@@ -7,14 +7,16 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button x:Name="hitboxButton" Content="Hitbox" HorizontalAlignment="Left" Margin="10,113,0,0" VerticalAlignment="Top" Width="75" Click="hitboxButton_Click"/>
-        <Button x:Name="hurtboxButton" Content="Hurtbox" HorizontalAlignment="Left" Margin="10,138,0,0" VerticalAlignment="Top" Width="74" Click="hurtboxButton_Click"/>
-        <ComboBox x:Name="currentActionDropdown" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboBox_SelectionChanged"/>
+        <Button x:Name="hitboxButton" Content="Hitbox" HorizontalAlignment="Left" Margin="10,245,0,0" VerticalAlignment="Top" Width="75" Click="hitboxButton_Click"/>
+        <Button x:Name="hurtboxButton" Content="Hurtbox" HorizontalAlignment="Left" Margin="10,270,0,0" VerticalAlignment="Top" Width="74" Click="hurtboxButton_Click"/>
+        <ComboBox x:Name="currentActionDropdown" HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboBox_SelectionChanged"/>
         <Image x:Name="currentFrameImage" HorizontalAlignment="Left" Height="399" Margin="130,10,0,0" VerticalAlignment="Top" Width="437" RenderTransformOrigin="0.5,0.5"/>
-        <Button x:Name="newActionButton" Content="New Action" HorizontalAlignment="Left" Margin="9,37,0,0" VerticalAlignment="Top" Width="75" Click="newActionButton_Click"/>
-        <Button x:Name="saveButton" Content="Save Action" HorizontalAlignment="Left" Margin="10,62,0,0" VerticalAlignment="Top" Width="75" Click="saveButton_Click"/>
-        <TextBox x:Name="nameTextBox" HorizontalAlignment="Left" Height="23" Margin="567,10,0,0" TextWrapping="Wrap" Text="Action Name" VerticalAlignment="Top" Width="215" KeyDown="nameTextBox_KeyDown"/>
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Height="100" Margin="272,227,0,0" VerticalAlignment="Top" Width="100"/>
+        <Button x:Name="newActionButton" Content="New Action" HorizontalAlignment="Left" Margin="9,169,0,0" VerticalAlignment="Top" Width="75" Click="newActionButton_Click"/>
+        <Button x:Name="saveButton" Content="Save Action" HorizontalAlignment="Left" Margin="10,194,0,0" VerticalAlignment="Top" Width="75" Click="saveButton_Click"/>
+        <TextBox x:Name="nameTextBox" HorizontalAlignment="Right" Height="23" Margin="0,38,10,0" TextWrapping="Wrap" Text="Action Name" VerticalAlignment="Top" Width="215" KeyDown="nameTextBox_KeyDown"/>
+        <ListBox x:Name="characterList" HorizontalAlignment="Left" Height="100" Margin="10,35,0,0" VerticalAlignment="Top" Width="115" SelectionChanged="listBox_SelectionChanged"/>
+        <Button x:Name="newCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" Click="newCharacterButton_Click"/>
+        <TextBox x:Name="characterNameTextBox" HorizontalAlignment="Right" Height="23" Margin="0,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" Width="215" KeyDown="characterNameTextBox_KeyDown"/>
 
     </Grid>
 </Window>
