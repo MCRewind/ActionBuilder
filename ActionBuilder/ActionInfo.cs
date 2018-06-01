@@ -30,6 +30,15 @@ namespace ActionBuilder
         [DataMember]
         private bool infinite;
 
+        public ActionInfo()
+        {
+            frames = new List<FrameType>();
+            frames.Add(FrameType.Startup);
+            blockType = BlockType.Mid;
+            knockdownType = KnockdownType.None;
+            infinite = false;
+        }
+
         private struct Box
         {
             public Vector2 knockbackAngle;

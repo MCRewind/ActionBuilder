@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Media.Animation;
 
 namespace ActionBuilder
 {
@@ -25,6 +26,8 @@ namespace ActionBuilder
         private List<CharacterInfo> characters;
         private List<ActionInfo> actions;
         private List<EditorInfo> editorInfos;
+
+        private List<List<BitmapImage>> actionAnims;
 
         private bool loadedFromNew = false;
         private int lastSelectedCharacter = -1;
@@ -46,12 +49,21 @@ namespace ActionBuilder
             characters = new List<CharacterInfo>();
             actions = new List<ActionInfo>();
             editorInfos = new List<EditorInfo>();
+            actionAnims = new List<List<BitmapImage>>();
 
             InitializeComponent();
 
             loadCharacters("../../Characters/");
             if (File.Exists("../../Editor/lastCharacter.json"))
                 loadActions(readFromJson("../../Editor/lastCharacter.json"));
+
+            BitmapImage previewImage = new BitmapImage();
+            previewImage.BeginInit();
+            previewImage.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\..\Textures\test.png", UriKind.Absolute);
+            previewImage.EndInit();
+            currentFrameImage.Source = previewImage;
+
+            frameSlider.IsSnapToTickEnabled = true;
         }
 
         private void loadActions(string character)
@@ -105,16 +117,19 @@ namespace ActionBuilder
 
         private void newActionButton_Click(object sender, RoutedEventArgs e)
         {
-            ActionInfo newAction = new ActionInfo();
-            newAction.name = $"new action {actions.Count}";
-            actions.Add(newAction);
+            if (characterList.SelectedIndex >= 0)
+            {
+                ActionInfo newAction = new ActionInfo();
+                newAction.name = $"new action {actions.Count}";
+                actions.Add(newAction);
 
-            EditorInfo newEditorInfo = new EditorInfo();
-            newEditorInfo.texturePath = $"Textures/{characters[characterList.SelectedIndex].name}/{newAction.name}/";
+                EditorInfo newEditorInfo = new EditorInfo();
+                newEditorInfo.texturePath = $"Textures/{characters[characterList.SelectedIndex].name}/{newAction.name}/";
 
-            currentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.name);
+                currentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.name);
 
-            currentActionDropdown.SelectedIndex = currentActionDropdown.Items.Count - 1;
+                currentActionDropdown.SelectedIndex = currentActionDropdown.Items.Count - 1;
+            }
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
@@ -124,13 +139,16 @@ namespace ActionBuilder
 
         private void saveAction()
         {
-            MemoryStream outStream = new MemoryStream();
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ActionInfo));
+            if (currentActionDropdown.SelectedIndex >= 0)
+            {
+                MemoryStream outStream = new MemoryStream();
+                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ActionInfo));
 
-            ser.WriteObject(outStream, actions[currentActionDropdown.SelectedIndex]);
+                ser.WriteObject(outStream, actions[currentActionDropdown.SelectedIndex]);
 
-            string filepath = $"../../Actions/{characters[characterList.SelectedIndex].name}/{actions[currentActionDropdown.SelectedIndex].name}.json";
-            writeToJson(filepath, outStream);
+                string filepath = $"../../Actions/{characters[characterList.SelectedIndex].name}/{actions[currentActionDropdown.SelectedIndex].name}.json";
+                writeToJson(filepath, outStream);
+            }
         }
 
         private string readFromJson(string path)
@@ -176,6 +194,8 @@ namespace ActionBuilder
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (actions[currentActionDropdown.SelectedIndex] != null)
+                frameSlider.Maximum = actions[currentActionDropdown.SelectedIndex].getFrameCount();
             if (currentActionDropdown.SelectedIndex >= 0)
                 nameTextBox.Text = actions[currentActionDropdown.SelectedIndex].name;
         }
@@ -215,10 +235,25 @@ namespace ActionBuilder
                 if (currentActionDropdown.SelectedIndex >= 0)
                     saveAction();
 
+                actionAnims.Clear();
+
                 if (loadedFromNew == false)
                     loadActions(characters[lastSelectedCharacter].name);
                 else
                     loadedFromNew = true;
+
+                for (int i = 0; i < actions.Count; ++i)
+                {
+                    actionAnims.Add(new List<BitmapImage>());
+                    foreach (string file in Directory.GetFiles($"../../Textures/{characters[lastSelectedCharacter].name}/"))
+                    {
+                        BitmapImage tempImg = new BitmapImage();
+                        tempImg.BeginInit();
+                        tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{file}", UriKind.Absolute);
+                        tempImg.EndInit();
+                        actionAnims[i].Add(tempImg);
+                    }
+                }
             }
         }
 
@@ -244,6 +279,7 @@ namespace ActionBuilder
             writeToJson(filepath, outStream);
 
             Directory.CreateDirectory($"../../Actions/{characters[characterList.SelectedIndex].name}");
+            Directory.CreateDirectory($"../../Textures/{characters[characterList.SelectedIndex].name}");
 
             loadActions(characters[characterList.SelectedIndex].name);
         }
@@ -266,9 +302,36 @@ namespace ActionBuilder
                 writeToJson(filepath, outStream);
 
                 Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{characters[lastSelectedCharacter].name}.json");
+                Directory.Move($"../../Textures/{oldName}", $"../../Textures/{characters[lastSelectedCharacter].name}");
                 Directory.Move($"../../Actions/{oldName}", $"../../Actions/{characters[lastSelectedCharacter].name}");
                 characterList.SelectedIndex = lastSelectedCharacter;
             }
+        }
+
+        private void frameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (currentActionDropdown.SelectedIndex >= 0 && frameSlider.Value < actionAnims[currentActionDropdown.SelectedIndex].Count)
+                currentFrameImage.Source = actionAnims[currentActionDropdown.SelectedIndex][(int) frameSlider.Value];
+        }
+
+        private void prevFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            --frameSlider.Value;
+        }
+
+        private void nextFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            ++frameSlider.Value;
+        }
+
+        private void playButton_Click(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
+        private void pauseButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
