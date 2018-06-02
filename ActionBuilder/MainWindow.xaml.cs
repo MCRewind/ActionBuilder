@@ -200,7 +200,7 @@ namespace ActionBuilder
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (currentAction() != null)
-                frameSlider.Maximum = currentAction().getFrameCount();
+                frameSlider.Maximum = currentAction().FrameCount;
             if (currentActionDropdown.SelectedIndex >= 0)
                 nameTextBox.Text = currentAction().name;
         }
@@ -315,8 +315,9 @@ namespace ActionBuilder
 
         private void frameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (currentActionDropdown.SelectedIndex >= 0 && frameSlider.Value < actionAnims[currentActionDropdown.SelectedIndex].Count)
-                currentFrameImage.Source = actionAnims[currentActionDropdown.SelectedIndex][(int) frameSlider.Value];
+            if (currentActionDropdown.SelectedIndex >= 0 && frameSlider.Value < currentAction().FrameCount && currentActionDropdown.SelectedIndex < actionAnims.Count)
+                if (frameSlider.Value < actionAnims[currentActionDropdown.SelectedIndex].Count)
+                    currentFrameImage.Source = actionAnims[currentActionDropdown.SelectedIndex][(int) frameSlider.Value];
         }
 
         private void prevFrameButton_Click(object sender, RoutedEventArgs e)
@@ -341,12 +342,20 @@ namespace ActionBuilder
 
         private void removeFrameButton_Click(object sender, RoutedEventArgs e)
         {
-            currentAction().removeFrame((int)frameSlider.Value);
+            if (currentAction() != null)
+            {
+                currentAction().removeFrame((int)frameSlider.Value);
+                frameSlider.Maximum = currentAction().FrameCount;
+            }
         }
 
         private void insertFrameButton_Click(object sender, RoutedEventArgs e)
         {
-            currentAction().insertFrame((int) frameSlider.Value);
+            if (currentAction() != null)
+            {
+                currentAction().insertFrame((int)frameSlider.Value);
+                frameSlider.Maximum = currentAction().FrameCount;
+            }
         }
     }
 }

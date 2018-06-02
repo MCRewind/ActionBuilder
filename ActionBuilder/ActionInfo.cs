@@ -63,9 +63,9 @@ namespace ActionBuilder
         [DataMember]
         private List<Box> hitboxes, hurtboxes;
 
-        public int getFrameCount()
+        public int FrameCount
         {
-            return frames.Count;
+            get { return frames.Count; }
         }
 
         public void insertFrame(int index)
