@@ -30,7 +30,7 @@ namespace ActionBuilder
         private List<List<BitmapImage>> actionAnims;
 
         private bool loadedFromNew = false;
-        private int lastSelectedCharacter = -1;
+        private CharacterInfo lastSelectedCharacter;
 
         public MainWindow()
         {
@@ -56,14 +56,7 @@ namespace ActionBuilder
             loadCharacters("../../Characters/");
             if (File.Exists("../../Editor/lastCharacter.json"))
                 loadActions(readFromJson("../../Editor/lastCharacter.json"));
-
-            BitmapImage previewImage = new BitmapImage();
-            previewImage.BeginInit();
-            previewImage.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\..\Textures\test.png", UriKind.Absolute);
-            previewImage.EndInit();
-            currentFrameImage.Source = previewImage;
-
-            frameSlider.IsSnapToTickEnabled = true;
+            
         }
 
         private void loadActions(string character)
@@ -112,7 +105,19 @@ namespace ActionBuilder
         private void updatePaths()
         {
             for (int i = 0; i < editorInfos.Count; ++i)
-                editorInfos[i].texturePath = $"Textures/{characters[characterList.SelectedIndex].name}/{actions[i].name}/";
+                editorInfos[i].texturePath = $"Textures/{currentCharacter().name}/{actions[i].name}/";
+        }
+
+        private ActionInfo currentAction()
+        {
+            int index = currentActionDropdown.SelectedIndex;
+            return index > -1 && index < actions.Count ? actions[index] : null;
+        }
+
+        private CharacterInfo currentCharacter()
+        {
+            int index = characterList.SelectedIndex;
+            return index > -1 && index < characters.Count ? characters[index] : lastSelectedCharacter;
         }
 
         private void newActionButton_Click(object sender, RoutedEventArgs e)
@@ -124,7 +129,7 @@ namespace ActionBuilder
                 actions.Add(newAction);
 
                 EditorInfo newEditorInfo = new EditorInfo();
-                newEditorInfo.texturePath = $"Textures/{characters[characterList.SelectedIndex].name}/{newAction.name}/";
+                newEditorInfo.texturePath = $"Textures/{currentCharacter().name}/{newAction.name}/";
 
                 currentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.name);
 
@@ -144,9 +149,9 @@ namespace ActionBuilder
                 MemoryStream outStream = new MemoryStream();
                 DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ActionInfo));
 
-                ser.WriteObject(outStream, actions[currentActionDropdown.SelectedIndex]);
+                ser.WriteObject(outStream, currentAction());
 
-                string filepath = $"../../Actions/{characters[characterList.SelectedIndex].name}/{actions[currentActionDropdown.SelectedIndex].name}.json";
+                string filepath = $"../../Actions/{currentCharacter().name}/{currentAction().name}.json";
                 writeToJson(filepath, outStream);
             }
         }
@@ -194,10 +199,10 @@ namespace ActionBuilder
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (actions[currentActionDropdown.SelectedIndex] != null)
-                frameSlider.Maximum = actions[currentActionDropdown.SelectedIndex].getFrameCount();
+            if (currentAction() != null)
+                frameSlider.Maximum = currentAction().getFrameCount();
             if (currentActionDropdown.SelectedIndex >= 0)
-                nameTextBox.Text = actions[currentActionDropdown.SelectedIndex].name;
+                nameTextBox.Text = currentAction().name;
         }
 
         private void nameTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -205,7 +210,7 @@ namespace ActionBuilder
             if (currentActionDropdown.HasItems && currentActionDropdown.SelectedIndex >= 0 && e.Key == Key.Enter)
             {
                 int index = currentActionDropdown.SelectedIndex;
-                actions[currentActionDropdown.SelectedIndex].name = nameTextBox.Text;
+                currentAction().name = nameTextBox.Text;
                 updateActionNames();
                 currentActionDropdown.SelectedIndex = index;
             }
@@ -215,16 +220,17 @@ namespace ActionBuilder
         {
             if (characterList.SelectedIndex >= 0)
             {
-                lastSelectedCharacter = characterList.SelectedIndex;
 
                 MemoryStream outStream = new MemoryStream();
                 DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(string));
 
-                ser.WriteObject(outStream, characters[lastSelectedCharacter].name);
+                ser.WriteObject(outStream, currentCharacter().name);
 
-                File.WriteAllText("../../Editor/lastCharacter.json", characters[lastSelectedCharacter].name);
+                File.WriteAllText("../../Editor/lastCharacter.json", currentCharacter().name);
 
-                characterNameTextBox.Text = characters[lastSelectedCharacter].name;
+                characterNameTextBox.Text = currentCharacter().name;
+
+                lastSelectedCharacter = currentCharacter();
 
                 if (currentActionDropdown.HasItems)
                 {
@@ -238,14 +244,14 @@ namespace ActionBuilder
                 actionAnims.Clear();
 
                 if (loadedFromNew == false)
-                    loadActions(characters[lastSelectedCharacter].name);
+                    loadActions(currentCharacter().name);
                 else
                     loadedFromNew = true;
 
                 for (int i = 0; i < actions.Count; ++i)
                 {
                     actionAnims.Add(new List<BitmapImage>());
-                    foreach (string file in Directory.GetFiles($"../../Textures/{characters[lastSelectedCharacter].name}/"))
+                    foreach (string file in Directory.GetFiles($"../../Textures/{currentCharacter().name}/"))
                     {
                         BitmapImage tempImg = new BitmapImage();
                         tempImg.BeginInit();
@@ -273,38 +279,37 @@ namespace ActionBuilder
             MemoryStream outStream = new MemoryStream();
             DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CharacterInfo));
 
-            ser.WriteObject(outStream, characters[characterList.SelectedIndex]);
+            ser.WriteObject(outStream, currentCharacter());
 
-            string filepath = $"../../Characters/{characters[characterList.SelectedIndex].name}.json";
+            string filepath = $"../../Characters/{currentCharacter().name}.json";
             writeToJson(filepath, outStream);
 
-            Directory.CreateDirectory($"../../Actions/{characters[characterList.SelectedIndex].name}");
-            Directory.CreateDirectory($"../../Textures/{characters[characterList.SelectedIndex].name}");
+            Directory.CreateDirectory($"../../Actions/{currentCharacter().name}");
+            Directory.CreateDirectory($"../../Textures/{currentCharacter().name}");
 
-            loadActions(characters[characterList.SelectedIndex].name);
+            loadActions(currentCharacter().name);
         }
 
         private void characterNameTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (characterList.HasItems && lastSelectedCharacter >= 0 && e.Key == Key.Enter)
+            if (characterList.HasItems && characterList.SelectedIndex >= 0 && e.Key == Key.Enter)
             {
-                var oldName = characters[lastSelectedCharacter].name;
-                characters[lastSelectedCharacter].name = characterNameTextBox.Text;
+                var oldName = currentCharacter().name;
+                currentCharacter().name = characterNameTextBox.Text;
                 updateCharacterNames();
 
                 // write charactr file
                 MemoryStream outStream = new MemoryStream();
                 DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CharacterInfo));
 
-                ser.WriteObject(outStream, characters[lastSelectedCharacter]);
+                ser.WriteObject(outStream, currentCharacter());
 
                 string filepath = $"../../Characters/{oldName}.json";
                 writeToJson(filepath, outStream);
 
-                Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{characters[lastSelectedCharacter].name}.json");
-                Directory.Move($"../../Textures/{oldName}", $"../../Textures/{characters[lastSelectedCharacter].name}");
-                Directory.Move($"../../Actions/{oldName}", $"../../Actions/{characters[lastSelectedCharacter].name}");
-                characterList.SelectedIndex = lastSelectedCharacter;
+                Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{currentCharacter().name}.json");
+                Directory.Move($"../../Textures/{oldName}", $"../../Textures/{currentCharacter().name}");
+                Directory.Move($"../../Actions/{oldName}", $"../../Actions/{currentCharacter().name}");
             }
         }
 
@@ -332,6 +337,16 @@ namespace ActionBuilder
         private void pauseButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void removeFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            currentAction().removeFrame((int)frameSlider.Value);
+        }
+
+        private void insertFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            currentAction().insertFrame((int) frameSlider.Value);
         }
     }
 }

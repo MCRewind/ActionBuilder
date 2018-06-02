@@ -67,6 +67,31 @@ namespace ActionBuilder
         {
             return frames.Count;
         }
+
+        public void insertFrame(int index)
+        {
+            if (frames.Count > 0)
+                if (index > frames.Count)
+                    frames.Add(frames[frames.Count - 1]);
+                else if (index > 0)
+                    frames.Insert(index, frames[index - 1]);
+                else
+                    frames.Prepend(FrameType.Startup);
+            else
+                frames.Add(FrameType.Startup);
+        }
+
+        public void removeFrame(int index)
+        {
+            if (frames.Count > 0)
+                if (index > frames.Count)
+                    frames.RemoveAt(frames.Count - 1);
+                else if (index > 0)
+                    frames.RemoveAt(index - 1);
+                else
+                    frames.RemoveAt(0);
+        }
+
     }
 
 }

@@ -17,11 +17,12 @@
         <ListBox x:Name="characterList" HorizontalAlignment="Left" Height="100" Margin="10,35,0,0" VerticalAlignment="Top" Width="115" SelectionChanged="listBox_SelectionChanged"/>
         <Button x:Name="newCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" Click="newCharacterButton_Click"/>
         <TextBox x:Name="characterNameTextBox" HorizontalAlignment="Right" Height="23" Margin="0,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" Width="215" KeyDown="characterNameTextBox_KeyDown"/>
-        <Slider x:Name="frameSlider" HorizontalAlignment="Center" Margin="128,0,228,10" VerticalAlignment="Bottom" Width="436" ValueChanged="frameSlider_ValueChanged"/>
+        <Slider x:Name="frameSlider" HorizontalAlignment="Center" Margin="128,0,228,10" VerticalAlignment="Bottom" Width="436" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="frameSlider_ValueChanged"/>
         <Button x:Name="nextFrameButton" Content=">" HorizontalAlignment="Center" Margin="235,0,799,10" VerticalAlignment="Bottom" Width="18" Height="18" Click="nextFrameButton_Click"/>
         <Button x:Name="prevFrameButton" Content="&#60;" HorizontalAlignment="Center" Margin="166,0,868,10" VerticalAlignment="Bottom" Width="18" Height="18" Click="prevFrameButton_Click"/>
         <Button x:Name="playButton" Content="►" HorizontalAlignment="Center" Margin="212,0,822,10" VerticalAlignment="Bottom" Width="18" Height="18" RenderTransformOrigin="0.472,0.556" Click="playButton_Click"/>
         <Button x:Name="pauseButton" Content="■" HorizontalAlignment="Center" Margin="189,0,845,10" VerticalAlignment="Bottom" Width="18" Height="18" Click="pauseButton_Click"/>
-
+        <Button x:Name="insertFrameButton" Content="+" HorizontalAlignment="Center" Margin="722,0,312,10" VerticalAlignment="Bottom" Width="18" Height="18" Click="insertFrameButton_Click"/>
+        <Button x:Name="removeFrameButton" Content="-" HorizontalAlignment="Center" Margin="699,0,335,10" VerticalAlignment="Bottom" Width="18" Height="18" Click="removeFrameButton_Click"/>
     </Grid>
 </Window>
