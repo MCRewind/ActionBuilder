@@ -15,13 +15,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
+using MahApps.Metro.Controls;
 
 namespace ActionBuilder
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         private List<CharacterInfo> characters;
         private List<ActionInfo> actions;
@@ -56,7 +57,24 @@ namespace ActionBuilder
             loadCharacters("../../Characters/");
             if (File.Exists("../../Editor/lastCharacter.json"))
                 loadActions(readFromJson("../../Editor/lastCharacter.json"));
-            
+
+            frameTypeDropdown.Items.Add("Startup");
+            frameTypeDropdown.Items.Add("Active");
+            frameTypeDropdown.Items.Add("Recovery");
+            frameTypeDropdown.Items.Add("Buffer");
+
+            knockdownTypeDropdown.Items.Add("None");
+            knockdownTypeDropdown.Items.Add("Soft");
+            knockdownTypeDropdown.Items.Add("Hard");
+            knockdownTypeDropdown.Items.Add("SoftGB");
+            knockdownTypeDropdown.Items.Add("HardGB");
+            knockdownTypeDropdown.Items.Add("SoftWB");
+            knockdownTypeDropdown.Items.Add("HardWB");
+
+            blockTypeDropdown.Items.Add("Low");
+            blockTypeDropdown.Items.Add("Mid");
+            blockTypeDropdown.Items.Add("High");
+            blockTypeDropdown.Items.Add("Unblockable");
         }
 
         private void loadActions(string character)
