@@ -16,10 +16,12 @@ namespace ActionBuilder
         enum KnockdownType { None, Soft, Hard, SoftGB, HardGB, SoftWB, HardWB }
 
         [DataMember]
-        public String name { get; set; }
+        public string name;
 
         [DataMember]
-        private List<FrameType> frames;
+        private List<FrameType> frames; 
+
+        public int FrameCount { get => frames.Count; }
 
         [DataMember]
         private BlockType blockType;
@@ -62,11 +64,6 @@ namespace ActionBuilder
 
         [DataMember]
         private List<Box> hitboxes, hurtboxes;
-
-        public int FrameCount
-        {
-            get { return frames.Count; }
-        }
 
         public void insertFrame(int index)
         {
