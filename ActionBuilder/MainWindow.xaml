@@ -5,21 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ActionBuilder"
         mc:Ignorable="d"
-        Title="MainWindow" Height="640" Width="1060">
+        Title="Action Builder" MinHeight="360" MinWidth="1070" Width="1070" Height="540">
     <Grid>
-        <Grid Margin="10,10,910,10" HorizontalAlignment="Left" >
+        <Grid HorizontalAlignment="Left" Width="132" Margin="10,10,0,10">
             <Border
                 BorderBrush="DarkCyan"
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch" Margin="0,0,-9,0"/>
-            <Button x:Name="hitboxButton" Content="Hitbox" HorizontalAlignment="Left" Margin="10,245,0,0" VerticalAlignment="Top" Width="75" Click="hitboxButton_Click"/>
-            <Button x:Name="hurtboxButton" Content="Hurtbox" HorizontalAlignment="Left" Margin="10,270,0,0" VerticalAlignment="Top" Width="74" Click="hurtboxButton_Click"/>
-            <ComboBox x:Name="currentActionDropdown" HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top" Width="115" SelectionChanged="comboBox_SelectionChanged"/>
-            <ListBox x:Name="characterList" HorizontalAlignment="Left" Height="100" Margin="10,35,0,0" VerticalAlignment="Top" Width="115" SelectionChanged="listBox_SelectionChanged"/>
-            <Button x:Name="newCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="115" Click="newCharacterButton_Click"/>
-            <Button x:Name="newActionButton" Content="New Action" HorizontalAlignment="Left" Margin="9,169,0,0" VerticalAlignment="Top" Width="75" Click="newActionButton_Click"/>
-            <Button x:Name="saveButton" Content="Save Action" HorizontalAlignment="Left" Margin="10,194,0,0" VerticalAlignment="Top" Width="75" Click="saveButton_Click"/>
+                VerticalAlignment="Stretch"/>
+            <Button x:Name="hitboxButton"       Content="Hitbox"        HorizontalAlignment="Left" Margin="10,245,0,0" VerticalAlignment="Top" Click="hitboxButton_Click" Width="112"/>
+            <Button x:Name="hurtboxButton"      Content="Hurtbox"       HorizontalAlignment="Left" Margin="10,270,0,0" VerticalAlignment="Top" Click="hurtboxButton_Click" Width="112"/>
+            <Button x:Name="newCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0"  VerticalAlignment="Top" Click="newCharacterButton_Click" Width="112"/>
+            <Button x:Name="newActionButton"    Content="New Action"    HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Click="newActionButton_Click" Width="112"/>
+            <Button x:Name="saveButton"         Content="Save Action"   HorizontalAlignment="Left" Margin="10,194,0,0" VerticalAlignment="Top" Click="saveButton_Click" Width="112"/>
+            <ComboBox x:Name="currentActionDropdown" HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="comboBox_SelectionChanged"/>
+            <ListBox x:Name="characterList" HorizontalAlignment="Left" Height="100" Margin="10,35,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="listBox_SelectionChanged"/>
         </Grid>
 
         <Grid Margin="147,10,263,211" VerticalAlignment="Stretch">
@@ -31,14 +31,14 @@
             <Image x:Name="currentFrameImage" HorizontalAlignment="Stretch" Margin="10" VerticalAlignment="Stretch" RenderTransformOrigin="0.5,0.5" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
         </Grid>
 
-        <Grid Margin="794,10,10,10" HorizontalAlignment="Right">
+        <Grid Margin="0,10,10,10" HorizontalAlignment="Right" Width="248">
             <Border
-                BorderBrush="DarkCyan"
+                BorderBrush="DarkCyan" 
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch" Margin="-10,0,0,0"/>
-            <TextBox x:Name="nameTextBox" Height="23" Margin="0,38,10,0" TextWrapping="Wrap" Text="Action Name" VerticalAlignment="Top" KeyDown="nameTextBox_KeyDown"/>
-            <TextBox x:Name="characterNameTextBox" HorizontalAlignment="Right" Height="23" Margin="0,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" Width="228" KeyDown="characterNameTextBox_KeyDown"/>
+                VerticalAlignment="Stretch"/>
+            <TextBox x:Name="nameTextBox"          Height="23" Margin="10,38,10,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="nameTextBox_KeyDown"/>
+            <TextBox x:Name="characterNameTextBox" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="characterNameTextBox_KeyDown"/>
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">
@@ -47,13 +47,19 @@
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"/>
+            <Grid Margin="10,168,544,10">
+                <Button x:Name="nextFrameButton"   Content=">"     Width="18" Height="18" Click="nextFrameButton_Click" Margin="70,0,0,0"   />
+                <Button x:Name="prevFrameButton"   Content="&#60;" Width="18" Height="18" Click="prevFrameButton_Click" Margin="1,0,69,0"   />
+                <Button x:Name="playButton"        Content="►"     Width="18" Height="18" Click="playButton_Click"      Margin="47,0,23,0"  />
+                <Button x:Name="pauseButton"       Content="■"     Width="18" Height="18" Click="pauseButton_Click"     Margin="24,0,46,0"  />
+            </Grid>
+
+            <Grid Margin="544,168,10,10">
+                <Button x:Name="insertFrameButton" Content="+"  Width="18" Height="18" Click="insertFrameButton_Click" Margin="23,0,47,0"  />
+                <Button x:Name="removeFrameButton" Content="-"  Width="18" Height="18" Click="removeFrameButton_Click" Margin="0,0,70,0" />
+            </Grid>
+
             <Slider x:Name="frameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="436" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="frameSlider_ValueChanged" Margin="103,0,103,10"/>
-            <Button x:Name="nextFrameButton"   Content=">"     HorizontalAlignment="Center"  VerticalAlignment="Bottom" Width="18" Height="18" Click="nextFrameButton_Click"   Margin="80,0,544,10"/>
-            <Button x:Name="prevFrameButton"   Content="&#60;" HorizontalAlignment="Center"  VerticalAlignment="Bottom" Width="18" Height="18" Click="prevFrameButton_Click"   Margin="11,0,613,10"/>
-            <Button x:Name="playButton"        Content="►"     HorizontalAlignment="Center"  VerticalAlignment="Bottom" Width="18" Height="18" Click="playButton_Click"        Margin="57,0,567,10"/>
-            <Button x:Name="pauseButton"       Content="■"     HorizontalAlignment="Center"  VerticalAlignment="Bottom" Width="18" Height="18" Click="pauseButton_Click"       Margin="34,0,590,10"/>
-            <Button x:Name="insertFrameButton" Content="+"     HorizontalAlignment="Center"  VerticalAlignment="Bottom" Width="18" Height="18" Click="insertFrameButton_Click" Margin="567,0,57,10"/>
-            <Button x:Name="removeFrameButton" Content="-"     HorizontalAlignment="Center"  VerticalAlignment="Bottom" Width="18" Height="18" Click="removeFrameButton_Click" Margin="544,0,80,10"/>
         </Grid>
     </Grid>
 </Window>
