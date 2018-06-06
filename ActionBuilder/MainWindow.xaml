@@ -64,6 +64,8 @@
                         x:Name="selectionBox"
                         Visibility="Collapsed"
                         Stroke="Black"
+                        Opacity=".3"
+                        Fill="LightGreen"
                         StrokeThickness="1" Height="228" Width="574" Canvas.Left="27" Canvas.Top="10"
                     />
             </Canvas>
