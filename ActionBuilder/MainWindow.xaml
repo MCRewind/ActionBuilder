@@ -22,21 +22,24 @@
             <ListBox x:Name="characterList" HorizontalAlignment="Left" Height="100" Margin="10,42,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="listBox_SelectionChanged"/>
         </Grid>
 
-        <Grid Margin="147,10,263,211" VerticalAlignment="Stretch">
+        <Grid Name="editGrid" Margin="147,10,263,211" VerticalAlignment="Stretch"                     
+                    MouseDown="Grid_MouseDown"
+                    MouseUp="Grid_MouseUp"
+                    MouseMove="Grid_MouseMove">
             <Border
                     BorderBrush="DarkCyan"
                     BorderThickness="3"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"/>
-
-
+                    VerticalAlignment="Stretch"
+                />
 
             <paz:ZoomBorder Name="zoomBorder" Stretch="None" ZoomSpeed="1.2" 
                             Background="DarkSlateGray" ClipToBounds="True" Focusable="True"
-                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10">
-                <Canvas Margin="0, 0, 0, 0" Name="editCanvas">
+                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10"
+                            MinZoomX=".5" MinZoomY=".5">
+                <Canvas Width="1920" Height="1080" Margin="-618,-420,-670,-392" Name="editCanvas">
                     <Canvas.Background>
-                        <DrawingBrush TileMode="Tile" Viewport="-10, -10, 40, 40" 
+                        <DrawingBrush TileMode="Tile"  Viewport="0, 0, 4, 4" 
                                              ViewportUnits="Absolute">
                             <DrawingBrush.Drawing>
                                 <GeometryDrawing>
@@ -55,6 +58,15 @@
                                    RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10"/>
                 </Canvas>
             </paz:ZoomBorder>
+
+            <Canvas Margin="10">
+                <Rectangle
+                        x:Name="selectionBox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        StrokeThickness="1" Height="228" Width="574" Canvas.Left="27" Canvas.Top="10"
+                    />
+            </Canvas>
 
         </Grid>
 

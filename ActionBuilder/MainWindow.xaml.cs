@@ -33,6 +33,9 @@ namespace ActionBuilder
         private bool loadedFromNew = false;
         private CharacterInfo lastSelectedCharacter;
 
+        bool mouseDown = false;
+        Point mouseDownPos;
+
         public MainWindow()
         {
             if (!Directory.Exists("../../Editor"))
@@ -60,7 +63,6 @@ namespace ActionBuilder
 
             zoomBorder.MouseDown += ZoomBorder_MouseDown;
             zoomBorder.MouseWheel += ZoomBorder_MouseWheel;
-
 
             frameTypeDropdown.Items.Add("Startup");
             frameTypeDropdown.Items.Add("Active");
@@ -376,9 +378,79 @@ namespace ActionBuilder
 
         private void ZoomBorder_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Console.WriteLine("AAAAAAAAAAAA");
+            Console.WriteLine($"{zoomBorder.ZoomX}");
             editCanvas.Height = 1080; 
             editCanvas.Width = 1920; 
+        }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            // Capture and track the mouse.
+            mouseDown = true;
+            mouseDownPos = e.GetPosition(editGrid);
+            editGrid.CaptureMouse();
+
+            // Initial placement of the drag selection box.         
+            Canvas.SetLeft(selectionBox, mouseDownPos.X);
+            Canvas.SetTop(selectionBox, mouseDownPos.Y);
+            selectionBox.Width = 0;
+            selectionBox.Height = 0;
+
+            Console.WriteLine("TESTSETSETSET");
+
+            // Make the drag selection box visible.
+            selectionBox.Visibility = Visibility.Visible;
+        }
+
+        private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            // Release the mouse capture and stop tracking it.
+            mouseDown = false;
+            editGrid.ReleaseMouseCapture();
+
+            // Hide the drag selection box.
+            selectionBox.Visibility = Visibility.Collapsed;
+
+            Point mouseUpPos = e.GetPosition(editGrid);
+
+            // TODO: 
+            //
+            // The mouse has been released, check to see if any of the items 
+            // in the other canvas are contained within mouseDownPos and 
+            // mouseUpPos, for any that are, select them!
+            //
+        }
+
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                // When the mouse is held down, reposition the drag selection box.
+
+                Point mousePos = e.GetPosition(editGrid);
+
+                if (mouseDownPos.X < mousePos.X)
+                {
+                    Canvas.SetLeft(selectionBox, mouseDownPos.X);
+                    selectionBox.Width = mousePos.X - mouseDownPos.X;
+                }
+                else
+                {
+                    Canvas.SetLeft(selectionBox, mousePos.X);
+                    selectionBox.Width = mouseDownPos.X - mousePos.X;
+                }
+
+                if (mouseDownPos.Y < mousePos.Y)
+                {
+                    Canvas.SetTop(selectionBox, mouseDownPos.Y);
+                    selectionBox.Height = mousePos.Y - mouseDownPos.Y;
+                }
+                else
+                {
+                    Canvas.SetTop(selectionBox, mousePos.Y);
+                    selectionBox.Height = mouseDownPos.Y - mousePos.Y;
+                }
+            }
         }
     }
 }
