@@ -62,19 +62,6 @@ namespace ActionBuilder
             frameTypeDropdown.Items.Add("Active");
             frameTypeDropdown.Items.Add("Recovery");
             frameTypeDropdown.Items.Add("Buffer");
-
-            knockdownTypeDropdown.Items.Add("None");
-            knockdownTypeDropdown.Items.Add("Soft");
-            knockdownTypeDropdown.Items.Add("Hard");
-            knockdownTypeDropdown.Items.Add("SoftGB");
-            knockdownTypeDropdown.Items.Add("HardGB");
-            knockdownTypeDropdown.Items.Add("SoftWB");
-            knockdownTypeDropdown.Items.Add("HardWB");
-
-            blockTypeDropdown.Items.Add("Low");
-            blockTypeDropdown.Items.Add("Mid");
-            blockTypeDropdown.Items.Add("High");
-            blockTypeDropdown.Items.Add("Unblockable");
         }
 
         private void loadActions(string character)
@@ -297,7 +284,7 @@ namespace ActionBuilder
             MemoryStream outStream = new MemoryStream();
             DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CharacterInfo));
 
-            ser.WriteObject(outStream, currentCharacter());
+            ser.WriteObject(outStream, currentCharacter()); 
 
             string filepath = $"../../Characters/{currentCharacter().name}.json";
             writeToJson(filepath, outStream);

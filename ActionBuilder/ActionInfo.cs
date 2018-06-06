@@ -12,8 +12,6 @@ namespace ActionBuilder
     internal class ActionInfo
     {
         enum FrameType { Startup, Active, Recovery, Buffer }
-        enum BlockType { Low, Mid, High, Unblockable }
-        enum KnockdownType { None, Soft, Hard, SoftGB, HardGB, SoftWB, HardWB }
 
         [DataMember]
         public string name;
@@ -24,20 +22,12 @@ namespace ActionBuilder
         public int FrameCount { get => frames.Count; }
 
         [DataMember]
-        private BlockType blockType;
-
-        [DataMember]
-        private KnockdownType knockdownType;
-
-        [DataMember]
         private bool infinite;
 
         public ActionInfo()
         {
             frames = new List<FrameType>();
             frames.Add(FrameType.Startup);
-            blockType = BlockType.Mid;
-            knockdownType = KnockdownType.None;
             infinite = false;
         }
 
@@ -45,9 +35,8 @@ namespace ActionBuilder
         {
             public Vector2 knockbackAngle;
             public float x, y, width, height, damage, knockbackStrength;
-            public int id;
 
-            public Box(float x, float y, float width, float height, float damage, float knockbackStrength, Vector2 knockbackAngle, int id)
+            public Box(float x, float y, float width, float height, float damage, float knockbackStrength, Vector2 knockbackAngle)
             {
                 this.x = x;
                 this.y = y;
@@ -56,10 +45,9 @@ namespace ActionBuilder
                 this.damage = damage;
                 this.knockbackStrength = knockbackStrength;
                 this.knockbackAngle = knockbackAngle;
-                this.id = id;
             }
 
-            public Box(int id) : this(0, 0, 5, 5, 0, 0, new Vector2(), id) { }
+            public Box(Boolean baseBox) : this(0, 0, 5, 5, 0, 0, new Vector2()) { }
         }
 
         [DataMember]
