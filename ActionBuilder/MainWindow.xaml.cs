@@ -58,6 +58,10 @@ namespace ActionBuilder
             if (File.Exists("../../Editor/lastCharacter.json"))
                 loadActions(readFromJson("../../Editor/lastCharacter.json"));
 
+            zoomBorder.MouseDown += ZoomBorder_MouseDown;
+            zoomBorder.MouseWheel += ZoomBorder_MouseWheel;
+
+
             frameTypeDropdown.Items.Add("Startup");
             frameTypeDropdown.Items.Add("Active");
             frameTypeDropdown.Items.Add("Recovery");
@@ -361,6 +365,20 @@ namespace ActionBuilder
                 currentAction().insertFrame((int)frameSlider.Value);
                 frameSlider.Maximum = currentAction().FrameCount;
             }
+        }
+
+        private void ZoomBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Console.WriteLine("DDDDDDDDD");
+            editCanvas.Height = 1080;
+            editCanvas.Width = 1920;
+        }
+
+        private void ZoomBorder_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Console.WriteLine("AAAAAAAAAAAA");
+            editCanvas.Height = 1080; 
+            editCanvas.Width = 1920; 
         }
     }
 }
