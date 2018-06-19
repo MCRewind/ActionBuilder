@@ -36,7 +36,7 @@
             <paz:ZoomBorder Name="zoomBorder" Stretch="None" ZoomSpeed="1.2" 
                             Background="DarkSlateGray" ClipToBounds="True" Focusable="True"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10"
-                            MinZoomX=".5" MinZoomY=".5">
+                            MinZoomX=".5" MinZoomY=".5" PanButton="Middle">
                 <Canvas Name="editCanvas">
                     <Canvas.Background>
                         <DrawingBrush TileMode="Tile"  Viewport="0, 0, 4, 4" 

@@ -599,8 +599,13 @@ namespace ActionBuilder
             boxAngleText.Text = boxKBAngleSlider.Value.ToString() + "°";
         }
 
-        private void Grid_MouseDown(object sender, MouseEventArgs e)
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                
+            }
+
             mouseDown = true;
             mouseDownPos = e.GetPosition(boxCanvas);
 
