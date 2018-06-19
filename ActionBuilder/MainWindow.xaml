@@ -37,7 +37,7 @@
                             Background="DarkSlateGray" ClipToBounds="True" Focusable="True"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10"
                             MinZoomX=".5" MinZoomY=".5">
-                <Canvas Width="1920" Height="1080" Margin="-618,-420,-670,-392" Name="editCanvas">
+                <Canvas Name="editCanvas">
                     <Canvas.Background>
                         <DrawingBrush TileMode="Tile"  Viewport="0, 0, 4, 4" 
                                              ViewportUnits="Absolute">
@@ -56,19 +56,29 @@
 
                     <Image x:Name="currentFrameImage" Height="258" Width="612"
                                    RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10"/>
-                </Canvas>
-            </paz:ZoomBorder>
 
-            <Canvas Margin="10">
-                <Rectangle
-                        x:Name="selectionBox"
+                    <Canvas Name="boxCanvas"  Margin="10,0,10,10">
+                        <Rectangle
+                        x:Name="hitbox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        Opacity=".3"
+                        Fill="PaleVioletRed"
+                        StrokeThickness="1" Height="228" Width="574" Canvas.Left="27" Canvas.Top="10"
+                    />
+
+                        <Rectangle
+                        x:Name="hurtbox"
                         Visibility="Collapsed"
                         Stroke="Black"
                         Opacity=".3"
                         Fill="LightGreen"
-                        StrokeThickness="1" Height="228" Width="574" Canvas.Left="27" Canvas.Top="10"
+                        StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
                     />
-            </Canvas>
+                    </Canvas>
+                </Canvas>
+            </paz:ZoomBorder>
+
 
         </Grid>
 
@@ -83,6 +93,20 @@
 
             <TextBlock x:Name="frameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
             <ComboBox x:Name="frameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" />
+            <Grid HorizontalAlignment="Left" Margin="10,284,0,0" Width="228" Height="195" VerticalAlignment="Bottom">
+                <TextBox x:Name="boxXText" HorizontalAlignment="Left" Height="23" Margin="10,10,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102" KeyDown="boxXText_KeyDown"/>
+                <TextBox x:Name="boxYText" HorizontalAlignment="Left" Height="23" Margin="117,10,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101" KeyDown="boxYText_KeyDown"/>
+                <TextBox x:Name="boxWidthText" HorizontalAlignment="Left" Height="23" Margin="10,41,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" KeyDown="boxWidthText_KeyDown"/>
+                <TextBox x:Name="boxHeightText" HorizontalAlignment="Left" Height="23" Margin="117,41,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" KeyDown="boxHeightText_KeyDown"/>
+                <TextBox x:Name="boxDMGText" HorizontalAlignment="Left" Height="23" Margin="10,72,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" KeyDown="boxDMGText_KeyDown"/>
+                <TextBox x:Name="boxKBStrengthText" HorizontalAlignment="Left" Height="23" Margin="117,72,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" KeyDown="boxKBStrengthText_KeyDown"/>
+                <Slider x:Name="boxKBAngleSlider" HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Width="208" ValueChanged="boxKBAngleSlider_ValueChanged"/>
+                <TextBlock x:Name="KBAngleText" HorizontalAlignment="Left" Margin="10,148,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Knockback Angle"/>
+                <TextBlock x:Name="boxAngleText" HorizontalAlignment="Left" Margin="196,148,0,0" TextWrapping="Wrap" Text="0°" VerticalAlignment="Top"/>
+
+            </Grid>
+
+
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">

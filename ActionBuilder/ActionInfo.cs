@@ -31,7 +31,7 @@ namespace ActionBuilder
             infinite = false;
         }
 
-        private struct Box
+        public class Box
         {
             public Vector2 knockbackAngle;
             public float x, y, width, height, damage, knockbackStrength;
@@ -48,6 +48,12 @@ namespace ActionBuilder
             }
 
             public Box(Boolean baseBox) : this(0, 0, 5, 5, 0, 0, new Vector2()) { }
+
+            public void setPos(double x, double y) { this.x = (float) x; this.y = (float) y; }
+            public void setDims(double w, double h) { this.width = (float) w; this.height = (float) h; }
+            public void setDamage(float dmg) { this.damage = dmg; }
+            public void setKnockbackStrength(float strength) { this.knockbackStrength = strength; }
+            public void setKnockbackAngle(Vector2 angle) { this.knockbackAngle = angle; }
         }
 
         [DataMember]
