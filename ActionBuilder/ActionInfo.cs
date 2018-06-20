@@ -34,14 +34,17 @@ namespace ActionBuilder
             frames = new List<FrameType>();
             frames.Add(FrameType.Startup);
             infinite = new Vector2(-1, -1);
+            hitboxes = new List<List<Box>>();
+            hurtboxes = new List<List<Box>>();
         }
 
         public class Box
         {
             public Vector2 knockbackAngle;
             public float x, y, width, height, damage, knockbackStrength;
+            public int lifespan;
 
-            public Box(float x, float y, float width, float height, float damage, float knockbackStrength, Vector2 knockbackAngle)
+            public Box(float x, float y, float width, float height, float damage, float knockbackStrength, Vector2 knockbackAngle, int lifespan)
             {
                 this.x = x;
                 this.y = y;
@@ -50,9 +53,10 @@ namespace ActionBuilder
                 this.damage = damage;
                 this.knockbackStrength = knockbackStrength;
                 this.knockbackAngle = knockbackAngle;
+                this.lifespan = lifespan;
             }
 
-            public Box(Boolean baseBox) : this(0, 0, 5, 5, 0, 0, new Vector2()) { }
+            public Box(Boolean baseBox) : this(0, 0, 5, 5, 0, 0, new Vector2(), 1) { }
 
             public void setPos(double x, double y) { this.x = (float) x; this.y = (float) y; }
             public void setDims(double w, double h) { this.width = (float) w; this.height = (float) h; }
@@ -62,7 +66,7 @@ namespace ActionBuilder
         }
 
         [DataMember]
-        private List<Box> hitboxes, hurtboxes;
+        public List<List<Box>> hitboxes, hurtboxes;
 
         public void insertFrame(int index)
         {

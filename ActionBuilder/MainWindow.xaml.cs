@@ -27,24 +27,22 @@ namespace ActionBuilder
         private List<CharacterInfo> characters;
         private List<ActionInfo> actions;
         private List<EditorInfo> editorInfos;
-
+        private List<BoxInfo> boxes;
         private List<List<BitmapImage>> actionAnims;
 
-        private List<BoxInfo> boxes;
+        private SolidColorBrush hurtBrush, hurtOverBrush, hitBrush, hitOverBrush;
+        private CharacterInfo lastSelectedCharacter;
+        private Point mouseDownPos;
+        private Point currentBoxPos = new Point(0, 0);
 
         private bool loadedFromNew = false;
-        private CharacterInfo lastSelectedCharacter;
+        private bool mouseDown = false;
 
         private int selectedBox;
-
-        bool mouseDown = false;
-        Point mouseDownPos;
-
-        int boxPlaceMode = -1;
-        int currentBoxCount;
-        int gridSize = 4;
-
-        SolidColorBrush hurtBrush, hurtOverBrush, hitBrush, hitOverBrush;
+        private int boxPlaceMode = -1;
+        private int currentBoxCount;
+        private int gridSize = 4;
+        private int previousFrame = 0;
 
         struct BoxInfo
         {         
@@ -57,8 +55,6 @@ namespace ActionBuilder
                 rect = r;
             }
         }
-
-        Point currentBoxPos = new Point(0, 0);
 
         public MainWindow()
         {
@@ -263,10 +259,16 @@ namespace ActionBuilder
                 infiniteRangeMinDropdown.Items.Add("None");
                 infiniteRangeMaxDropdown.Items.Clear();
                 infiniteRangeMaxDropdown.Items.Add("None");
+
+                currentAction().hitboxes = new List<List<ActionInfo.Box>>();
+                currentAction().hurtboxes = new List<List<ActionInfo.Box>>();
                 for (int i = 0; i <= currentAction().FrameCount; ++i)
                 {
                     infiniteRangeMinDropdown.Items.Add(i);
                     infiniteRangeMaxDropdown.Items.Add(i);
+
+                    currentAction().hitboxes.Add(new List<ActionInfo.Box>());
+                    currentAction().hurtboxes.Add(new List<ActionInfo.Box>());
                 }
             }
             if (currentActionDropdown.SelectedIndex >= 0)
@@ -384,8 +386,61 @@ namespace ActionBuilder
         private void frameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (currentActionDropdown.SelectedIndex >= 0 && frameSlider.Value < currentAction().FrameCount && currentActionDropdown.SelectedIndex < actionAnims.Count)
+            {
+                List<ActionInfo.Box> tempHit = new List<ActionInfo.Box>();
+                List<ActionInfo.Box> tempHurt = new List<ActionInfo.Box>();
+                foreach (var boxInfo in boxes)
+                    if (boxInfo.rect.Name.StartsWith("hit"))
+                        tempHit.Add(boxInfo.box);
+                    else if (boxInfo.rect.Name.StartsWith("hurt"))
+                        tempHurt.Add(boxInfo.box);
+
+                currentAction().hitboxes[previousFrame] = tempHit;
+                currentAction().hurtboxes[previousFrame] = tempHurt;
+                boxes.Clear();
+                boxCanvas.Children.Clear();
+                foreach (var box in currentAction().hitboxes[(int) frameSlider.Value])
+                {
+                    Rectangle r = new Rectangle();
+                    r.Stroke = hitbox.Stroke;
+                    r.Opacity = hitbox.Opacity;
+                    r.Fill = hitBrush;
+                    r.Name = "hit" + boxes.Count.ToString();
+                    r.Width = box.width;
+                    r.Height = box.height;
+                    r.Visibility = Visibility.Visible;
+                    r.MouseEnter += new MouseEventHandler(Box_MouseOver);
+                    r.MouseLeave += new MouseEventHandler(Box_MouseLeave);
+                    r.MouseLeftButtonDown += new MouseButtonEventHandler(Box_MouseLeftButtonDown);
+                    boxCanvas.Children.Add(r);
+                    Canvas.SetLeft(r, box.x);
+                    Canvas.SetTop(r, box.y);
+                    boxes.Add(new BoxInfo(box, r));
+                    
+                }
+                foreach (var box in currentAction().hurtboxes[(int) frameSlider.Value])
+                {
+                    Rectangle r = new Rectangle();
+                    r.Stroke = hurtbox.Stroke;
+                    r.Opacity = hurtbox.Opacity;
+                    r.Fill = hurtBrush;
+                    r.Name = "hit" + boxes.Count.ToString();
+                    r.Width = box.width;
+                    r.Height = box.height;
+                    r.Visibility = Visibility.Visible;
+                    r.MouseEnter += new MouseEventHandler(Box_MouseOver);
+                    r.MouseLeave += new MouseEventHandler(Box_MouseLeave);
+                    r.MouseLeftButtonDown += new MouseButtonEventHandler(Box_MouseLeftButtonDown);
+                    boxCanvas.Children.Add(r);
+                    Canvas.SetLeft(r, box.x);
+                    Canvas.SetTop(r, box.y);
+                    boxes.Add(new BoxInfo(box, r));
+                }
                 if (frameSlider.Value < actionAnims[currentActionDropdown.SelectedIndex].Count)
                     currentFrameImage.Source = actionAnims[currentActionDropdown.SelectedIndex][(int) frameSlider.Value];
+
+                previousFrame = (int)frameSlider.Value;
+            }
         }
 
         private void prevFrameButton_Click(object sender, RoutedEventArgs e)
@@ -413,6 +468,8 @@ namespace ActionBuilder
             if (currentAction() != null)
             {
                 currentAction().removeFrame((int)frameSlider.Value);
+                currentAction().hitboxes.RemoveAt((int)frameSlider.Value);
+                currentAction().hurtboxes.RemoveAt((int)frameSlider.Value);
                 frameSlider.Maximum = currentAction().FrameCount;
             }
         }
@@ -422,6 +479,8 @@ namespace ActionBuilder
             if (currentAction() != null)
             {
                 currentAction().insertFrame((int)frameSlider.Value);
+                currentAction().hitboxes.Insert((int)frameSlider.Value, new List<ActionInfo.Box>());
+                currentAction().hurtboxes.Insert((int)frameSlider.Value, new List<ActionInfo.Box>());
                 frameSlider.Maximum = currentAction().FrameCount;
             }
         }
@@ -456,7 +515,7 @@ namespace ActionBuilder
 
         private bool IsSelectedBox(Rectangle rect)
         {
-            if (selectedBox < 0)
+            if (selectedBox < 0 || boxes.Count == 0)
                 return false;
             if (boxes[selectedBox].rect.Equals(rect))
                 return true;
@@ -519,6 +578,8 @@ namespace ActionBuilder
                     boxHeightText.Text = boxes[selectedBox].box.height.ToString();
                     boxDMGText.Text = boxes[selectedBox].box.damage.ToString();
                     boxKBStrengthText.Text = boxes[selectedBox].box.knockbackStrength.ToString();
+                    boxLifespanText.Text = boxes[selectedBox].box.lifespan.ToString();
+                    boxIdTextBlock.Text = "ID: " + boxes[selectedBox].rect.Name;
                 }
             }
         }
@@ -546,7 +607,7 @@ namespace ActionBuilder
                 if (selectedBox != -1)
                 {
                     int y = 0;
-                    if (int.TryParse(boxXText.Text, out y))
+                    if (int.TryParse(boxYText.Text, out y))
                     {
                         Canvas.SetTop(boxes[selectedBox].rect, y);
                         boxes[selectedBox].box.setPos(boxes[selectedBox].box.x, y);
@@ -651,6 +712,8 @@ namespace ActionBuilder
                     box.Fill = hitbox.Fill;
 
                     box.Fill = hitBrush;
+
+                    box.Name = "hit" + boxes.Count.ToString();
                 }
                 else if (boxPlaceMode == 1)
                 {
@@ -659,10 +722,11 @@ namespace ActionBuilder
                     box.Fill = hurtbox.Fill;
 
                     box.Fill = hurtBrush;
+
+                    box.Name = "hurt" + boxes.Count.ToString();
                 }
 
                 box.Visibility = Visibility.Visible;
-                box.Name = "box" + boxes.Count.ToString();
 
                 box.MouseEnter += new MouseEventHandler(Box_MouseOver);
                 box.MouseLeave += new MouseEventHandler(Box_MouseLeave);
@@ -676,8 +740,8 @@ namespace ActionBuilder
 
                 //currentBoxPos.Y = Math.Round(mouseDownPos.Y / gridSize) * gridSize;
                 //currentBoxPos.X = Math.Round(mouseDownPos.X / gridSize) * gridSize;
-                currentBoxPos.X = mouseDownPos.X / gridSize;
-                currentBoxPos.Y = mouseDownPos.Y / gridSize;
+                currentBoxPos.X = mouseDownPos.X;
+                currentBoxPos.Y = mouseDownPos.Y;
 
                 boxes.Last().box.setPos(currentBoxPos.X, currentBoxPos.Y);
 

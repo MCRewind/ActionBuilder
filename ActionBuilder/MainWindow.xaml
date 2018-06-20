@@ -113,10 +113,13 @@
                 <TextBlock x:Name="heghtTextBlock" HorizontalAlignment="Left" Margin="117,30,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" RenderTransformOrigin="0.512,1.086" Grid.Row="1"/>
                 <TextBlock x:Name="xPosTextBlock" HorizontalAlignment="Left" Margin="10,-8,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102"/>
                 <TextBlock x:Name="yPosTextBlock" HorizontalAlignment="Left" Margin="117,-8,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101"/>
+                <TextBox x:Name="boxLifespanText" HorizontalAlignment="Left" Height="23" Margin="10,-39,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101" KeyDown="boxYText_KeyDown"/>
+                <TextBlock x:Name="boxIdTextBlock" HorizontalAlignment="Left" Margin="116,-39,0,0" TextWrapping="Wrap" Text="ID: " VerticalAlignment="Top" Width="62" Height="26" FontSize="20"/>
+                <TextBlock x:Name="boxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,-60,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101"/>
 
             </Grid>
 
-
+ 
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">
@@ -124,7 +127,8 @@
                 BorderBrush="DarkCyan" 
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"/>
+                VerticalAlignment="Stretch">
+            </Border>
             <Button x:Name="nextFrameButton"   Content=">"      Width="25" Height="25" Click="nextFrameButton_Click" Margin="100,161,527,10"   />
             <Button x:Name="prevFrameButton"   Content="&#60;"  Width="25" Height="25" Click="prevFrameButton_Click" Margin="10,161,617,10"   />
             <Button x:Name="playButton"        Content="►"      Width="25" Height="25" Click="playButton_Click" Margin="70,161,557,10" />
