@@ -133,10 +133,12 @@
             <Button x:Name="removeFrameButton" Content="-"  Width="25" Height="18" Click="removeFrameButton_Click" Margin="587,161,40,10" />
 
             <Slider x:Name="frameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="452" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="frameSlider_ValueChanged" Margin="130,0,70,10" Height="25"/>
-            <TextBlock x:Name="statOneText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Stat One:" VerticalAlignment="Top" Height="26" Width="120" FontSize="15"/>
-            <ComboBox x:Name="statOneDropdown" HorizontalAlignment="Left" Margin="80,10,0,0" VerticalAlignment="Top"  Height="22" />
-            <TextBlock x:Name="statTwoText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Stat Two:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
-            <ComboBox x:Name="statTwoDropdown" HorizontalAlignment="Left" Margin="80,41,0,0" VerticalAlignment="Top"  Height="22" />
+            <TextBlock x:Name="actionTypeText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" Width="85" FontSize="15" Text="Action Type:"/>
+            <ComboBox x:Name="actionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" />
+            <TextBlock x:Name="infiniteRangeText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Infinite Range:" VerticalAlignment="Top" Height="26" Width="101" FontSize="15"/>
+            <ComboBox x:Name="infiniteRangeMinDropdown" HorizontalAlignment="Left" Margin="116,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="infiniteRangeMinDropdown_SelectionChanged" Width="73" />
+            <ComboBox x:Name="infiniteRangeMaxDropdown" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="infiniteRangeMaxDropdown_SelectionChanged" Width="73" />
+            <TextBlock x:Name="toTextBlock" HorizontalAlignment="Left" Margin="194,44,0,0" TextWrapping="Wrap" Text="To" VerticalAlignment="Top" Height="23"/>
 
         </Grid>
     </Grid>

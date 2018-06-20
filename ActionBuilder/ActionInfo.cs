@@ -22,13 +22,18 @@ namespace ActionBuilder
         public int FrameCount { get => frames.Count; }
 
         [DataMember]
-        private bool infinite;
+        public Types.ActionType type;
+
+        [DataMember]
+        private Vector2 infinite;
+        public float InfiniteRangeMin { get => infinite.X; set => infinite.X = value; }
+        public float InfiniteRangeMax { get => infinite.Y; set => infinite.Y = value; }
 
         public ActionInfo()
         {
             frames = new List<FrameType>();
             frames.Add(FrameType.Startup);
-            infinite = false;
+            infinite = new Vector2(-1, -1);
         }
 
         public class Box

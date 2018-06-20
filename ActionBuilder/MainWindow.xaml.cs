@@ -109,11 +109,17 @@ namespace ActionBuilder
             boxKBAngleSlider.Minimum = 0;
             boxKBAngleSlider.Maximum = 360;
             boxKBAngleSlider.IsSnapToTickEnabled = true;
+
+            foreach (var item in Enum.GetValues(typeof(Types.ActionType)))
+                actionTypeDropdown.Items.Add(item);
         }
 
         private void loadActions(string character)
         {   
             DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ActionInfo));
+
+            if (!Directory.Exists($"../../Actions/{character}/"))
+                Directory.CreateDirectory($"../../Actions/{character}/");
 
             foreach (string file in Directory.GetFiles($"../../Actions/{character}/"))
                 using (StreamReader sr = new StreamReader(file))
@@ -252,7 +258,18 @@ namespace ActionBuilder
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (currentAction() != null)
+            {
                 frameSlider.Maximum = currentAction().FrameCount;
+                infiniteRangeMinDropdown.Items.Clear();
+                infiniteRangeMinDropdown.Items.Add("None");
+                infiniteRangeMaxDropdown.Items.Clear();
+                infiniteRangeMaxDropdown.Items.Add("None");
+                for (int i = 0; i <= currentAction().FrameCount; ++i)
+                {
+                    infiniteRangeMinDropdown.Items.Add(i);
+                    infiniteRangeMaxDropdown.Items.Add(i);
+                }
+            }
             if (currentActionDropdown.SelectedIndex >= 0)
                 nameTextBox.Text = currentAction().name;
         }
@@ -599,13 +616,19 @@ namespace ActionBuilder
             boxAngleText.Text = boxKBAngleSlider.Value.ToString() + "°";
         }
 
+        private void infiniteRangeMinDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // selected index minus one to account for "none" option (-1)
+            currentAction().InfiniteRangeMin = infiniteRangeMinDropdown.SelectedIndex - 1;
+        }
+
+        private void infiniteRangeMaxDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            currentAction().InfiniteRangeMax = infiniteRangeMaxDropdown.SelectedIndex;
+        }
+
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Middle)
-            {
-                
-            }
-
             mouseDown = true;
             mouseDownPos = e.GetPosition(boxCanvas);
 
