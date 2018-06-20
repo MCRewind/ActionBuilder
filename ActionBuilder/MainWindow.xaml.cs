@@ -110,8 +110,7 @@ namespace ActionBuilder
             boxKBAngleSlider.Maximum = 360;
             boxKBAngleSlider.IsSnapToTickEnabled = true;
 
-            foreach (var item in Enum.GetValues(typeof(Types.ActionType)))
-                actionTypeDropdown.Items.Add(item);
+            actionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
         }
 
         private void loadActions(string character)
@@ -457,6 +456,8 @@ namespace ActionBuilder
 
         private bool IsSelectedBox(Rectangle rect)
         {
+            if (selectedBox < 0)
+                return false;
             if (boxes[selectedBox].rect.Equals(rect))
                 return true;
             return false;
@@ -495,25 +496,30 @@ namespace ActionBuilder
         {
             var rect = sender as Rectangle;
 
-            if (boxes[selectedBox].rect.Fill.IsEqualTo(hitOverBrush))
+            if (!IsSelectedBox(rect))
             {
-                boxes[selectedBox].rect.Fill = hitBrush;
-            }
-            else if (boxes[selectedBox].rect.Fill.IsEqualTo(hurtOverBrush))
-            {
-                boxes[selectedBox].rect.Fill = hurtBrush;
-            }
+                // if selected box is a selected hitbox
+                if (boxes[selectedBox].rect.Fill.IsEqualTo(hitOverBrush))
+                {
+                    boxes[selectedBox].rect.Fill = hitBrush;
+                }
+                // else if selected box is a selected hurtbox
+                else if (boxes[selectedBox].rect.Fill.IsEqualTo(hurtOverBrush))
+                {
+                    boxes[selectedBox].rect.Fill = hurtBrush;
+                }
 
-            int index = IndexFromRect(rect);
-            if (index != -1)
-            {
-                selectedBox = index;
-                boxXText.Text = boxes[selectedBox].box.x.ToString();
-                boxYText.Text = boxes[selectedBox].box.y.ToString();
-                boxWidthText.Text = boxes[selectedBox].box.width.ToString();
-                boxHeightText.Text = boxes[selectedBox].box.height.ToString();
-                boxDMGText.Text = boxes[selectedBox].box.damage.ToString();
-                boxKBStrengthText.Text = boxes[selectedBox].box.knockbackStrength.ToString();
+                int index = IndexFromRect(rect);
+                if (index != -1)
+                {
+                    selectedBox = index;
+                    boxXText.Text = boxes[selectedBox].box.x.ToString();
+                    boxYText.Text = boxes[selectedBox].box.y.ToString();
+                    boxWidthText.Text = boxes[selectedBox].box.width.ToString();
+                    boxHeightText.Text = boxes[selectedBox].box.height.ToString();
+                    boxDMGText.Text = boxes[selectedBox].box.damage.ToString();
+                    boxKBStrengthText.Text = boxes[selectedBox].box.knockbackStrength.ToString();
+                }
             }
         }
 
