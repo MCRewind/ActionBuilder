@@ -8,10 +8,10 @@ using System.Runtime.Serialization;
 namespace ActionBuilder
 {
     [DataContract]
-    class CharacterInfo
+    internal class CharacterInfo
     {
         [DataMember]
-        public string name { get; set; }
+        public string Name { get; set; }
 
 
     }

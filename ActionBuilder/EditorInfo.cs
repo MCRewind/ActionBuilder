@@ -8,11 +8,11 @@ using System.Runtime.Serialization;
 namespace ActionBuilder
 {
     [DataContract]
-    class EditorInfo
+    internal class EditorInfo
     {
 
         [DataMember]
-        public String texturePath { get; set; }
+        public string TexturePath { get; set; }
 
     }
 }

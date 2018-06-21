@@ -13,16 +13,16 @@
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"/>
-            <Button x:Name="hitboxButton"       Content="Hitbox"        HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Click="hitboxButton_Click" Width="112"/>
-            <Button x:Name="hurtboxButton"      Content="Hurtbox"       HorizontalAlignment="Left" Margin="10,285,0,0" VerticalAlignment="Top" Click="hurtboxButton_Click" Width="112"/>
-            <Button x:Name="newCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0"  VerticalAlignment="Top" Click="newCharacterButton_Click" Width="112"/>
-            <Button x:Name="newActionButton"    Content="New Action"    HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Click="newActionButton_Click" Width="112"/>
-            <Button x:Name="saveButton"         Content="Save Action"   HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Click="saveButton_Click" Width="112"/>
-            <ComboBox x:Name="currentActionDropdown" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="comboBox_SelectionChanged"/>
-            <ListBox x:Name="characterList" HorizontalAlignment="Left" Height="100" Margin="10,42,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="listBox_SelectionChanged"/>
+            <Button x:Name="HitboxButton"       Content="Hitbox"        HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Click="HitboxButton_Click" Width="112"/>
+            <Button x:Name="HurtboxButton"      Content="Hurtbox"       HorizontalAlignment="Left" Margin="10,285,0,0" VerticalAlignment="Top" Click="HurtboxButton_Click" Width="112"/>
+            <Button x:Name="NewCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0"  VerticalAlignment="Top" Click="NewCharacterButton_Click" Width="112"/>
+            <Button x:Name="NewActionButton"    Content="New Action"    HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Click="NewActionButton_Click" Width="112"/>
+            <Button x:Name="SaveButton"         Content="Save Action"   HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Click="SaveButton_Click" Width="112"/>
+            <ComboBox x:Name="CurrentActionDropdown" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="ComboBox_SelectionChanged"/>
+            <ListBox x:Name="CharacterList" HorizontalAlignment="Left" Height="100" Margin="10,42,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="ListBox_SelectionChanged"/>
         </Grid>
 
-        <Grid Name="editGrid" Margin="147,10,263,211" VerticalAlignment="Stretch"                     
+        <Grid Name="EditGrid" Margin="147,10,263,211" VerticalAlignment="Stretch"                     
                     MouseDown="Grid_MouseDown"
                     MouseUp="Grid_MouseUp"
                     MouseMove="Grid_MouseMove">
@@ -33,11 +33,11 @@
                     VerticalAlignment="Stretch"
                 />
 
-            <paz:ZoomBorder Name="zoomBorder" Stretch="None" ZoomSpeed="1.2" 
+            <paz:ZoomBorder Name="EditGridZoomBorder" Stretch="None" ZoomSpeed="1.2" 
                             Background="DarkSlateGray" ClipToBounds="True" Focusable="True"
                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="10"
-                            MinZoomX=".5" MinZoomY=".5" PanButton="Middle" KeyDown="zoomBorder_KeyDown">
-                <Canvas Name="editCanvas">
+                            MinZoomX=".5" MinZoomY=".5" PanButton="Middle" KeyDown="ZoomBorder_KeyDown">
+                <Canvas Name="EditCanvas">
                     <Canvas.Background>
                         <DrawingBrush TileMode="Tile"  Viewport="0, 0, 4, 4" 
                                              ViewportUnits="Absolute">
@@ -54,12 +54,12 @@
                         </DrawingBrush>
                     </Canvas.Background>
 
-                    <Image x:Name="currentFrameImage" Height="258" Width="612"
+                    <Image x:Name="CurrentFrameImage" Height="258" Width="612"
                                    RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10"/>
 
-                    <Canvas Name="boxCanvas"  Margin="10,0,10,10">
+                    <Canvas Name="BoxCanvas"  Margin="10,0,10,10">
                         <Rectangle
-                        x:Name="hitbox"
+                        x:Name="Hitbox"
                         Visibility="Collapsed"
                         Stroke="Black"
                         Opacity=".3"
@@ -68,7 +68,7 @@
                     />
 
                         <Rectangle
-                        x:Name="hurtbox"
+                        x:Name="Hurtbox"
                         Visibility="Collapsed"
                         Stroke="Black"
                         Opacity=".3"
@@ -88,34 +88,34 @@
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"/>
-            <TextBox x:Name="nameTextBox"          Height="23" Margin="10,41,10,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="nameTextBox_KeyDown"/>
-            <TextBox x:Name="characterNameTextBox" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="characterNameTextBox_KeyDown"/>
+            <TextBox x:Name="NameTextBox"          Height="23" Margin="10,41,10,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="NameTextBox_KeyDown"/>
+            <TextBox x:Name="CharacterNameTextBox" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="CharacterNameTextBox_KeyDown"/>
 
-            <TextBlock x:Name="frameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
-            <ComboBox x:Name="frameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" />
+            <TextBlock x:Name="FrameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
+            <ComboBox x:Name="FrameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" />
             <Grid HorizontalAlignment="Left" Margin="10,0,0,10" Width="228" Height="186" VerticalAlignment="Bottom">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="14*"/>
                     <RowDefinition Height="181*"/>
                 </Grid.RowDefinitions>
-                <TextBox x:Name="boxXText" HorizontalAlignment="Left" Height="23" Margin="10,14,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102" KeyDown="boxXText_KeyDown" Grid.RowSpan="2"/>
-                <TextBox x:Name="boxYText" HorizontalAlignment="Left" Height="23" Margin="117,14,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101" KeyDown="boxYText_KeyDown" Grid.RowSpan="2"/>
-                <TextBox x:Name="boxWidthText" HorizontalAlignment="Left" Height="23" Margin="10,51,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" KeyDown="boxWidthText_KeyDown" Grid.Row="1"/>
-                <TextBox x:Name="boxHeightText" HorizontalAlignment="Left" Height="23" Margin="117,51,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" KeyDown="boxHeightText_KeyDown" Grid.Row="1"/>
-                <TextBox x:Name="boxDMGText" HorizontalAlignment="Left" Height="23" Margin="10,103,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" KeyDown="boxDMGText_KeyDown" Grid.Row="1"/>
-                <TextBox x:Name="boxKBStrengthText" HorizontalAlignment="Left" Height="23" Margin="117,103,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" KeyDown="boxKBStrengthText_KeyDown" Grid.Row="1"/>
-                <Slider x:Name="boxKBAngleSlider" HorizontalAlignment="Left" Margin="10,155.333,0,0" VerticalAlignment="Top" Width="208" ValueChanged="boxKBAngleSlider_ValueChanged" Grid.Row="1"/>
-                <TextBlock x:Name="KBAngleText" HorizontalAlignment="Left" Margin="10,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Knockback Angle" Grid.Row="1"/>
-                <TextBlock x:Name="boxAngleText" HorizontalAlignment="Left" Margin="196,134.333,0,0" TextWrapping="Wrap" Text="0°" VerticalAlignment="Top" Grid.Row="1"/>
-                <TextBlock x:Name="damageTextBlock" HorizontalAlignment="Left" Margin="10,82,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" Grid.Row="1"/>
-                <TextBlock x:Name="KBStrengthTextBlock" HorizontalAlignment="Left" Margin="117,82,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" Grid.Row="1"/>
-                <TextBlock x:Name="widthTextBlock" HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" Grid.Row="1"/>
-                <TextBlock x:Name="heghtTextBlock" HorizontalAlignment="Left" Margin="117,30,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" RenderTransformOrigin="0.512,1.086" Grid.Row="1"/>
-                <TextBlock x:Name="xPosTextBlock" HorizontalAlignment="Left" Margin="10,-8,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102"/>
-                <TextBlock x:Name="yPosTextBlock" HorizontalAlignment="Left" Margin="117,-8,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101"/>
-                <TextBox x:Name="boxLifespanText" HorizontalAlignment="Left" Height="23" Margin="10,-39,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101" KeyDown="boxYText_KeyDown"/>
-                <TextBlock x:Name="boxIdTextBlock" HorizontalAlignment="Left" Margin="116,-39,0,0" TextWrapping="Wrap" Text="ID: " VerticalAlignment="Top" Width="62" Height="26" FontSize="20"/>
-                <TextBlock x:Name="boxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,-60,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101"/>
+                <TextBox x:Name="BoxXText" HorizontalAlignment="Left" Height="23" Margin="10,14,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102" KeyDown="BoxXText_KeyDown" Grid.RowSpan="2"/>
+                <TextBox x:Name="BoxYText" HorizontalAlignment="Left" Height="23" Margin="117,14,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101" KeyDown="BoxYText_KeyDown" Grid.RowSpan="2"/>
+                <TextBox x:Name="BoxWidthText" HorizontalAlignment="Left" Height="23" Margin="10,51,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" KeyDown="BoxWidthText_KeyDown" Grid.Row="1"/>
+                <TextBox x:Name="BoxHeightText" HorizontalAlignment="Left" Height="23" Margin="117,51,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" KeyDown="BoxHeightText_KeyDown" Grid.Row="1"/>
+                <TextBox x:Name="BoxDmgText" HorizontalAlignment="Left" Height="23" Margin="10,103,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" KeyDown="BoxDMGText_KeyDown" Grid.Row="1"/>
+                <TextBox x:Name="BoxKbStrengthText" HorizontalAlignment="Left" Height="23" Margin="117,103,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" KeyDown="BoxKBStrengthText_KeyDown" Grid.Row="1"/>
+                <Slider x:Name="BoxKbAngleSlider" HorizontalAlignment="Left" Margin="10,155.333,0,0" VerticalAlignment="Top" Width="208" ValueChanged="BoxKBAngleSlider_ValueChanged" Grid.Row="1"/>
+                <TextBlock x:Name="KbAngleText" HorizontalAlignment="Left" Margin="10,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Knockback Angle" Grid.Row="1"/>
+                <TextBlock x:Name="BoxAngleText" HorizontalAlignment="Left" Margin="196,134.333,0,0" TextWrapping="Wrap" Text="0°" VerticalAlignment="Top" Grid.Row="1"/>
+                <TextBlock x:Name="DamageTextBlock" HorizontalAlignment="Left" Margin="10,82,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" Grid.Row="1"/>
+                <TextBlock x:Name="KbStrengthTextBlock" HorizontalAlignment="Left" Margin="117,82,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" Grid.Row="1"/>
+                <TextBlock x:Name="WidthTextBlock" HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" Grid.Row="1"/>
+                <TextBlock x:Name="HeghtTextBlock" HorizontalAlignment="Left" Margin="117,30,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" RenderTransformOrigin="0.512,1.086" Grid.Row="1"/>
+                <TextBlock x:Name="XPosTextBlock" HorizontalAlignment="Left" Margin="10,-8,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102"/>
+                <TextBlock x:Name="YPosTextBlock" HorizontalAlignment="Left" Margin="117,-8,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101"/>
+                <TextBox x:Name="BoxLifespanText" HorizontalAlignment="Left" Height="23" Margin="10,-39,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101" KeyDown="BoxYText_KeyDown"/>
+                <TextBlock x:Name="BoxIdTextBlock" HorizontalAlignment="Left" Margin="116,-39,0,0" TextWrapping="Wrap" Text="ID: " VerticalAlignment="Top" Width="62" Height="26" FontSize="20"/>
+                <TextBlock x:Name="BoxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,-60,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101"/>
 
             </Grid>
 
@@ -129,19 +129,19 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
             </Border>
-            <Button x:Name="nextFrameButton"   Content=">"      Width="25" Height="25" Click="nextFrameButton_Click" Margin="100,161,527,10"   />
-            <Button x:Name="prevFrameButton"   Content="&#60;"  Width="25" Height="25" Click="prevFrameButton_Click" Margin="10,161,617,10"   />
-            <Button x:Name="playButton"        Content="►"      Width="25" Height="25" Click="playButton_Click" Margin="70,161,557,10" />
-            <Button x:Name="pauseButton"       Content="■"      Width="25" Height="25" Click="pauseButton_Click" Margin="40,161,587,10"  />
-            <Button x:Name="insertFrameButton" Content="+"  Width="25" Height="18" Click="insertFrameButton_Click" Margin="617,161,10,10"  />
-            <Button x:Name="removeFrameButton" Content="-"  Width="25" Height="18" Click="removeFrameButton_Click" Margin="587,161,40,10" />
+            <Button x:Name="NextFrameButton"   Content=">"      Width="25" Height="25" Click="NextFrameButton_Click" Margin="100,161,527,10"   />
+            <Button x:Name="PrevFrameButton"   Content="&#60;"  Width="25" Height="25" Click="PrevFrameButton_Click" Margin="10,161,617,10"   />
+            <Button x:Name="PlayButton"        Content="►"      Width="25" Height="25" Click="PlayButton_Click" Margin="70,161,557,10" />
+            <Button x:Name="PauseButton"       Content="■"      Width="25" Height="25" Click="PauseButton_Click" Margin="40,161,587,10"  />
+            <Button x:Name="InsertFrameButton" Content="+"  Width="25" Height="18" Click="InsertFrameButton_Click" Margin="617,161,10,10"  />
+            <Button x:Name="RemoveFrameButton" Content="-"  Width="25" Height="18" Click="RemoveFrameButton_Click" Margin="587,161,40,10" />
 
-            <Slider x:Name="frameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="452" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="frameSlider_ValueChanged" Margin="130,0,70,10" Height="25"/>
-            <TextBlock x:Name="actionTypeText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" Width="85" FontSize="15" Text="Action Type:"/>
-            <ComboBox x:Name="actionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" />
-            <TextBlock x:Name="infiniteRangeText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Infinite Range:" VerticalAlignment="Top" Height="26" Width="101" FontSize="15"/>
-            <ComboBox x:Name="infiniteRangeMinDropdown" HorizontalAlignment="Left" Margin="116,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="infiniteRangeMinDropdown_SelectionChanged" Width="73" />
-            <ComboBox x:Name="infiniteRangeMaxDropdown" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="infiniteRangeMaxDropdown_SelectionChanged" Width="73" />
+            <Slider x:Name="FrameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="452" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="FrameSlider_ValueChanged" Margin="130,0,70,10" Height="25"/>
+            <TextBlock x:Name="ActionTypeText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" Width="85" FontSize="15" Text="Action Type:"/>
+            <ComboBox x:Name="ActionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" />
+            <TextBlock x:Name="InfiniteRangeText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Infinite Range:" VerticalAlignment="Top" Height="26" Width="101" FontSize="15"/>
+            <ComboBox x:Name="InfiniteRangeMinDropdown" HorizontalAlignment="Left" Margin="116,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMinDropdown_SelectionChanged" Width="73" />
+            <ComboBox x:Name="InfiniteRangeMaxDropdown" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMaxDropdown_SelectionChanged" Width="73" />
             <TextBlock x:Name="toTextBlock" HorizontalAlignment="Left" Margin="194,44,0,0" TextWrapping="Wrap" Text="To" VerticalAlignment="Top" Height="23"/>
 
         </Grid>

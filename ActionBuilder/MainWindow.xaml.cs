@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using MahApps.Metro.Controls;
+using static ActionBuilder.ActionInfo;
 
 namespace ActionBuilder
 {
@@ -24,35 +25,40 @@ namespace ActionBuilder
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        private List<CharacterInfo> characters;
-        private List<ActionInfo> actions;
-        private List<EditorInfo> editorInfos;
-        private List<BoxInfo> boxes;
-        private List<List<BitmapImage>> actionAnims;
+        private readonly List<CharacterInfo> _characters;
+        private readonly List<ActionInfo> _actions;
+        private readonly List<EditorInfo> _editorInfos;
+        private readonly List<MainWindow.BoxInfo> _boxes;
+        private readonly List<List<BitmapImage>> _actionAnims;
 
-        private SolidColorBrush hurtBrush, hurtOverBrush, hitBrush, hitOverBrush;
-        private CharacterInfo lastSelectedCharacter;
-        private Point mouseDownPos;
-        private Point currentBoxPos = new Point(0, 0);
+        private readonly SolidColorBrush _hurtBrush;
+        private readonly SolidColorBrush _hurtOverBrush;
+        private readonly SolidColorBrush _hitBrush;
+        private readonly SolidColorBrush _hitOverBrush;
 
-        private bool loadedFromNew = false;
-        private bool mouseDown = false;
+        private CharacterInfo _lastSelectedCharacter;
+        private Point _mouseDownPos;
+        private Point _currentBoxPos = new Point(0, 0);
 
-        private int selectedBox;
-        private int boxPlaceMode = -1;
-        private int currentBoxCount;
-        private int gridSize = 4;
-        private int previousFrame = 0;
+        private bool _loadedFromNew;
+        private bool _mouseDown;
 
-        struct BoxInfo
-        {         
-            public ActionInfo.Box box;
-            public Rectangle rect;
+        private int _selectedBox;
+        private int _boxPlaceMode = -1;
+        private int _currentBoxCount;
+        private int _previousFrame = 0;
 
-            public BoxInfo(ActionInfo.Box b, Rectangle r)
+        private const int GridSize = 4;
+
+        private struct BoxInfo
+        {
+            public Box Box { get; }
+            public Rectangle Rect { get; }
+
+            public BoxInfo(Box b, Rectangle r)
             {
-                box = b;
-                rect = r;
+                Box = b;
+                Rect = r;
             }
         }
 
@@ -70,771 +76,704 @@ namespace ActionBuilder
             if (!Directory.Exists("../../Textures"))
                 Directory.CreateDirectory("../../Textures");
 
-            characters = new List<CharacterInfo>();
-            actions = new List<ActionInfo>();
-            editorInfos = new List<EditorInfo>();
-            actionAnims = new List<List<BitmapImage>>();
-            boxes = new List<BoxInfo>();
+            _characters = new List<CharacterInfo>();
+            _actions = new List<ActionInfo>();
+            _editorInfos = new List<EditorInfo>();
+            _actionAnims = new List<List<BitmapImage>>();
+            _boxes = new List<MainWindow.BoxInfo>();
 
-            hurtBrush = new SolidColorBrush();
-            hurtBrush.Color = Color.FromRgb(112, 255, 150);
-
-            hurtOverBrush = new SolidColorBrush();
-            hurtOverBrush.Color = Color.FromRgb(52, 249, 114);
-
-            hitBrush = new SolidColorBrush();
-            hitBrush.Color = Color.FromRgb(255, 66, 116);
-
-            hitOverBrush = new SolidColorBrush();
-            hitOverBrush.Color = Color.FromRgb(226, 20, 75);
+            _hurtBrush = new SolidColorBrush { Color = Color.FromRgb(112, 255, 150) };
+            _hurtOverBrush = new SolidColorBrush { Color = Color.FromRgb(52, 249, 114) };
+            _hitBrush = new SolidColorBrush { Color = Color.FromRgb(255, 66, 116) };
+            _hitOverBrush = new SolidColorBrush { Color = Color.FromRgb(226, 20, 75) };
 
             InitializeComponent();
 
-            loadCharacters("../../Characters/");
+            LoadCharacters("../../Characters/");
             if (File.Exists("../../Editor/lastCharacter.json"))
-                loadActions(readFromJson("../../Editor/lastCharacter.json"));
+                LoadActions(JsonUtils.ReadFromJson("../../Editor/lastCharacter.json"));
 
-            zoomBorder.MouseDown += ZoomBorder_MouseDown;
-            zoomBorder.MouseWheel += ZoomBorder_MouseWheel;
+            EditGridZoomBorder.MouseDown += EditGridZoomBorderMouseDown;
+            EditGridZoomBorder.MouseWheel += EditGridZoomBorderMouseWheel;
 
-            frameTypeDropdown.Items.Add("Startup");
-            frameTypeDropdown.Items.Add("Active");
-            frameTypeDropdown.Items.Add("Recovery");
-            frameTypeDropdown.Items.Add("Buffer");
+            FrameTypeDropdown.Items.Add("Startup");
+            FrameTypeDropdown.Items.Add("Active");
+            FrameTypeDropdown.Items.Add("Recovery");
+            FrameTypeDropdown.Items.Add("Buffer");
 
-            boxKBAngleSlider.Minimum = 0;
-            boxKBAngleSlider.Maximum = 360;
-            boxKBAngleSlider.IsSnapToTickEnabled = true;
+            BoxKbAngleSlider.Minimum = 0;
+            BoxKbAngleSlider.Maximum = 360;
+            BoxKbAngleSlider.IsSnapToTickEnabled = true;
 
-            actionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
+            ActionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
         }
 
-        private void loadActions(string character)
+        private void LoadActions(string character)
         {   
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ActionInfo));
+            var ser = new DataContractJsonSerializer(typeof(ActionInfo));
 
             if (!Directory.Exists($"../../Actions/{character}/"))
                 Directory.CreateDirectory($"../../Actions/{character}/");
 
-            foreach (string file in Directory.GetFiles($"../../Actions/{character}/"))
-                using (StreamReader sr = new StreamReader(file))
-                    actions.Add((ActionInfo) ser.ReadObject(sr.BaseStream));
+            foreach (var file in Directory.GetFiles($"../../Actions/{character}/"))
+                using (var sr = new StreamReader(file))
+                    _actions.Add((ActionInfo) ser.ReadObject(sr.BaseStream));
 
-            foreach (ActionInfo action in actions)
-                currentActionDropdown.Items.Add(new ComboBoxItem().Content = action.name);
+            foreach (var action in _actions)
+                CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = action.Name);
 
-            currentActionDropdown.SelectedIndex = 0;
+            CurrentActionDropdown.SelectedIndex = 0;
         }
 
-        private void loadCharacters(string path)
+        private void LoadCharacters(string path)
         {
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CharacterInfo));
+            var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
 
-            if (Directory.Exists(path))
+            if (!Directory.Exists(path)) return;
+
+            foreach (var file in Directory.GetFiles(path))
+                using (var sr = new StreamReader(file))
+                    _characters.Add((CharacterInfo)ser.ReadObject(sr.BaseStream));
+
+            foreach (var character in _characters)
+                CharacterList.Items.Add(new ListBoxItem().Content = character.Name);
+
+            CharacterList.SelectedIndex = 0;
+        }
+
+        private void UpdateActionNames()
+        {
+            for (var i = 0; i < _actions.Count; ++i)
+                CurrentActionDropdown.Items[i] = new ComboBoxItem().Content = _actions[i].Name;
+        }
+
+        private void UpdateCharacterNames()
+        {
+            for (var i = 0; i < _characters.Count; ++i)
+                CharacterList.Items[i] = new ComboBoxItem().Content = _characters[i].Name;
+        }
+
+        private void UpdatePaths()
+        {
+            for (var i = 0; i < _editorInfos.Count; ++i)
+                _editorInfos[i].TexturePath = $"Textures/{CurrentCharacter().Name}/{_actions[i].Name}/";
+        }
+
+        private ActionInfo CurrentAction()
+        {
+            var index = CurrentActionDropdown.SelectedIndex;
+            return index > -1 && index < _actions.Count ? _actions[index] : null;
+        }
+
+        private CharacterInfo CurrentCharacter()
+        {
+            var index = CharacterList.SelectedIndex;
+            return index > -1 && index < _characters.Count ? _characters[index] : _lastSelectedCharacter;
+        }
+
+        private void NewActionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CharacterList.SelectedIndex < 0) return;
+
+            var newAction = new ActionInfo { Name = $"new action {_actions.Count}" };
+            _actions.Add(newAction);
+
+            var newEditorInfo = new EditorInfo { TexturePath = $"Textures/{CurrentCharacter().Name}/{newAction.Name}/" };
+
+            CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.Name);
+            CurrentActionDropdown.SelectedIndex = CurrentActionDropdown.Items.Count - 1;
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e) => SaveAction();
+
+        private void SaveAction()
+        {
+            if (CurrentActionDropdown.SelectedIndex < 0) return;
+
+            var filepath = $"../../Actions/{CurrentCharacter().Name}/{CurrentAction().Name}.json";
+
+            using (var outStream = new MemoryStream())
             {
-                foreach (string file in Directory.GetFiles(path))
-                    using (StreamReader sr = new StreamReader(file))
-                        characters.Add((CharacterInfo)ser.ReadObject(sr.BaseStream));
+                var ser = new DataContractJsonSerializer(typeof(ActionInfo));
 
-                foreach (CharacterInfo character in characters)
-                    characterList.Items.Add(new ListBoxItem().Content = character.name);
+                ser.WriteObject(outStream, CurrentAction());
 
-                characterList.SelectedIndex = 0;
+                JsonUtils.WriteToJson(filepath, outStream);
             }
         }
 
-        private void updateActionNames()
-        {
-            for (int i = 0; i < actions.Count; ++i)
-                currentActionDropdown.Items[i] = new ComboBoxItem().Content = actions[i].name;
-        }
+        private void HitboxButton_Click(object sender, RoutedEventArgs e) => _boxPlaceMode = 0;
 
-        private void updateCharacterNames()
-        {
-            for (int i = 0; i < characters.Count; ++i)
-                characterList.Items[i] = new ComboBoxItem().Content = characters[i].name;
-        }
+        private void HurtboxButton_Click(object sender, RoutedEventArgs e) => _boxPlaceMode = 1;
 
-        private void updatePaths()
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            for (int i = 0; i < editorInfos.Count; ++i)
-                editorInfos[i].texturePath = $"Textures/{currentCharacter().name}/{actions[i].name}/";
-        }
+            if (CurrentAction() == null) return;
 
-        private ActionInfo currentAction()
-        {
-            int index = currentActionDropdown.SelectedIndex;
-            return index > -1 && index < actions.Count ? actions[index] : null;
-        }
+            NameTextBox.Text = CurrentAction().Name;
+            FrameSlider.Maximum = CurrentAction().FrameCount;
+            InfiniteRangeMinDropdown.Items.Clear();
+            InfiniteRangeMinDropdown.Items.Add("None");
+            InfiniteRangeMaxDropdown.Items.Clear();
+            InfiniteRangeMaxDropdown.Items.Add("None");
 
-        private CharacterInfo currentCharacter()
-        {
-            int index = characterList.SelectedIndex;
-            return index > -1 && index < characters.Count ? characters[index] : lastSelectedCharacter;
-        }
-
-        private void newActionButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (characterList.SelectedIndex >= 0)
+            CurrentAction().Hitboxes = new List<List<Box>>();
+            CurrentAction().Hurtboxes = new List<List<Box>>();
+            for (var i = 0; i <= CurrentAction().FrameCount; ++i)
             {
-                ActionInfo newAction = new ActionInfo();
-                newAction.name = $"new action {actions.Count}";
-                actions.Add(newAction);
+                InfiniteRangeMinDropdown.Items.Add(i);
+                InfiniteRangeMaxDropdown.Items.Add(i);
 
-                EditorInfo newEditorInfo = new EditorInfo();
-                newEditorInfo.texturePath = $"Textures/{currentCharacter().name}/{newAction.name}/";
-
-                currentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.name);
-
-                currentActionDropdown.SelectedIndex = currentActionDropdown.Items.Count - 1;
+                CurrentAction().Hitboxes.Add(new List<Box>());
+                CurrentAction().Hurtboxes.Add(new List<Box>());
             }
         }
 
-        private void saveButton_Click(object sender, RoutedEventArgs e)
+        private void NameTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            saveAction();
-        }
-        
-        private void saveAction()
-        {
-            if (currentActionDropdown.SelectedIndex >= 0)
-            {
-                MemoryStream outStream = new MemoryStream();
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(ActionInfo));
+            if (CurrentAction() == null || e.Key != Key.Enter) return;
 
-                ser.WriteObject(outStream, currentAction());
-
-                string filepath = $"../../Actions/{currentCharacter().name}/{currentAction().name}.json";
-                writeToJson(filepath, outStream);
-            }
+            CurrentAction().Name = NameTextBox.Text;
+            UpdateActionNames();
         }
 
-        private string readFromJson(string path)
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var result = string.Empty;
+            if (CharacterList.SelectedIndex < 0) return;
 
-            using (StreamReader r = new StreamReader(path))
+            using (var outStream = new MemoryStream())
             {
-                result = r.ReadToEnd();
-            }
-            return result;
-        }
+                var ser = new DataContractJsonSerializer(typeof(string));
 
-        private void writeToJson(string path, MemoryStream contents)
-        {
-            string result = string.Empty;
-
-            if (!File.Exists(path))
-            {
-                Directory.CreateDirectory(Directory.GetParent(path).FullName);
+                ser.WriteObject(outStream, CurrentCharacter().Name);
             }
 
+            File.WriteAllText("../../Editor/lastCharacter.json", CurrentCharacter().Name);
 
-            contents.Position = 0;
+            CharacterNameTextBox.Text = CurrentCharacter().Name;
 
-            using (StreamReader r = new StreamReader(contents))
+            _lastSelectedCharacter = CurrentCharacter();
+
+            if (CurrentActionDropdown.HasItems)
             {
-                result = r.ReadToEnd();
+                _actions.Clear();
+                CurrentActionDropdown.Items.Clear();
             }
 
-            File.WriteAllText(path, result);
-        }
+            if (CurrentActionDropdown.SelectedIndex >= 0)
+                SaveAction();
 
-        private void hitboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            boxPlaceMode = 0;
-        }
+            _actionAnims.Clear();
 
-        private void hurtboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            boxPlaceMode = 1;
-        }
+            if (_loadedFromNew == false)
+                LoadActions(CurrentCharacter().Name);
+            else
+                _loadedFromNew = true;
 
-        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (currentAction() != null)
+            for (var i = 0; i < _actions.Count; ++i)
             {
-                frameSlider.Maximum = currentAction().FrameCount;
-                infiniteRangeMinDropdown.Items.Clear();
-                infiniteRangeMinDropdown.Items.Add("None");
-                infiniteRangeMaxDropdown.Items.Clear();
-                infiniteRangeMaxDropdown.Items.Add("None");
-
-                currentAction().hitboxes = new List<List<ActionInfo.Box>>();
-                currentAction().hurtboxes = new List<List<ActionInfo.Box>>();
-                for (int i = 0; i <= currentAction().FrameCount; ++i)
+                _actionAnims.Add(new List<BitmapImage>());
+                foreach (var file in Directory.GetFiles($"../../Textures/{CurrentCharacter().Name}/"))
                 {
-                    infiniteRangeMinDropdown.Items.Add(i);
-                    infiniteRangeMaxDropdown.Items.Add(i);
-
-                    currentAction().hitboxes.Add(new List<ActionInfo.Box>());
-                    currentAction().hurtboxes.Add(new List<ActionInfo.Box>());
-                }
-            }
-            if (currentActionDropdown.SelectedIndex >= 0)
-                nameTextBox.Text = currentAction().name;
-        }
-
-        private void nameTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (currentActionDropdown.HasItems && currentActionDropdown.SelectedIndex >= 0 && e.Key == Key.Enter)
-            {
-                int index = currentActionDropdown.SelectedIndex;
-                currentAction().name = nameTextBox.Text;
-                updateActionNames();
-                currentActionDropdown.SelectedIndex = index;
-            }
-        }
-
-        private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (characterList.SelectedIndex >= 0)
-            {
-
-                MemoryStream outStream = new MemoryStream();
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(string));
-
-                ser.WriteObject(outStream, currentCharacter().name);
-
-                File.WriteAllText("../../Editor/lastCharacter.json", currentCharacter().name);
-
-                characterNameTextBox.Text = currentCharacter().name;
-
-                lastSelectedCharacter = currentCharacter();
-
-                if (currentActionDropdown.HasItems)
-                {
-                    actions.Clear();
-                    currentActionDropdown.Items.Clear();
-                }
-
-                if (currentActionDropdown.SelectedIndex >= 0)
-                    saveAction();
-
-                actionAnims.Clear();
-
-                if (loadedFromNew == false)
-                    loadActions(currentCharacter().name);
-                else
-                    loadedFromNew = true;
-
-                for (int i = 0; i < actions.Count; ++i)
-                {
-                    actionAnims.Add(new List<BitmapImage>());
-                    foreach (string file in Directory.GetFiles($"../../Textures/{currentCharacter().name}/"))
-                    {
-                        BitmapImage tempImg = new BitmapImage();
-                        tempImg.BeginInit();
-                        tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{file}", UriKind.Absolute);
-                        tempImg.EndInit();
-                        actionAnims[i].Add(tempImg);
-                    }
+                    var tempImg = new BitmapImage();
+                    tempImg.BeginInit();
+                    tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{file}", UriKind.Absolute);
+                    tempImg.EndInit();
+                    _actionAnims[i].Add(tempImg);
                 }
             }
         }
 
-        private void newCharacterButton_Click(object sender, RoutedEventArgs e)
+        private void NewCharacterButton_Click(object sender, RoutedEventArgs e)
         {
-            loadedFromNew = true;
+            _loadedFromNew = true;
 
-            CharacterInfo newCharacter = new CharacterInfo();
-            newCharacter.name = $"new character {characters.Count}";
-            characters.Add(newCharacter);
+            var newCharacter = new CharacterInfo { Name = $"new character {_characters.Count}" };
+            _characters.Add(newCharacter);
 
-            characterList.Items.Add(new ListBoxItem().Content = newCharacter.name);
+            CharacterList.Items.Add(new ListBoxItem().Content = newCharacter.Name);
 
-            characterList.SelectedIndex = characterList.Items.Count - 1;
+            CharacterList.SelectedIndex = CharacterList.Items.Count - 1;
+
+            var filepath = $"../../Characters/{CurrentCharacter().Name}.json";
+            var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
+
+            // write character file
+            using (var outStream = new MemoryStream())
+            {
+                ser.WriteObject(outStream, CurrentCharacter()); 
+                JsonUtils.WriteToJson(filepath, outStream);
+            }
+
+            Directory.CreateDirectory($"../../Actions/{CurrentCharacter().Name}");
+            Directory.CreateDirectory($"../../Textures/{CurrentCharacter().Name}");
+
+            LoadActions(CurrentCharacter().Name);
+        }
+
+        private void CharacterNameTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (!CharacterList.HasItems || CharacterList.SelectedIndex < 0 || e.Key != Key.Enter) return;
+
+            var oldName = CurrentCharacter().Name;
+            CurrentCharacter().Name = CharacterNameTextBox.Text;
+            UpdateCharacterNames();
+
+            var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
+            var filepath = $"../../Characters/{oldName}.json";
 
             // write charactr file
-            MemoryStream outStream = new MemoryStream();
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CharacterInfo));
-
-            ser.WriteObject(outStream, currentCharacter()); 
-
-            string filepath = $"../../Characters/{currentCharacter().name}.json";
-            writeToJson(filepath, outStream);
-
-            Directory.CreateDirectory($"../../Actions/{currentCharacter().name}");
-            Directory.CreateDirectory($"../../Textures/{currentCharacter().name}");
-
-            loadActions(currentCharacter().name);
-        }
-
-        private void characterNameTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (characterList.HasItems && characterList.SelectedIndex >= 0 && e.Key == Key.Enter)
+            using (var outStream = new MemoryStream())
             {
-                var oldName = currentCharacter().name;
-                currentCharacter().name = characterNameTextBox.Text;
-                updateCharacterNames();
-
-                // write charactr file
-                MemoryStream outStream = new MemoryStream();
-                DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(CharacterInfo));
-
-                ser.WriteObject(outStream, currentCharacter());
-
-                string filepath = $"../../Characters/{oldName}.json";
-                writeToJson(filepath, outStream);
-
-                Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{currentCharacter().name}.json");
-                Directory.Move($"../../Textures/{oldName}", $"../../Textures/{currentCharacter().name}");
-                Directory.Move($"../../Actions/{oldName}", $"../../Actions/{currentCharacter().name}");
+                ser.WriteObject(outStream, CurrentCharacter());
+                JsonUtils.WriteToJson(filepath, outStream);
             }
+
+            Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{CurrentCharacter().Name}.json");
+            Directory.Move($"../../Textures/{oldName}", $"../../Textures/{CurrentCharacter().Name}");
+            Directory.Move($"../../Actions/{oldName}", $"../../Actions/{CurrentCharacter().Name}");
         }
 
-        private void frameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (currentActionDropdown.SelectedIndex >= 0 && frameSlider.Value < currentAction().FrameCount && currentActionDropdown.SelectedIndex < actionAnims.Count)
+            if (CurrentActionDropdown.SelectedIndex < 0 || !(FrameSlider.Value < CurrentAction().FrameCount) ||
+                CurrentActionDropdown.SelectedIndex >= _actionAnims.Count) return;
+
+            var tempHit = new List<Box>();
+            var tempHurt = new List<Box>();
+
+            foreach (var boxInfo in _boxes)
+                if (boxInfo.Rect.Name.StartsWith("hit"))
+                    tempHit.Add(boxInfo.Box);
+                else if (boxInfo.Rect.Name.StartsWith("hurt"))
+                    tempHurt.Add(boxInfo.Box);
+
+            CurrentAction().Hitboxes[_previousFrame] = tempHit;
+            CurrentAction().Hurtboxes[_previousFrame] = tempHurt;
+
+            _boxes.Clear();
+            BoxCanvas.Children.Clear();
+
+            foreach (var box in CurrentAction().Hitboxes[(int) FrameSlider.Value])
             {
-                List<ActionInfo.Box> tempHit = new List<ActionInfo.Box>();
-                List<ActionInfo.Box> tempHurt = new List<ActionInfo.Box>();
-                foreach (var boxInfo in boxes)
-                    if (boxInfo.rect.Name.StartsWith("hit"))
-                        tempHit.Add(boxInfo.box);
-                    else if (boxInfo.rect.Name.StartsWith("hurt"))
-                        tempHurt.Add(boxInfo.box);
-
-                currentAction().hitboxes[previousFrame] = tempHit;
-                currentAction().hurtboxes[previousFrame] = tempHurt;
-                boxes.Clear();
-                boxCanvas.Children.Clear();
-                foreach (var box in currentAction().hitboxes[(int) frameSlider.Value])
+                var r = new Rectangle
                 {
-                    Rectangle r = new Rectangle();
-                    r.Stroke = hitbox.Stroke;
-                    r.Opacity = hitbox.Opacity;
-                    r.Fill = hitBrush;
-                    r.Name = "hit" + boxes.Count.ToString();
-                    r.Width = box.width;
-                    r.Height = box.height;
-                    r.Visibility = Visibility.Visible;
-                    r.MouseEnter += new MouseEventHandler(Box_MouseOver);
-                    r.MouseLeave += new MouseEventHandler(Box_MouseLeave);
-                    r.MouseLeftButtonDown += new MouseButtonEventHandler(Box_MouseLeftButtonDown);
-                    boxCanvas.Children.Add(r);
-                    Canvas.SetLeft(r, box.x);
-                    Canvas.SetTop(r, box.y);
-                    boxes.Add(new BoxInfo(box, r));
-                    
-                }
-                foreach (var box in currentAction().hurtboxes[(int) frameSlider.Value])
-                {
-                    Rectangle r = new Rectangle();
-                    r.Stroke = hurtbox.Stroke;
-                    r.Opacity = hurtbox.Opacity;
-                    r.Fill = hurtBrush;
-                    r.Name = "hurt" + boxes.Count.ToString();
-                    r.Width = box.width;
-                    r.Height = box.height;
-                    r.Visibility = Visibility.Visible;
-                    r.MouseEnter += new MouseEventHandler(Box_MouseOver);
-                    r.MouseLeave += new MouseEventHandler(Box_MouseLeave);
-                    r.MouseLeftButtonDown += new MouseButtonEventHandler(Box_MouseLeftButtonDown);
-                    boxCanvas.Children.Add(r);
-                    Canvas.SetLeft(r, box.x);
-                    Canvas.SetTop(r, box.y);
-                    boxes.Add(new BoxInfo(box, r));
-                }
-                if (frameSlider.Value < actionAnims[currentActionDropdown.SelectedIndex].Count)
-                    currentFrameImage.Source = actionAnims[currentActionDropdown.SelectedIndex][(int) frameSlider.Value];
+                    Stroke = Hitbox.Stroke,
+                    Opacity = Hitbox.Opacity,
+                    Fill = _hitBrush,
+                    Name = "hit" + _boxes.Count.ToString(),
+                    Width = box.Width,
+                    Height = box.Height,
+                    Visibility = Visibility.Visible
+                };
+                r.MouseEnter += Box_MouseOver;
+                r.MouseLeave += Box_MouseLeave;
+                r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                previousFrame = (int)frameSlider.Value;
+                BoxCanvas.Children.Add(r);
+                Canvas.SetLeft(r, box.X);
+                Canvas.SetTop(r, box.Y);
+
+                _boxes.Add(new BoxInfo(box, r));    
             }
+            foreach (var box in CurrentAction().Hurtboxes[(int) FrameSlider.Value])
+            {
+                var r = new Rectangle
+                {
+                    Stroke = Hurtbox.Stroke,
+                    Opacity = Hurtbox.Opacity,
+                    Fill = _hurtBrush,
+                    Name = "hurt" + _boxes.Count.ToString(),
+                    Width = box.Width,
+                    Height = box.Height,
+                    Visibility = Visibility.Visible
+                };
+                r.MouseEnter += Box_MouseOver;
+                r.MouseLeave += Box_MouseLeave;
+                r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+
+                BoxCanvas.Children.Add(r);
+                Canvas.SetLeft(r, box.X);
+                Canvas.SetTop(r, box.Y);
+
+                _boxes.Add(new BoxInfo(box, r));
+            }
+
+            if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
+                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value];
+
+            _previousFrame = (int)FrameSlider.Value;
         }
 
-        private void prevFrameButton_Click(object sender, RoutedEventArgs e)
-        {
-            --frameSlider.Value;
-        }
+        private void PrevFrameButton_Click(object sender, RoutedEventArgs e) => --FrameSlider.Value;
 
-        private void nextFrameButton_Click(object sender, RoutedEventArgs e)
-        {
-            ++frameSlider.Value;
-        }
+        private void NextFrameButton_Click(object sender, RoutedEventArgs e) => ++FrameSlider.Value;
 
-        private void playButton_Click(object sender, RoutedEventArgs e)
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
            
         }
 
-        private void pauseButton_Click(object sender, RoutedEventArgs e)
+        private void PauseButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void removeFrameButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveFrameButton_Click(object sender, RoutedEventArgs e)
         {
-            if (currentAction() != null)
-            {
-                currentAction().removeFrame((int)frameSlider.Value);
-                currentAction().hitboxes.RemoveAt((int)frameSlider.Value);
-                currentAction().hurtboxes.RemoveAt((int)frameSlider.Value);
-                frameSlider.Maximum = currentAction().FrameCount;
-            }
+            if (CurrentAction() == null) return;
+
+            CurrentAction().RemoveFrame((int)FrameSlider.Value);
+            CurrentAction().Hitboxes.RemoveAt((int)FrameSlider.Value);
+            CurrentAction().Hurtboxes.RemoveAt((int)FrameSlider.Value);
+
+            FrameSlider.Maximum = CurrentAction().FrameCount;
         }
 
-        private void insertFrameButton_Click(object sender, RoutedEventArgs e)
+        private void InsertFrameButton_Click(object sender, RoutedEventArgs e)
         {
-            if (currentAction() != null)
-            {
-                currentAction().insertFrame((int)frameSlider.Value);
-                currentAction().hitboxes.Insert((int)frameSlider.Value, new List<ActionInfo.Box>());
-                currentAction().hurtboxes.Insert((int)frameSlider.Value, new List<ActionInfo.Box>());
-                frameSlider.Maximum = currentAction().FrameCount;
-            }
+            if (CurrentAction() == null) return;
+
+            CurrentAction().InsertFrame((int)FrameSlider.Value);
+            CurrentAction().Hitboxes.Insert((int)FrameSlider.Value, new List<Box>());
+            CurrentAction().Hurtboxes.Insert((int)FrameSlider.Value, new List<Box>());
+
+            FrameSlider.Maximum = CurrentAction().FrameCount;
         }
 
-        private void ZoomBorder_MouseDown(object sender, MouseButtonEventArgs e)
+        private void EditGridZoomBorderMouseDown(object sender, MouseButtonEventArgs e)
         {
             
         }
 
-        private void ZoomBorder_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void EditGridZoomBorderMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Console.WriteLine($"{zoomBorder.ZoomX}");
-            editCanvas.Height = 1080; 
-            editCanvas.Width = 1920; 
+            Console.WriteLine($"{EditGridZoomBorder.ZoomX}");
+            EditCanvas.Height = 1080; 
+            EditCanvas.Width = 1920; 
         }
 
-        private void zoomBorder_KeyDown(object sender, KeyEventArgs e)
+        private void ZoomBorder_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space)
-                zoomBorder.PanButton = PanAndZoom.ButtonName.Left;
-            else
-                zoomBorder.PanButton = PanAndZoom.ButtonName.Middle;
+            switch (e.Key)
+            {
+                case Key.Space:
+                    EditGridZoomBorder.PanButton = PanAndZoom.ButtonName.Left;
+                    break;
+                default:
+                    EditGridZoomBorder.PanButton = PanAndZoom.ButtonName.Middle;
+                    break;
+            }
         }
 
         private void Box_MouseOver(object sender, MouseEventArgs e)
         {
-            var rect = sender as Rectangle;
+            if (!(sender is Rectangle rect)) return;
 
-            if (rect.Fill.IsEqualTo(hitBrush))
-            {
-                rect.Fill = hitOverBrush;
-            }
-            else if (rect.Fill.IsEqualTo(hurtBrush))
-            {
-                rect.Fill = hurtOverBrush;
-            }
+            if (rect.Fill.IsEqualTo(_hitBrush))
+                rect.Fill = _hitOverBrush;
+            else if (rect.Fill.IsEqualTo(_hurtBrush))
+                rect.Fill = _hurtOverBrush;
         }
 
         private bool IsSelectedBox(Rectangle rect)
         {
-            if (selectedBox < 0 || boxes.Count == 0)
+            if (_selectedBox < 0 || _boxes.Count == 0)
                 return false;
-            if (boxes[selectedBox].rect.Equals(rect))
-                return true;
-            return false;
+            return _boxes[_selectedBox].Rect.Equals(rect);
         }
 
         private int IndexFromRect(Rectangle rect)
         {
-            for (int i = 0; i < boxes.Count; ++i)
-            {
-                if (boxes[i].rect == rect)
-                {
+            for (var i = 0; i < _boxes.Count; ++i)
+                if (_boxes[i].Rect.Equals(rect))
                     return i;
-                }
-            }
+
             return -1;
         }
 
         private void Box_MouseLeave(object sender, MouseEventArgs e)
         {
-            var rect = sender as Rectangle;
+            if (!(sender is Rectangle rect)) return;
 
-            if (!IsSelectedBox(rect))
-            {
-                if (rect.Fill.IsEqualTo(hitOverBrush))
-                {
-                    rect.Fill = hitBrush;
-                }
-                else if (rect.Fill.IsEqualTo(hurtOverBrush))
-                {
-                    rect.Fill = hurtBrush;
-                }
-            }
+            if (IsSelectedBox(rect)) return;
+
+            if (rect.Fill.IsEqualTo(_hitOverBrush))
+                rect.Fill = _hitBrush;
+            else if (rect.Fill.IsEqualTo(_hurtOverBrush))
+                rect.Fill = _hurtBrush;
         }
 
         private void Box_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var rect = sender as Rectangle;
+            if (!(sender is Rectangle rect)) return;
 
-            if (!IsSelectedBox(rect))
-            {
-                // if selected box is a selected hitbox
-                if (boxes[selectedBox].rect.Fill.IsEqualTo(hitOverBrush))
-                {
-                    boxes[selectedBox].rect.Fill = hitBrush;
-                }
-                // else if selected box is a selected hurtbox
-                else if (boxes[selectedBox].rect.Fill.IsEqualTo(hurtOverBrush))
-                {
-                    boxes[selectedBox].rect.Fill = hurtBrush;
-                }
+            if (IsSelectedBox(rect)) return;
+           
+            // if selected box is a selected hitbox
+            if (_boxes[_selectedBox].Rect.Fill.IsEqualTo(_hitOverBrush))
+                _boxes[_selectedBox].Rect.Fill = _hitBrush;
+            else if (_boxes[_selectedBox].Rect.Fill.IsEqualTo(_hurtOverBrush))
+                _boxes[_selectedBox].Rect.Fill = _hurtBrush;
 
-                int index = IndexFromRect(rect);
-                if (index != -1)
-                {
-                    selectedBox = index;
-                    boxXText.Text = boxes[selectedBox].box.x.ToString();
-                    boxYText.Text = boxes[selectedBox].box.y.ToString();
-                    boxWidthText.Text = boxes[selectedBox].box.width.ToString();
-                    boxHeightText.Text = boxes[selectedBox].box.height.ToString();
-                    boxDMGText.Text = boxes[selectedBox].box.damage.ToString();
-                    boxKBStrengthText.Text = boxes[selectedBox].box.knockbackStrength.ToString();
-                    boxLifespanText.Text = boxes[selectedBox].box.lifespan.ToString();
-                    boxIdTextBlock.Text = "ID: " + boxes[selectedBox].rect.Name;
-                }
-            }
+            var index = IndexFromRect(rect);
+
+            if (index == -1) return;
+
+            _selectedBox = index;
+            BoxXText.Text = _boxes[_selectedBox].Box.X.ToString();
+            BoxYText.Text = _boxes[_selectedBox].Box.Y.ToString();
+            BoxWidthText.Text = _boxes[_selectedBox].Box.Width.ToString();
+            BoxHeightText.Text = _boxes[_selectedBox].Box.Height.ToString();
+            BoxDmgText.Text = _boxes[_selectedBox].Box.Damage.ToString();
+            BoxKbStrengthText.Text = _boxes[_selectedBox].Box.KnockbackStrength.ToString();
+            BoxLifespanText.Text = _boxes[_selectedBox].Box.Lifespan.ToString();
+            BoxIdTextBlock.Text = "ID: " + _boxes[_selectedBox].Rect.Name;
         }
 
-        private void boxXText_KeyDown(object sender, KeyEventArgs e)
+        private void BoxXText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (selectedBox != -1)
-                {
-                    int x = 0;
-                    if (int.TryParse(boxXText.Text, out x))
+                case Key.Enter:
+                    if (_selectedBox != -1)
                     {
-                        Canvas.SetLeft(boxes[selectedBox].rect, x);
-                        boxes[selectedBox].box.setPos(x, boxes[selectedBox].box.y);
+                        if (int.TryParse(BoxXText.Text, out var x))
+                        {
+                            Canvas.SetLeft(_boxes[_selectedBox].Rect, x);
+                            _boxes[_selectedBox].Box.SetPos(x, _boxes[_selectedBox].Box.Y);
+                        }
                     }
-                }
+   
+                    break;
             }
         }
 
-        private void boxYText_KeyDown(object sender, KeyEventArgs e)
+        private void BoxYText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (selectedBox != -1)
-                {
-                    int y = 0;
-                    if (int.TryParse(boxYText.Text, out y))
+                case Key.Enter:
+                    if (_selectedBox != -1)
                     {
-                        Canvas.SetTop(boxes[selectedBox].rect, y);
-                        boxes[selectedBox].box.setPos(boxes[selectedBox].box.x, y);
+                        if (int.TryParse(BoxYText.Text, out var y))
+                        {
+                            Canvas.SetTop(_boxes[_selectedBox].Rect, y);
+                            _boxes[_selectedBox].Box.SetPos(_boxes[_selectedBox].Box.X, y);
+                        }
                     }
-                }
+
+                    break;
             }
         }
 
-        private void boxWidthText_KeyDown(object sender, KeyEventArgs e)
+        private void BoxWidthText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (selectedBox != -1)
-                {
-                    int width = 0;
-                    if (int.TryParse(boxWidthText.Text, out width))
+                case Key.Enter:
+                    if (_selectedBox != -1)
                     {
-                        boxes[selectedBox].rect.Width = width;
-                        boxes[selectedBox].box.width = width;
+                        if (int.TryParse(BoxWidthText.Text, out var width))
+                        {
+                            _boxes[_selectedBox].Rect.Width = width;
+                            _boxes[_selectedBox].Box.Width = width;
+                        }
                     }
-                }
+
+                    break;
             }
         }
 
-        private void boxHeightText_KeyDown(object sender, KeyEventArgs e)
+        private void BoxHeightText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (selectedBox != -1)
-                {
-                    int height = 0;
-                    if (int.TryParse(boxHeightText.Text, out height))
+                case Key.Enter:
+                    if (_selectedBox != -1)
                     {
-                        boxes[selectedBox].rect.Height = height;
-                        boxes[selectedBox].box.height = height;
+                        if (int.TryParse(BoxHeightText.Text, out var height))
+                        {
+                            _boxes[_selectedBox].Rect.Height = height;
+                            _boxes[_selectedBox].Box.Height = height;
+                        }
                     }
-                }
+
+                    break;
             }
         }
 
-        private void boxDMGText_KeyDown(object sender, KeyEventArgs e)
+        private void BoxDMGText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (selectedBox != -1)
-                {
-                    int damage = 0;
-                    if (int.TryParse(boxDMGText.Text, out damage))
+                case Key.Enter:
+                    if (_selectedBox != -1)
                     {
-                        boxes[selectedBox].box.damage = damage;
+                        if (int.TryParse(BoxDmgText.Text, out var damage))
+                        {
+                            _boxes[_selectedBox].Box.Damage = damage;
+                        }
                     }
-                }
+
+                    break;
             }
         }
 
-        private void boxKBStrengthText_KeyDown(object sender, KeyEventArgs e)
+        private void BoxKBStrengthText_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            switch (e.Key)
             {
-                if (selectedBox != -1)
-                {
-                    int strength = 0;
-                    if (int.TryParse(boxKBStrengthText.Text, out strength))
+                case Key.Enter:
+                    if (_selectedBox != -1)
                     {
-                        boxes[selectedBox].box.knockbackStrength = strength;
+                        if (int.TryParse(BoxKbStrengthText.Text, out var strength))
+                        {
+                            _boxes[_selectedBox].Box.KnockbackStrength = strength;
+                        }
                     }
-                }
+
+                    break;
             }
         }
 
-        private void boxKBAngleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            boxAngleText.Text = boxKBAngleSlider.Value.ToString() + "°";
-        }
+        private void BoxKBAngleSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) 
+            => BoxAngleText.Text = BoxKbAngleSlider.Value + "°";
 
-        private void infiniteRangeMinDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void InfiniteRangeMinDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
             // selected index minus one to account for "none" option (-1)
-            currentAction().InfiniteRangeMin = infiniteRangeMinDropdown.SelectedIndex - 1;
-        }
+            => CurrentAction().InfiniteRangeMin = InfiniteRangeMinDropdown.SelectedIndex - 1;
 
-        private void infiniteRangeMaxDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            currentAction().InfiniteRangeMax = infiniteRangeMaxDropdown.SelectedIndex;
-        }
+        private void InfiniteRangeMaxDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => CurrentAction().InfiniteRangeMax = InfiniteRangeMaxDropdown.SelectedIndex;
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            mouseDown = true;
-            mouseDownPos = e.GetPosition(boxCanvas);
+            _mouseDown = true;
+            _mouseDownPos = e.GetPosition(BoxCanvas);
 
-            if (boxPlaceMode > -1)
+            if (_boxPlaceMode <= -1) return;
+            
+            // Capture and track the mouse.
+            BoxCanvas.CaptureMouse();
+
+            var box = new Rectangle();
+
+            switch (_boxPlaceMode)
             {
-                // Capture and track the mouse.
-                boxCanvas.CaptureMouse();
+                case 0:
+                    box.Stroke = Hitbox.Stroke;
+                    box.Opacity = Hitbox.Opacity;
+                    box.Fill = Hitbox.Fill;
 
-                Rectangle box = new Rectangle();
-                if (boxPlaceMode == 0)
-                {
-                    box.Stroke = hitbox.Stroke;
-                    box.Opacity = hitbox.Opacity;
-                    box.Fill = hitbox.Fill;
+                    box.Fill = _hitBrush;
 
-                    box.Fill = hitBrush;
+                    box.Name = "hit" + _boxes.Count;
+                    break;
+                case 1:
+                    box.Stroke = Hurtbox.Stroke;
+                    box.Opacity = Hurtbox.Opacity;
+                    box.Fill = Hurtbox.Fill;
 
-                    box.Name = "hit" + boxes.Count.ToString();
-                }
-                else if (boxPlaceMode == 1)
-                {
-                    box.Stroke = hurtbox.Stroke;
-                    box.Opacity = hurtbox.Opacity;
-                    box.Fill = hurtbox.Fill;
+                    box.Fill = _hurtBrush;
 
-                    box.Fill = hurtBrush;
-
-                    box.Name = "hurt" + boxes.Count.ToString();
-                }
-
-                box.Visibility = Visibility.Visible;
-
-                box.MouseEnter += new MouseEventHandler(Box_MouseOver);
-                box.MouseLeave += new MouseEventHandler(Box_MouseLeave);
-                box.MouseLeftButtonDown += new MouseButtonEventHandler(Box_MouseLeftButtonDown);
-
-                BoxInfo info = new BoxInfo(new ActionInfo.Box(true), box);
-
-                boxes.Add(info);
-
-                boxCanvas.Children.Add(boxes.Last().rect);
-
-                //currentBoxPos.Y = Math.Round(mouseDownPos.Y / gridSize) * gridSize;
-                //currentBoxPos.X = Math.Round(mouseDownPos.X / gridSize) * gridSize;
-                currentBoxPos.X = mouseDownPos.X;
-                currentBoxPos.Y = mouseDownPos.Y;
-
-                boxes.Last().box.setPos(currentBoxPos.X, currentBoxPos.Y);
-
-                boxXText.Text = boxes.Last().box.x.ToString();
-                boxYText.Text = boxes.Last().box.y.ToString();
-                boxDMGText.Text = boxes.Last().box.damage.ToString();
-                boxKBStrengthText.Text = boxes.Last().box.knockbackStrength.ToString();
-
-                // Initial placement of the drag selection box.         
-                Canvas.SetLeft(boxes.Last().rect, currentBoxPos.X);
-                Canvas.SetTop(boxes.Last().rect, currentBoxPos.Y);
-
-                // Make the drag selection box visible.
-                boxes.Last().rect.Visibility = Visibility.Visible;
+                    box.Name = "hurt" + _boxes.Count;
+                    break;
             }
+
+            box.Visibility = Visibility.Visible;
+
+            box.MouseEnter += Box_MouseOver;
+            box.MouseLeave += Box_MouseLeave;
+            box.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+            
+            _boxes.Add(new BoxInfo(new Box(), box));
+
+            BoxCanvas.Children.Add(_boxes.Last().Rect);
+
+            //currentBoxPos.Y = Math.Round(mouseDownPos.Y / gridSize) * gridSize;
+            //currentBoxPos.X = Math.Round(mouseDownPos.X / gridSize) * gridSize;
+            _currentBoxPos.X = _mouseDownPos.X;
+            _currentBoxPos.Y = _mouseDownPos.Y;
+
+            _boxes.Last().Box.SetPos(_currentBoxPos.X, _currentBoxPos.Y);
+
+            BoxXText.Text = _boxes.Last().Box.X.ToString();
+            BoxYText.Text = _boxes.Last().Box.Y.ToString();
+            BoxDmgText.Text = _boxes.Last().Box.Damage.ToString();
+            BoxKbStrengthText.Text = _boxes.Last().Box.KnockbackStrength.ToString();
+
+            // Initial placement of the drag selection box.         
+            Canvas.SetLeft(_boxes.Last().Rect, _currentBoxPos.X);
+            Canvas.SetTop(_boxes.Last().Rect, _currentBoxPos.Y);
+
+            // Make the drag selection box visible.
+            _boxes.Last().Rect.Visibility = Visibility.Visible;
         }
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            mouseDown = false;
-            Point mouseUpPos = e.GetPosition(boxCanvas);
+            _mouseDown = false;
+            var mouseUpPos = e.GetPosition(BoxCanvas);
 
-            if (boxPlaceMode > -1)
-            {
-                currentBoxCount = boxes.Count;
-                // Release the mouse capture and stop tracking it.
-                editCanvas.ReleaseMouseCapture();
+            if (_boxPlaceMode <= -1) return;
 
-                // Hide the drag selection box.
-                // selectionBox.Visibility = Visibility.Collapsed;
+            _currentBoxCount = _boxes.Count;
+            // Release the mouse capture and stop tracking it.
+            EditCanvas.ReleaseMouseCapture();
 
-                Mouse.Capture(null);
+            // Hide the drag selection box.
+            // selectionBox.Visibility = Visibility.Collapsed;
 
-                // TODO: 
-                //
-                // The mouse has been released, check to see if any of the items 
-                // in the other canvas are contained within mouseDownPos and 
-                // mouseUpPos, for any that are, select them!
-                //
-                boxPlaceMode = -1;
-            }
+            Mouse.Capture(null);
+
+            // TODO: 
+            //
+            // The mouse has been released, check to see if any of the items 
+            // in the other canvas are contained within mouseDownPos and 
+            // mouseUpPos, for any that are, select them!
+            //
+            _boxPlaceMode = -1;
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
-            Point mousePos = e.GetPosition(boxCanvas);
+            var mousePos = e.GetPosition(BoxCanvas);
 
-            if (boxPlaceMode > -1)
+            if (_boxPlaceMode <= -1)              return;
+            if (!_mouseDown)                      return;
+            if (_boxes.Count == _currentBoxCount) return;
+
+            // When the mouse is held down, reposition the drag selection box
+            if (_mouseDownPos.X < mousePos.X)
             {
-                if (mouseDown)
-                {
-                    // When the mouse is held down, reposition the drag selection box.
-                    if (boxes.Count != currentBoxCount)
-                    {
-                        if (mouseDownPos.X < mousePos.X)
-                        {
-                            Canvas.SetLeft(boxes.Last().rect, mouseDownPos.X);
-                            //boxes.Last().rect.Width = Math.Round((mousePos.X - mouseDownPos.X) / gridSize) * gridSize;
-                            boxes.Last().rect.Width = mousePos.X - mouseDownPos.X;
-                        }
-                        else
-                        {
-                            Canvas.SetLeft(boxes.Last().rect, mousePos.X);
-                            //boxes.Last().rect.Width = Math.Round((mouseDownPos.X - mousePos.X) / gridSize) * gridSize;
-                            boxes.Last().rect.Width = mouseDownPos.X - mousePos.X;
-                        }
-
-                        if (mouseDownPos.Y < mousePos.Y)
-                        {
-                            Canvas.SetTop(boxes.Last().rect, mouseDownPos.Y);
-                            //boxes.Last().rect.Height = Math.Round((mousePos.Y - mouseDownPos.Y) / gridSize) * gridSize;
-                            boxes.Last().rect.Height = mousePos.Y - mouseDownPos.Y;
-                        }
-                        else
-                        {
-                            Canvas.SetTop(boxes.Last().rect, mousePos.Y);
-                            //boxes.Last().rect.Height = Math.Round((mouseDownPos.Y - mousePos.Y) / gridSize) * gridSize;
-                            boxes.Last().rect.Height = mouseDownPos.Y - mousePos.Y;
-                        }
-
-                        
-                        boxes.Last().box.setDims(boxes.Last().rect.Width, boxes.Last().rect.Height);
-                        boxWidthText.Text = boxes.Last().box.width.ToString();
-                        boxHeightText.Text = boxes.Last().box.height.ToString();
-                    }
-                }
+                Canvas.SetLeft(_boxes.Last().Rect, _mouseDownPos.X);
+                //boxes.Last().rect.Width = Math.Round((mousePos.X - mouseDownPos.X) / gridSize) * gridSize;
+                _boxes.Last().Rect.Width = mousePos.X - _mouseDownPos.X;
             }
+            else
+            {
+                Canvas.SetLeft(_boxes.Last().Rect, mousePos.X);
+                //boxes.Last().rect.Width = Math.Round((mouseDownPos.X - mousePos.X) / gridSize) * gridSize;
+                _boxes.Last().Rect.Width = _mouseDownPos.X - mousePos.X;
+            }
+
+            if (_mouseDownPos.Y < mousePos.Y)
+            {
+                Canvas.SetTop(_boxes.Last().Rect, _mouseDownPos.Y);
+                //boxes.Last().rect.Height = Math.Round((mousePos.Y - mouseDownPos.Y) / gridSize) * gridSize;
+                _boxes.Last().Rect.Height = mousePos.Y - _mouseDownPos.Y;
+            }
+            else
+            {
+                Canvas.SetTop(_boxes.Last().Rect, mousePos.Y);
+                //boxes.Last().rect.Height = Math.Round((mouseDownPos.Y - mousePos.Y) / gridSize) * gridSize;
+                _boxes.Last().Rect.Height = _mouseDownPos.Y - mousePos.Y;
+            }
+
+            _boxes.Last().Box.SetDims(_boxes.Last().Rect.Width, _boxes.Last().Rect.Height);
+            BoxWidthText.Text = _boxes.Last().Box.Width.ToString();
+            BoxHeightText.Text = _boxes.Last().Box.Height.ToString();
         }
     }
 }
