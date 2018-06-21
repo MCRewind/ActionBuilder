@@ -194,7 +194,7 @@ namespace ActionBuilder
         {
             saveAction();
         }
-
+        
         private void saveAction()
         {
             if (currentActionDropdown.SelectedIndex >= 0)
@@ -424,7 +424,7 @@ namespace ActionBuilder
                     r.Stroke = hurtbox.Stroke;
                     r.Opacity = hurtbox.Opacity;
                     r.Fill = hurtBrush;
-                    r.Name = "hit" + boxes.Count.ToString();
+                    r.Name = "hurt" + boxes.Count.ToString();
                     r.Width = box.width;
                     r.Height = box.height;
                     r.Visibility = Visibility.Visible;
@@ -487,9 +487,7 @@ namespace ActionBuilder
 
         private void ZoomBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Console.WriteLine("DDDDDDDDD");
-            editCanvas.Height = 1080;
-            editCanvas.Width = 1920;
+            
         }
 
         private void ZoomBorder_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -497,6 +495,14 @@ namespace ActionBuilder
             Console.WriteLine($"{zoomBorder.ZoomX}");
             editCanvas.Height = 1080; 
             editCanvas.Width = 1920; 
+        }
+
+        private void zoomBorder_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+                zoomBorder.PanButton = PanAndZoom.ButtonName.Left;
+            else
+                zoomBorder.PanButton = PanAndZoom.ButtonName.Middle;
         }
 
         private void Box_MouseOver(object sender, MouseEventArgs e)
