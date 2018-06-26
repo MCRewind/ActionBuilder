@@ -28,7 +28,7 @@ namespace ActionBuilder
         private readonly List<CharacterInfo> _characters;
         private readonly List<ActionInfo> _actions;
         private readonly List<EditorInfo> _editorInfos;
-        private readonly List<MainWindow.BoxInfo> _boxes;
+        private List<BoxInfo> _hitboxes, _hurtboxes;
         private readonly List<List<BitmapImage>> _actionAnims;
 
         private readonly SolidColorBrush _hurtBrush;
@@ -46,7 +46,7 @@ namespace ActionBuilder
         private int _selectedBox;
         private int _boxPlaceMode = -1;
         private int _currentBoxCount;
-        private int _previousFrame = 0;
+        private int _previousFrame;
 
         private const int GridSize = 4;
 
@@ -80,12 +80,15 @@ namespace ActionBuilder
             _actions = new List<ActionInfo>();
             _editorInfos = new List<EditorInfo>();
             _actionAnims = new List<List<BitmapImage>>();
-            _boxes = new List<MainWindow.BoxInfo>();
+            _hitboxes = new List<BoxInfo>();
+            _hurtboxes = new List<BoxInfo>();
 
             _hurtBrush = new SolidColorBrush { Color = Color.FromRgb(112, 255, 150) };
             _hurtOverBrush = new SolidColorBrush { Color = Color.FromRgb(52, 249, 114) };
             _hitBrush = new SolidColorBrush { Color = Color.FromRgb(255, 66, 116) };
             _hitOverBrush = new SolidColorBrush { Color = Color.FromRgb(226, 20, 75) };
+
+            
 
             InitializeComponent();
 
@@ -336,24 +339,22 @@ namespace ActionBuilder
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (CurrentActionDropdown.SelectedIndex < 0 || !(FrameSlider.Value < CurrentAction().FrameCount) ||
+            Console.WriteLine($"frame_slider: {FrameSlider.Value}");
+
+            if (CurrentActionDropdown.SelectedIndex < 0 || FrameSlider.Value > CurrentAction().FrameCount ||
                 CurrentActionDropdown.SelectedIndex >= _actionAnims.Count) return;
 
-            var tempHit = new List<Box>();
-            var tempHurt = new List<Box>();
+            foreach (var boxInfo in _hitboxes)
+                CurrentAction().Hitboxes[_previousFrame].Add(boxInfo.Box);
+            foreach (var boxInfo in _hurtboxes)
+                CurrentAction().Hurtboxes[_previousFrame].Add(boxInfo.Box);
 
-            foreach (var boxInfo in _boxes)
-                if (boxInfo.Rect.Name.StartsWith("hit"))
-                    tempHit.Add(boxInfo.Box);
-                else if (boxInfo.Rect.Name.StartsWith("hurt"))
-                    tempHurt.Add(boxInfo.Box);
-
-            CurrentAction().Hitboxes[_previousFrame] = tempHit;
-            CurrentAction().Hurtboxes[_previousFrame] = tempHurt;
-
-            _boxes.Clear();
+            _currentBoxCount = 0;
+            _hitboxes.Clear();
+            _hurtboxes.Clear();
             BoxCanvas.Children.Clear();
-
+            BoxCanvas.GetChildObjects().ToList().Clear();
+            
             foreach (var box in CurrentAction().Hitboxes[(int) FrameSlider.Value])
             {
                 var r = new Rectangle
@@ -361,20 +362,22 @@ namespace ActionBuilder
                     Stroke = Hitbox.Stroke,
                     Opacity = Hitbox.Opacity,
                     Fill = _hitBrush,
-                    Name = "hit" + _boxes.Count.ToString(),
+                    Name = "I" + _hitboxes.Count,
+                    Visibility = Visibility.Visible,
+
                     Width = box.Width,
                     Height = box.Height,
-                    Visibility = Visibility.Visible
-                };
+            };
                 r.MouseEnter += Box_MouseOver;
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                BoxCanvas.Children.Add(r);
                 Canvas.SetLeft(r, box.X);
                 Canvas.SetTop(r, box.Y);
 
-                _boxes.Add(new BoxInfo(box, r));    
+                BoxCanvas.Children.Add(r);
+
+                _hitboxes.Add(new BoxInfo(box, r));
             }
             foreach (var box in CurrentAction().Hurtboxes[(int) FrameSlider.Value])
             {
@@ -383,20 +386,21 @@ namespace ActionBuilder
                     Stroke = Hurtbox.Stroke,
                     Opacity = Hurtbox.Opacity,
                     Fill = _hurtBrush,
-                    Name = "hurt" + _boxes.Count.ToString(),
+                    Name = "R" + _hurtboxes.Count,
+                    Visibility = Visibility.Visible,
                     Width = box.Width,
                     Height = box.Height,
-                    Visibility = Visibility.Visible
                 };
                 r.MouseEnter += Box_MouseOver;
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                BoxCanvas.Children.Add(r);
                 Canvas.SetLeft(r, box.X);
                 Canvas.SetTop(r, box.Y);
 
-                _boxes.Add(new BoxInfo(box, r));
+                BoxCanvas.Children.Add(r);
+
+                _hurtboxes.Add(new BoxInfo(box, r));
             }
 
             if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
@@ -478,16 +482,20 @@ namespace ActionBuilder
 
         private bool IsSelectedBox(Rectangle rect)
         {
-            if (_selectedBox < 0 || _boxes.Count == 0)
+            if (_selectedBox < 0 || CurrentBoxList().Count == 0)
                 return false;
-            return _boxes[_selectedBox].Rect.Equals(rect);
+            return SelectedBox().Rect.Equals(rect);
         }
 
         private int IndexFromRect(Rectangle rect)
         {
-            for (var i = 0; i < _boxes.Count; ++i)
-                if (_boxes[i].Rect.Equals(rect))
+            for (var i = 0; i < _hitboxes.Count; ++i)
+                if (_hitboxes[i].Rect.Equals(rect))
                     return i;
+
+            for (var i = 0; i < _hurtboxes.Count; ++i)
+                if (_hurtboxes[i].Rect.Equals(rect))
+                    return _hitboxes.Count + i;
 
             return -1;
         }
@@ -504,31 +512,36 @@ namespace ActionBuilder
                 rect.Fill = _hurtBrush;
         }
 
+        private BoxInfo SelectedBox()
+        {
+            return _selectedBox >= _hitboxes.Count ? _hurtboxes[_selectedBox - _hitboxes.Count] : _hitboxes[_selectedBox];
+        }
+
         private void Box_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is Rectangle rect)) return;
 
             if (IsSelectedBox(rect)) return;
-           
+
             // if selected box is a selected hitbox
-            if (_boxes[_selectedBox].Rect.Fill.IsEqualTo(_hitOverBrush))
-                _boxes[_selectedBox].Rect.Fill = _hitBrush;
-            else if (_boxes[_selectedBox].Rect.Fill.IsEqualTo(_hurtOverBrush))
-                _boxes[_selectedBox].Rect.Fill = _hurtBrush;
+            if (SelectedBox().Rect.Fill.IsEqualTo(_hitOverBrush))
+                SelectedBox().Rect.Fill = _hitBrush;
+            else if (SelectedBox().Rect.Fill.IsEqualTo(_hurtOverBrush))
+                SelectedBox().Rect.Fill = _hurtBrush;
 
             var index = IndexFromRect(rect);
 
             if (index == -1) return;
 
             _selectedBox = index;
-            BoxXText.Text = _boxes[_selectedBox].Box.X.ToString();
-            BoxYText.Text = _boxes[_selectedBox].Box.Y.ToString();
-            BoxWidthText.Text = _boxes[_selectedBox].Box.Width.ToString();
-            BoxHeightText.Text = _boxes[_selectedBox].Box.Height.ToString();
-            BoxDmgText.Text = _boxes[_selectedBox].Box.Damage.ToString();
-            BoxKbStrengthText.Text = _boxes[_selectedBox].Box.KnockbackStrength.ToString();
-            BoxLifespanText.Text = _boxes[_selectedBox].Box.Lifespan.ToString();
-            BoxIdTextBlock.Text = "ID: " + _boxes[_selectedBox].Rect.Name;
+            BoxXText.Text = SelectedBox().Box.X.ToString();
+            BoxYText.Text = SelectedBox().Box.Y.ToString();
+            BoxWidthText.Text = SelectedBox().Box.Width.ToString();
+            BoxHeightText.Text = SelectedBox().Box.Height.ToString();
+            BoxDmgText.Text = SelectedBox().Box.Damage.ToString();
+            BoxKbStrengthText.Text = SelectedBox().Box.KnockbackStrength.ToString();
+            BoxLifespanText.Text = SelectedBox().Box.Lifespan.ToString();
+            BoxIdTextBlock.Text = "ID: " + SelectedBox().Rect.Name;
         }
 
         private void BoxXText_KeyDown(object sender, KeyEventArgs e)
@@ -540,8 +553,8 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(BoxXText.Text, out var x))
                         {
-                            Canvas.SetLeft(_boxes[_selectedBox].Rect, x);
-                            _boxes[_selectedBox].Box.SetPos(x, _boxes[_selectedBox].Box.Y);
+                            Canvas.SetLeft(SelectedBox().Rect, x);
+                            SelectedBox().Box.SetPos(x, SelectedBox().Box.Y);
                         }
                     }
    
@@ -558,8 +571,8 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(BoxYText.Text, out var y))
                         {
-                            Canvas.SetTop(_boxes[_selectedBox].Rect, y);
-                            _boxes[_selectedBox].Box.SetPos(_boxes[_selectedBox].Box.X, y);
+                            Canvas.SetTop(SelectedBox().Rect, y);
+                            SelectedBox().Box.SetPos(SelectedBox().Box.X, y);
                         }
                     }
 
@@ -576,8 +589,8 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(BoxWidthText.Text, out var width))
                         {
-                            _boxes[_selectedBox].Rect.Width = width;
-                            _boxes[_selectedBox].Box.Width = width;
+                            SelectedBox().Rect.Width = width;
+                            SelectedBox().Box.Width = width;
                         }
                     }
 
@@ -594,8 +607,8 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(BoxHeightText.Text, out var height))
                         {
-                            _boxes[_selectedBox].Rect.Height = height;
-                            _boxes[_selectedBox].Box.Height = height;
+                            SelectedBox().Rect.Height = height;
+                            SelectedBox().Box.Height = height;
                         }
                     }
 
@@ -612,7 +625,7 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(BoxDmgText.Text, out var damage))
                         {
-                            _boxes[_selectedBox].Box.Damage = damage;
+                            SelectedBox().Box.Damage = damage;
                         }
                     }
 
@@ -629,7 +642,7 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(BoxKbStrengthText.Text, out var strength))
                         {
-                            _boxes[_selectedBox].Box.KnockbackStrength = strength;
+                            SelectedBox().Box.KnockbackStrength = strength;
                         }
                     }
 
@@ -649,7 +662,6 @@ namespace ActionBuilder
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _mouseDown = true;
             _mouseDownPos = e.GetPosition(BoxCanvas);
 
             if (_boxPlaceMode <= -1) return;
@@ -668,8 +680,13 @@ namespace ActionBuilder
 
                     box.Fill = _hitBrush;
 
-                    box.Name = "hit" + _boxes.Count;
+                    box.Name = "hit" + _hitboxes.Count;
+
+                    box.MouseEnter += Box_MouseOver;
+                    box.MouseLeave += Box_MouseLeave;
+                    box.MouseLeftButtonDown += Box_MouseLeftButtonDown;                
                     break;
+
                 case 1:
                     box.Stroke = Hurtbox.Stroke;
                     box.Opacity = Hurtbox.Opacity;
@@ -677,38 +694,36 @@ namespace ActionBuilder
 
                     box.Fill = _hurtBrush;
 
-                    box.Name = "hurt" + _boxes.Count;
+                    box.Name = "hurt" + _hurtboxes.Count;
+
+                    box.MouseEnter += Box_MouseOver;
+                    box.MouseLeave += Box_MouseLeave;
+                    box.MouseLeftButtonDown += Box_MouseLeftButtonDown;
                     break;
             }
 
-            box.Visibility = Visibility.Visible;
-
-            box.MouseEnter += Box_MouseOver;
-            box.MouseLeave += Box_MouseLeave;
-            box.MouseLeftButtonDown += Box_MouseLeftButtonDown;
-            
-            _boxes.Add(new BoxInfo(new Box(), box));
-
-            BoxCanvas.Children.Add(_boxes.Last().Rect);
+            CurrentBoxList().Add(new BoxInfo(new Box(), box));
+            BoxCanvas.Children.Add(CurrentBoxList().Last().Rect);
 
             //currentBoxPos.Y = Math.Round(mouseDownPos.Y / gridSize) * gridSize;
             //currentBoxPos.X = Math.Round(mouseDownPos.X / gridSize) * gridSize;
             _currentBoxPos.X = _mouseDownPos.X;
             _currentBoxPos.Y = _mouseDownPos.Y;
 
-            _boxes.Last().Box.SetPos(_currentBoxPos.X, _currentBoxPos.Y);
+            CurrentBoxList().Last().Box.SetPos(_currentBoxPos.X, _currentBoxPos.Y);
 
-            BoxXText.Text = _boxes.Last().Box.X.ToString();
-            BoxYText.Text = _boxes.Last().Box.Y.ToString();
-            BoxDmgText.Text = _boxes.Last().Box.Damage.ToString();
-            BoxKbStrengthText.Text = _boxes.Last().Box.KnockbackStrength.ToString();
+            BoxXText.Text = CurrentBoxList().Last().Box.X.ToString();
+            BoxYText.Text = CurrentBoxList().Last().Box.Y.ToString();
+            BoxDmgText.Text = CurrentBoxList().Last().Box.Damage.ToString();
+            BoxKbStrengthText.Text = CurrentBoxList().Last().Box.KnockbackStrength.ToString();
 
             // Initial placement of the drag selection box.         
-            Canvas.SetLeft(_boxes.Last().Rect, _currentBoxPos.X);
-            Canvas.SetTop(_boxes.Last().Rect, _currentBoxPos.Y);
+            Canvas.SetLeft(CurrentBoxList().Last().Rect, _currentBoxPos.X);
+            Canvas.SetTop(CurrentBoxList().Last().Rect, _currentBoxPos.Y);
 
             // Make the drag selection box visible.
-            _boxes.Last().Rect.Visibility = Visibility.Visible;
+            CurrentBoxList().Last().Rect.Visibility = Visibility.Visible;
+            _mouseDown = true;
         }
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
@@ -716,9 +731,18 @@ namespace ActionBuilder
             _mouseDown = false;
             var mouseUpPos = e.GetPosition(BoxCanvas);
 
-            if (_boxPlaceMode <= -1) return;
+            switch (_boxPlaceMode)
+            {
+                case -1:
+                    return;
+                case 0:
+                    _currentBoxCount = _hitboxes.Count;
+                    break;
+                case 1:
+                    _currentBoxCount = _hurtboxes.Count;
+                    break;
+            }
 
-            _currentBoxCount = _boxes.Count;
             // Release the mouse capture and stop tracking it.
             EditCanvas.ReleaseMouseCapture();
 
@@ -736,44 +760,60 @@ namespace ActionBuilder
             _boxPlaceMode = -1;
         }
 
+        private ref List<BoxInfo> CurrentBoxList()
+        {
+            switch (_boxPlaceMode)
+            {
+                case 0:
+                    return ref _hitboxes;
+                case 1:
+                    return ref _hurtboxes;
+                default:
+                    return ref _hitboxes;
+            }
+        }
+
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             var mousePos = e.GetPosition(BoxCanvas);
 
             if (_boxPlaceMode <= -1)              return;
             if (!_mouseDown)                      return;
-            if (_boxes.Count == _currentBoxCount) return;
+            if (_boxPlaceMode == 0)
+                if (_hitboxes.Count == _currentBoxCount) return;
+            else if (_boxPlaceMode == 1)
+                if (_hurtboxes.Count == _currentBoxCount) return;
 
             // When the mouse is held down, reposition the drag selection box
             if (_mouseDownPos.X < mousePos.X)
             {
-                Canvas.SetLeft(_boxes.Last().Rect, _mouseDownPos.X);
+                Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
                 //boxes.Last().rect.Width = Math.Round((mousePos.X - mouseDownPos.X) / gridSize) * gridSize;
-                _boxes.Last().Rect.Width = mousePos.X - _mouseDownPos.X;
+                CurrentBoxList().Last().Rect.Width = mousePos.X - _mouseDownPos.X;
             }
             else
             {
-                Canvas.SetLeft(_boxes.Last().Rect, mousePos.X);
+                Canvas.SetLeft(CurrentBoxList().Last().Rect, mousePos.X);
                 //boxes.Last().rect.Width = Math.Round((mouseDownPos.X - mousePos.X) / gridSize) * gridSize;
-                _boxes.Last().Rect.Width = _mouseDownPos.X - mousePos.X;
+                CurrentBoxList().Last().Rect.Width = _mouseDownPos.X - mousePos.X;
             }
 
             if (_mouseDownPos.Y < mousePos.Y)
             {
-                Canvas.SetTop(_boxes.Last().Rect, _mouseDownPos.Y);
+                Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
                 //boxes.Last().rect.Height = Math.Round((mousePos.Y - mouseDownPos.Y) / gridSize) * gridSize;
-                _boxes.Last().Rect.Height = mousePos.Y - _mouseDownPos.Y;
+                CurrentBoxList().Last().Rect.Height = mousePos.Y - _mouseDownPos.Y;
             }
             else
             {
-                Canvas.SetTop(_boxes.Last().Rect, mousePos.Y);
+                Canvas.SetTop(CurrentBoxList().Last().Rect, mousePos.Y);
                 //boxes.Last().rect.Height = Math.Round((mouseDownPos.Y - mousePos.Y) / gridSize) * gridSize;
-                _boxes.Last().Rect.Height = _mouseDownPos.Y - mousePos.Y;
+                CurrentBoxList().Last().Rect.Height = _mouseDownPos.Y - mousePos.Y;
             }
 
-            _boxes.Last().Box.SetDims(_boxes.Last().Rect.Width, _boxes.Last().Rect.Height);
-            BoxWidthText.Text = _boxes.Last().Box.Width.ToString();
-            BoxHeightText.Text = _boxes.Last().Box.Height.ToString();
+            CurrentBoxList().Last().Box.SetDims(CurrentBoxList().Last().Rect.Width, CurrentBoxList().Last().Rect.Height);
+            BoxWidthText.Text = CurrentBoxList().Last().Box.Width.ToString();
+            BoxHeightText.Text = CurrentBoxList().Last().Box.Height.ToString();
         }
     }
 }
