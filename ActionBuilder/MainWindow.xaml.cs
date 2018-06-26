@@ -341,11 +341,12 @@ namespace ActionBuilder
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Console.WriteLine($"frame_slider: {FrameSlider.Value}");
-
+            
             if (CurrentActionDropdown.SelectedIndex < 0 || FrameSlider.Value > CurrentAction().FrameCount ||
                 CurrentActionDropdown.SelectedIndex >= _actionAnims.Count) return;
 
+            CurrentAction().Hitboxes[_previousFrame].Clear();
+            CurrentAction().Hurtboxes[_previousFrame].Clear();    
             foreach (var boxInfo in _hitboxes)
                 CurrentAction().Hitboxes[_previousFrame].Add(boxInfo.Box);
             foreach (var boxInfo in _hurtboxes)
@@ -355,7 +356,7 @@ namespace ActionBuilder
             _hitboxes.Clear();
             _hurtboxes.Clear();
             BoxCanvas.Children.Clear();
-
+           
             foreach (var box in CurrentAction().Hitboxes[(int) FrameSlider.Value])
             {
                 var r = new Rectangle
