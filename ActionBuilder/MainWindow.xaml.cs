@@ -285,6 +285,8 @@ namespace ActionBuilder
                     _actionAnims[i].Add(tempImg);
                 }
             }
+
+            CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][0];
         }
 
         private void NewCharacterButton_Click(object sender, RoutedEventArgs e)
@@ -353,8 +355,7 @@ namespace ActionBuilder
             _hitboxes.Clear();
             _hurtboxes.Clear();
             BoxCanvas.Children.Clear();
-            BoxCanvas.GetChildObjects().ToList().Clear();
-            
+
             foreach (var box in CurrentAction().Hitboxes[(int) FrameSlider.Value])
             {
                 var r = new Rectangle
@@ -367,7 +368,7 @@ namespace ActionBuilder
 
                     Width = box.Width,
                     Height = box.Height,
-            };
+                };
                 r.MouseEnter += Box_MouseOver;
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
