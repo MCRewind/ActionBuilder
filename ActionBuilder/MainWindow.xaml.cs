@@ -39,7 +39,7 @@ namespace ActionBuilder
 
         private CharacterInfo _lastSelectedCharacter;
         private Point _mouseDownPos;
-        private Point _currentBoxPos = new Point(0, 0);
+        private IntCouple _currentBoxPos = new IntCouple(0, 0);
 
         private bool _loadedFromNew;
         private bool _mouseDown;
@@ -50,6 +50,18 @@ namespace ActionBuilder
         private int _previousFrame;
 
         private const int GridSize = 4;
+
+        private struct IntCouple
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+
+            public IntCouple(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
 
         private struct BoxInfo
         {
@@ -66,16 +78,48 @@ namespace ActionBuilder
         public MainWindow()
         {
             if (!Directory.Exists("../../Editor"))
-                Directory.CreateDirectory("../../Editor");
+                try
+                {
+                    Directory.CreateDirectory("../../Editor");
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
 
             if (!Directory.Exists("../../Actions"))
-                Directory.CreateDirectory("../../Actions");
+                try
+                {
+                    Directory.CreateDirectory("../../Actions");
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
 
             if (!Directory.Exists("../../Characters"))
-                Directory.CreateDirectory("../../Characters");
+                try
+                {
+                    Directory.CreateDirectory("../../Characters");
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
 
             if (!Directory.Exists("../../Textures"))
-                Directory.CreateDirectory("../../Textures");
+                try
+                {
+                    Directory.CreateDirectory("../../Textures");
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
 
             _characters = new List<CharacterInfo>();
             _actions = new List<ActionInfo>();
@@ -113,11 +157,21 @@ namespace ActionBuilder
         }
 
         private void LoadActions(string character)
-        {   
+        {
             var ser = new DataContractJsonSerializer(typeof(ActionInfo));
 
             if (!Directory.Exists($"../../Actions/{character}/"))
-                Directory.CreateDirectory($"../../Actions/{character}/");
+            {
+                try
+                {
+                    Directory.CreateDirectory($"../../Actions/{character}/");
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
 
             foreach (var file in Directory.GetFiles($"../../Actions/{character}/"))
                 using (var sr = new StreamReader(file))
@@ -125,6 +179,9 @@ namespace ActionBuilder
 
             foreach (var action in _actions)
             {
+                CurrentActionDropdown.Items.Clear();
+                _editorInfos.Clear();
+                _actionAnims.Clear();
                 CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = action.Name);
 
                 var newEditorInfo = new EditorInfo { TexturePath = $"../../Textures/{CurrentCharacter().Name}/{action.Name}/" };
@@ -153,8 +210,9 @@ namespace ActionBuilder
 
         private void UpdateActionNames()
         {
-            for (var i = 0; i < _actions.Count; ++i)
-                CurrentActionDropdown.Items[i] = new ComboBoxItem().Content = _actions[i].Name;
+            CurrentActionDropdown.Items.Clear();
+            foreach (var action in _actions)
+                CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = action.Name);
         }
 
         private void UpdateCharacterNames()
@@ -165,7 +223,7 @@ namespace ActionBuilder
 
         private void UpdatePaths()
         {
-            for (var i = 0; i < _editorInfos.Count; ++i)
+            for (var i = 0; i < _actions.Count; ++i)
                 _editorInfos[i].TexturePath = $"../../Textures/{CurrentCharacter().Name}/{_actions[i].Name}/";
         }
 
@@ -198,8 +256,16 @@ namespace ActionBuilder
             var newEditorInfo = new EditorInfo { TexturePath = $"../../Textures/{CurrentCharacter().Name}/{newAction.Name}" };
             _editorInfos.Add(newEditorInfo);
 
-            Directory.CreateDirectory(newEditorInfo.TexturePath);
-
+            try
+            {
+                Directory.CreateDirectory(newEditorInfo.TexturePath);
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+            
             CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.Name);
             CurrentActionDropdown.SelectedIndex = CurrentActionDropdown.Items.Count - 1;
         }
@@ -250,6 +316,7 @@ namespace ActionBuilder
             }
         }
 
+        // action name changed
         private void NameTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (CurrentAction() == null || e.Key != Key.Enter) return;
@@ -257,13 +324,29 @@ namespace ActionBuilder
             var oldName = CurrentAction().Name;
             var selectedIndex = CurrentActionDropdown.SelectedIndex;
 
+            if (oldName.Equals(NameTextBox.Text)) return;
+            if (Directory.Exists($"../../Textures/{CurrentCharacter().Name}/{NameTextBox.Text}"))
+            {
+                MessageBox.Show(this, "An action with this name already exists", "Can Not Rename");
+                return;
+            }
+
             CurrentAction().Name = NameTextBox.Text;
-            UpdateActionNames();
-            UpdatePaths();
+
+            CurrentActionDropdown.Items[selectedIndex] = new ComboBoxItem().Content = CurrentAction().Name;
+            _editorInfos[selectedIndex].TexturePath = $"../../Textures/{CurrentCharacter().Name}/{_actions[selectedIndex].Name}/";
 
             CurrentActionDropdown.SelectedIndex = selectedIndex;
+            try
+            {
+                Directory.Move($"../../Textures/{CurrentCharacter().Name}/{oldName}", _editorInfos[selectedIndex].TexturePath);
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
 
-            Directory.Move($"../../Textures/{CurrentCharacter().Name}/{oldName}", $"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}");
         }
 
         // character selection changed
@@ -278,8 +361,16 @@ namespace ActionBuilder
                 ser.WriteObject(outStream, CurrentCharacter().Name);
             }
 
-            File.WriteAllText("../../Editor/lastCharacter.json", CurrentCharacter().Name);
-
+            try
+            {
+                File.WriteAllText("../../Editor/lastCharacter.json", CurrentCharacter().Name);
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+            
             CharacterNameTextBox.Text = CurrentCharacter().Name;
 
             _lastSelectedCharacter = CurrentCharacter();
@@ -341,9 +432,17 @@ namespace ActionBuilder
                 JsonUtils.WriteToJson(filepath, outStream);
             }
 
-            Directory.CreateDirectory($"../../Actions/{CurrentCharacter().Name}");
-            Directory.CreateDirectory($"../../Textures/{CurrentCharacter().Name}");
-
+            try
+            {
+                Directory.CreateDirectory($"../../Actions/{CurrentCharacter().Name}");
+                Directory.CreateDirectory($"../../Textures/{CurrentCharacter().Name}");
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+           
             LoadActions(CurrentCharacter().Name);
         }
 
@@ -366,10 +465,18 @@ namespace ActionBuilder
                 JsonUtils.WriteToJson(filepath, outStream);
             }
 
-            Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{CurrentCharacter().Name}.json");
-            Directory.Move($"../../Textures/{oldName}", $"../../Textures/{CurrentCharacter().Name}");
-            Directory.Move($"../../Actions/{oldName}", $"../../Actions/{CurrentCharacter().Name}");
-        }
+            try
+            {
+                Directory.Move($"../../Characters/{oldName}.json", $"../../Characters/{CurrentCharacter().Name}.json");
+                Directory.Move($"../../Textures/{oldName}", $"../../Textures/{CurrentCharacter().Name}");
+                Directory.Move($"../../Actions/{oldName}", $"../../Actions/{CurrentCharacter().Name}");
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+           }
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -740,8 +847,8 @@ namespace ActionBuilder
 
             //currentBoxPos.Y = Math.Round(mouseDownPos.Y / gridSize) * gridSize;
             //currentBoxPos.X = Math.Round(mouseDownPos.X / gridSize) * gridSize;
-            _currentBoxPos.X = _mouseDownPos.X;
-            _currentBoxPos.Y = _mouseDownPos.Y;
+            _currentBoxPos.X = (int) _mouseDownPos.X;
+            _currentBoxPos.Y = (int) _mouseDownPos.Y;
 
             CurrentBoxList().Last().Box.SetPos(_currentBoxPos.X, _currentBoxPos.Y);
 
@@ -753,7 +860,8 @@ namespace ActionBuilder
             // Initial placement of the drag selection box.         
             Canvas.SetLeft(CurrentBoxList().Last().Rect, _currentBoxPos.X);
             Canvas.SetTop(CurrentBoxList().Last().Rect, _currentBoxPos.Y);
-
+            //Canvas.SetLeft(CurrentBoxList().Last().Rect, Math.Round((_currentBoxPos.X) / GridSize) * GridSize);
+            //Canvas.SetTop(CurrentBoxList().Last().Rect, Math.Round((_currentBoxPos.Y) / GridSize) * GridSize);
             // Make the drag selection box visible.
             CurrentBoxList().Last().Rect.Visibility = Visibility.Visible;
             _mouseDown = true;
@@ -793,6 +901,49 @@ namespace ActionBuilder
             _boxPlaceMode = -1;
         }
 
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
+        {
+            var mousePos = e.GetPosition(BoxCanvas);
+
+            if (_boxPlaceMode <= -1) return;
+            if (!_mouseDown) return;
+            if (_boxPlaceMode == 0)
+                if (_hitboxes.Count == _currentBoxCount) return;
+                else if (_boxPlaceMode == 1)
+                    if (_hurtboxes.Count == _currentBoxCount) return;
+
+            // When the mouse is held down, reposition the drag selection box
+            if (_mouseDownPos.X < mousePos.X)
+            {
+                Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
+                //CurrentBoxList().Last().Rect.Width = Math.Round((mousePos.X - _mouseDownPos.X) / GridSize) * GridSize;
+                CurrentBoxList().Last().Rect.Width = mousePos.X - _mouseDownPos.X;
+            }
+            else
+            {
+                Canvas.SetLeft(CurrentBoxList().Last().Rect, mousePos.X);
+                //CurrentBoxList().Last().Rect.Width = Math.Round((_mouseDownPos.X - mousePos.X) / GridSize) * GridSize;
+                CurrentBoxList().Last().Rect.Width = _mouseDownPos.X - mousePos.X;
+            }
+
+            if (_mouseDownPos.Y < mousePos.Y)
+            {
+                Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
+                //CurrentBoxList().Last().Rect.Height = Math.Round((mousePos.Y - _mouseDownPos.Y) / GridSize) * GridSize;
+                CurrentBoxList().Last().Rect.Height = mousePos.Y - _mouseDownPos.Y;
+            }
+            else
+            {
+                Canvas.SetTop(CurrentBoxList().Last().Rect, mousePos.Y);
+                //CurrentBoxList().Last().Rect.Height = Math.Round((_mouseDownPos.Y - mousePos.Y) / GridSize) * GridSize;
+                CurrentBoxList().Last().Rect.Height = _mouseDownPos.Y - mousePos.Y;
+            }
+
+            CurrentBoxList().Last().Box.SetDims((int) CurrentBoxList().Last().Rect.Width, (int) CurrentBoxList().Last().Rect.Height);
+            BoxWidthText.Text = CurrentBoxList().Last().Box.Width.ToString();
+            BoxHeightText.Text = CurrentBoxList().Last().Box.Height.ToString();
+        }
+
         private ref List<BoxInfo> CurrentBoxList()
         {
             switch (_boxPlaceMode)
@@ -817,9 +968,17 @@ namespace ActionBuilder
             if (openFileDialog.ShowDialog() != true) return;
 
             //if (File.Exists($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png"))
-            File.Delete($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
-            File.Copy(openFileDialog.FileName, $"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
-
+            //File.Delete($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
+            try
+            {
+                File.Copy(openFileDialog.FileName, $"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", true);
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+           
             var tempImg = new BitmapImage();
             tempImg.BeginInit();
             tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", UriKind.Absolute);
@@ -834,48 +993,6 @@ namespace ActionBuilder
                 CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value];
 
         }
-
-        private void Grid_MouseMove(object sender, MouseEventArgs e)
-        {
-            var mousePos = e.GetPosition(BoxCanvas);
-
-            if (_boxPlaceMode <= -1)              return;
-            if (!_mouseDown)                      return;
-            if (_boxPlaceMode == 0)
-                if (_hitboxes.Count == _currentBoxCount) return;
-            else if (_boxPlaceMode == 1)
-                if (_hurtboxes.Count == _currentBoxCount) return;
-
-            // When the mouse is held down, reposition the drag selection box
-            if (_mouseDownPos.X < mousePos.X)
-            {
-                Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
-                //boxes.Last().rect.Width = Math.Round((mousePos.X - mouseDownPos.X) / gridSize) * gridSize;
-                CurrentBoxList().Last().Rect.Width = mousePos.X - _mouseDownPos.X;
-            }
-            else
-            {
-                Canvas.SetLeft(CurrentBoxList().Last().Rect, mousePos.X);
-                //boxes.Last().rect.Width = Math.Round((mouseDownPos.X - mousePos.X) / gridSize) * gridSize;
-                CurrentBoxList().Last().Rect.Width = _mouseDownPos.X - mousePos.X;
-            }
-
-            if (_mouseDownPos.Y < mousePos.Y)
-            {
-                Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
-                //boxes.Last().rect.Height = Math.Round((mousePos.Y - mouseDownPos.Y) / gridSize) * gridSize;
-                CurrentBoxList().Last().Rect.Height = mousePos.Y - _mouseDownPos.Y;
-            }
-            else
-            {
-                Canvas.SetTop(CurrentBoxList().Last().Rect, mousePos.Y);
-                //boxes.Last().rect.Height = Math.Round((mouseDownPos.Y - mousePos.Y) / gridSize) * gridSize;
-                CurrentBoxList().Last().Rect.Height = _mouseDownPos.Y - mousePos.Y;
-            }
-
-            CurrentBoxList().Last().Box.SetDims(CurrentBoxList().Last().Rect.Width, CurrentBoxList().Last().Rect.Height);
-            BoxWidthText.Text = CurrentBoxList().Last().Box.Width.ToString();
-            BoxHeightText.Text = CurrentBoxList().Last().Box.Height.ToString();
-        }
+      
     }
 }

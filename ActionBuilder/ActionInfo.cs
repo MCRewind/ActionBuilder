@@ -40,10 +40,10 @@ namespace ActionBuilder
         public class Box
         {
             public Vector2 KnockbackAngle;
-            public float X, Y, Width, Height, Damage, KnockbackStrength;
-            public int Lifespan;
+            public double Damage, KnockbackStrength;
+            public int Lifespan, X, Y, Width, Height;
 
-            public Box(float x, float y, float width, float height, float damage, float knockbackStrength, Vector2 knockbackAngle, int lifespan)
+            public Box(int x, int y, int width, int height, double damage, double knockbackStrength, Vector2 knockbackAngle, int lifespan)
             {
                 X = x;
                 Y = y;
@@ -57,11 +57,8 @@ namespace ActionBuilder
 
             public Box() : this(0, 0, 5, 5, 0, 0, new Vector2(), 1) { }
 
-            public void SetPos(double x, double y) { this.X = (float) x; this.Y = (float) y; }
-            public void SetDims(double w, double h) { this.Width = (float) w; this.Height = (float) h; }
-            public void SetDamage(float dmg) { this.Damage = dmg; }
-            public void SetKnockbackStrength(float strength) { this.KnockbackStrength = strength; }
-            public void SetKnockbackAngle(Vector2 angle) { this.KnockbackAngle = angle; }
+            public void SetPos(int x, int y) { this.X = x; this.Y = y; }
+            public void SetDims(int w, int h) { this.Width = w; this.Height = h; }
         }
 
         [DataMember]
