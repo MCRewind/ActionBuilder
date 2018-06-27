@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using MahApps.Metro.Controls;
 using static ActionBuilder.ActionInfo;
+using Microsoft.Win32;
 
 namespace ActionBuilder
 {
@@ -123,7 +124,13 @@ namespace ActionBuilder
                     _actions.Add((ActionInfo) ser.ReadObject(sr.BaseStream));
 
             foreach (var action in _actions)
+            {
                 CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = action.Name);
+
+                var newEditorInfo = new EditorInfo { TexturePath = $"../../Textures/{CurrentCharacter().Name}/{action.Name}/" };
+                _editorInfos.Add(newEditorInfo);
+                _actionAnims.Add(new List<BitmapImage>());
+            }
 
             CurrentActionDropdown.SelectedIndex = 0;
         }
@@ -159,7 +166,7 @@ namespace ActionBuilder
         private void UpdatePaths()
         {
             for (var i = 0; i < _editorInfos.Count; ++i)
-                _editorInfos[i].TexturePath = $"Textures/{CurrentCharacter().Name}/{_actions[i].Name}/";
+                _editorInfos[i].TexturePath = $"../../Textures/{CurrentCharacter().Name}/{_actions[i].Name}/";
         }
 
         private ActionInfo CurrentAction()
@@ -174,14 +181,24 @@ namespace ActionBuilder
             return index > -1 && index < _characters.Count ? _characters[index] : _lastSelectedCharacter;
         }
 
+        private EditorInfo CurrentEditorInfo()
+        {
+            var index = CurrentActionDropdown.SelectedIndex;
+            return index > -1 && index < _editorInfos.Count ? _editorInfos[index] : null;
+        }
+
         private void NewActionButton_Click(object sender, RoutedEventArgs e)
         {
             if (CharacterList.SelectedIndex < 0) return;
 
             var newAction = new ActionInfo { Name = $"new action {_actions.Count}" };
             _actions.Add(newAction);
+            _actionAnims.Add(new List<BitmapImage>());
 
-            var newEditorInfo = new EditorInfo { TexturePath = $"Textures/{CurrentCharacter().Name}/{newAction.Name}/" };
+            var newEditorInfo = new EditorInfo { TexturePath = $"../../Textures/{CurrentCharacter().Name}/{newAction.Name}" };
+            _editorInfos.Add(newEditorInfo);
+
+            Directory.CreateDirectory(newEditorInfo.TexturePath);
 
             CurrentActionDropdown.Items.Add(new ComboBoxItem().Content = newAction.Name);
             CurrentActionDropdown.SelectedIndex = CurrentActionDropdown.Items.Count - 1;
@@ -209,6 +226,7 @@ namespace ActionBuilder
 
         private void HurtboxButton_Click(object sender, RoutedEventArgs e) => _boxPlaceMode = 1;
 
+        // action dropdown selection changed
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CurrentAction() == null) return;
@@ -236,10 +254,19 @@ namespace ActionBuilder
         {
             if (CurrentAction() == null || e.Key != Key.Enter) return;
 
+            var oldName = CurrentAction().Name;
+            var selectedIndex = CurrentActionDropdown.SelectedIndex;
+
             CurrentAction().Name = NameTextBox.Text;
             UpdateActionNames();
+            UpdatePaths();
+
+            CurrentActionDropdown.SelectedIndex = selectedIndex;
+
+            Directory.Move($"../../Textures/{CurrentCharacter().Name}/{oldName}", $"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}");
         }
 
+        // character selection changed
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CharacterList.SelectedIndex < 0) return;
@@ -268,7 +295,7 @@ namespace ActionBuilder
 
             _actionAnims.Clear();
 
-            if (_loadedFromNew == false)
+            if (!_loadedFromNew)
                 LoadActions(CurrentCharacter().Name);
             else
                 _loadedFromNew = true;
@@ -276,7 +303,7 @@ namespace ActionBuilder
             for (var i = 0; i < _actions.Count; ++i)
             {
                 _actionAnims.Add(new List<BitmapImage>());
-                foreach (var file in Directory.GetFiles($"../../Textures/{CurrentCharacter().Name}/"))
+                foreach (var file in Directory.GetFiles($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}/"))
                 {
                     var tempImg = new BitmapImage();
                     tempImg.BeginInit();
@@ -285,6 +312,10 @@ namespace ActionBuilder
                     _actionAnims[i].Add(tempImg);
                 }
             }
+
+            if (_actionAnims.Count <= 0) return;
+            if (_actionAnims.Count <= CurrentActionDropdown.SelectedIndex) return;
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count <= 0) return;
 
             CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][0];
         }
@@ -323,6 +354,7 @@ namespace ActionBuilder
             var oldName = CurrentCharacter().Name;
             CurrentCharacter().Name = CharacterNameTextBox.Text;
             UpdateCharacterNames();
+            UpdatePaths();
 
             var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
             var filepath = $"../../Characters/{oldName}.json";
@@ -341,7 +373,6 @@ namespace ActionBuilder
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            
             if (CurrentActionDropdown.SelectedIndex < 0 || FrameSlider.Value > CurrentAction().FrameCount ||
                 CurrentActionDropdown.SelectedIndex >= _actionAnims.Count) return;
 
@@ -773,6 +804,35 @@ namespace ActionBuilder
                 default:
                     return ref _hitboxes;
             }
+        }
+
+        private void ImportSpriteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpeg;*.bmp)|*.png;*.jpeg;*.bmp|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+
+            };
+            if (openFileDialog.ShowDialog() != true) return;
+
+            //if (File.Exists($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png"))
+            File.Delete($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
+            File.Copy(openFileDialog.FileName, $"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
+
+            var tempImg = new BitmapImage();
+            tempImg.BeginInit();
+            tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", UriKind.Absolute);
+            tempImg.EndInit();
+
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count <= (int) FrameSlider.Value)
+                for (var i = 0; i <= (int) FrameSlider.Value; i++)
+                    _actionAnims[CurrentActionDropdown.SelectedIndex].Add(new BitmapImage());
+            _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] = tempImg;
+
+            if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
+                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value];
+
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)

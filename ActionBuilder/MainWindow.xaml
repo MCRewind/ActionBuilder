@@ -20,6 +20,7 @@
             <Button x:Name="SaveButton"         Content="Save Action"   HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Click="SaveButton_Click" Width="112"/>
             <ComboBox x:Name="CurrentActionDropdown" HorizontalAlignment="Left" Margin="10,147,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="ComboBox_SelectionChanged"/>
             <ListBox x:Name="CharacterList" HorizontalAlignment="Left" Height="100" Margin="10,42,0,0" VerticalAlignment="Top" Width="112" SelectionChanged="ListBox_SelectionChanged"/>
+            <Button x:Name="ImportSpriteButton" Content="Import Sprite" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="112" Click="ImportSpriteButton_Click"/>
         </Grid>
 
         <Grid Name="EditGrid" Margin="147,10,263,211" VerticalAlignment="Stretch"                     
@@ -120,8 +121,6 @@
                 <TextBlock x:Name="BoxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,-60,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101"/>
 
             </Grid>
-
- 
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">
