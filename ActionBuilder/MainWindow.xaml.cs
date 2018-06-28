@@ -38,7 +38,7 @@ namespace ActionBuilder
         private readonly SolidColorBrush _hitOverBrush;
 
         private CharacterInfo _lastSelectedCharacter;
-        private Point _mouseDownPos;
+        private IntCouple _mouseDownPos;
         private IntCouple _currentBoxPos = new IntCouple(0, 0);
 
         private bool _loadedFromNew;
@@ -802,7 +802,7 @@ namespace ActionBuilder
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            _mouseDownPos = e.GetPosition(BoxCanvas);
+            _mouseDownPos = new IntCouple((int) e.GetPosition(BoxCanvas).X, (int) e.GetPosition(BoxCanvas).Y);
 
             if (_boxPlaceMode <= -1) return;
             
@@ -847,8 +847,8 @@ namespace ActionBuilder
 
             //currentBoxPos.Y = Math.Round(mouseDownPos.Y / gridSize) * gridSize;
             //currentBoxPos.X = Math.Round(mouseDownPos.X / gridSize) * gridSize;
-            _currentBoxPos.X = (int) _mouseDownPos.X;
-            _currentBoxPos.Y = (int) _mouseDownPos.Y;
+            _currentBoxPos.X =  _mouseDownPos.X;
+            _currentBoxPos.Y =  _mouseDownPos.Y;
 
             CurrentBoxList().Last().Box.SetPos(_currentBoxPos.X, _currentBoxPos.Y);
 
@@ -858,8 +858,8 @@ namespace ActionBuilder
             BoxKbStrengthText.Text = CurrentBoxList().Last().Box.KnockbackStrength.ToString();
 
             // Initial placement of the drag selection box.         
-            Canvas.SetLeft(CurrentBoxList().Last().Rect, _currentBoxPos.X);
-            Canvas.SetTop(CurrentBoxList().Last().Rect, _currentBoxPos.Y);
+            Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
+            Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
             //Canvas.SetLeft(CurrentBoxList().Last().Rect, Math.Round((_currentBoxPos.X) / GridSize) * GridSize);
             //Canvas.SetTop(CurrentBoxList().Last().Rect, Math.Round((_currentBoxPos.Y) / GridSize) * GridSize);
             // Make the drag selection box visible.
@@ -903,8 +903,8 @@ namespace ActionBuilder
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
-            var mousePos = e.GetPosition(BoxCanvas);
-
+            var mousePos = new IntCouple((int) e.GetPosition(BoxCanvas).X, (int) e.GetPosition(BoxCanvas).Y);
+            
             if (_boxPlaceMode <= -1) return;
             if (!_mouseDown) return;
             if (_boxPlaceMode == 0)
@@ -912,33 +912,38 @@ namespace ActionBuilder
                 else if (_boxPlaceMode == 1)
                     if (_hurtboxes.Count == _currentBoxCount) return;
 
+
+            Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
+            Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
+            CurrentBoxList().Last().Box.SetPos(_mouseDownPos.X, _mouseDownPos.Y);
+            BoxXText.Text = CurrentBoxList().Last().Box.X.ToString();
+            BoxYText.Text = CurrentBoxList().Last().Box.Y.ToString();
+            CurrentBoxList().Last().Rect.Width = Math.Abs(mousePos.X - _mouseDownPos.X);
+            CurrentBoxList().Last().Rect.Height = Math.Abs(mousePos.Y - _mouseDownPos.Y);
+
             // When the mouse is held down, reposition the drag selection box
-            if (_mouseDownPos.X < mousePos.X)
+            if (mousePos.X < _mouseDownPos.X)
             {
-                Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
-                //CurrentBoxList().Last().Rect.Width = Math.Round((mousePos.X - _mouseDownPos.X) / GridSize) * GridSize;
-                CurrentBoxList().Last().Rect.Width = mousePos.X - _mouseDownPos.X;
-            }
-            else
-            {
-                Canvas.SetLeft(CurrentBoxList().Last().Rect, mousePos.X);
-                //CurrentBoxList().Last().Rect.Width = Math.Round((_mouseDownPos.X - mousePos.X) / GridSize) * GridSize;
-                CurrentBoxList().Last().Rect.Width = _mouseDownPos.X - mousePos.X;
-            }
+                Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X - CurrentBoxList().Last().Rect.Width);
 
-            if (_mouseDownPos.Y < mousePos.Y)
-            {
-                Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
-                //CurrentBoxList().Last().Rect.Height = Math.Round((mousePos.Y - _mouseDownPos.Y) / GridSize) * GridSize;
-                CurrentBoxList().Last().Rect.Height = mousePos.Y - _mouseDownPos.Y;
-            }
-            else
-            {
-                Canvas.SetTop(CurrentBoxList().Last().Rect, mousePos.Y);
-                //CurrentBoxList().Last().Rect.Height = Math.Round((_mouseDownPos.Y - mousePos.Y) / GridSize) * GridSize;
-                CurrentBoxList().Last().Rect.Height = _mouseDownPos.Y - mousePos.Y;
-            }
+                CurrentBoxList().Last().Box.X = _mouseDownPos.X - (int) CurrentBoxList().Last().Rect.Width;
 
+                CurrentBoxList().Last().Rect.Width = Math.Abs(mousePos.X - _mouseDownPos.X);
+
+                BoxXText.Text = CurrentBoxList().Last().Box.X.ToString();
+            }
+           
+            if (mousePos.Y < _mouseDownPos.Y)
+            {
+                Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y - CurrentBoxList().Last().Rect.Height);
+
+                CurrentBoxList().Last().Box.Y = _mouseDownPos.Y - (int)CurrentBoxList().Last().Rect.Height;
+                
+                CurrentBoxList().Last().Rect.Height = Math.Abs(mousePos.Y - _mouseDownPos.Y);
+
+                BoxYText.Text = CurrentBoxList().Last().Box.Y.ToString();
+            }
+          
             CurrentBoxList().Last().Box.SetDims((int) CurrentBoxList().Last().Rect.Width, (int) CurrentBoxList().Last().Rect.Height);
             BoxWidthText.Text = CurrentBoxList().Last().Box.Width.ToString();
             BoxHeightText.Text = CurrentBoxList().Last().Box.Height.ToString();

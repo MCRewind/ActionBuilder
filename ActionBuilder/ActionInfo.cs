@@ -37,10 +37,14 @@ namespace ActionBuilder
             Hurtboxes = new List<List<Box>>();
         }
 
+        [DataContract]
         public class Box
         {
+            [DataMember]
             public Vector2 KnockbackAngle;
+            [DataMember]
             public double Damage, KnockbackStrength;
+            [DataMember]
             public int Lifespan, X, Y, Width, Height;
 
             public Box(int x, int y, int width, int height, double damage, double knockbackStrength, Vector2 knockbackAngle, int lifespan)
