@@ -18,6 +18,7 @@ using System.Windows.Media.Animation;
 using MahApps.Metro.Controls;
 using static ActionBuilder.ActionInfo;
 using Microsoft.Win32;
+using Newtonsoft.Json;
 
 namespace ActionBuilder
 {
@@ -158,8 +159,6 @@ namespace ActionBuilder
 
         private void LoadActions(string character)
         {
-            var ser = new DataContractJsonSerializer(typeof(ActionInfo));
-
             if (!Directory.Exists($"../../Actions/{character}/"))
             {
                 try
@@ -174,8 +173,10 @@ namespace ActionBuilder
             }
 
             foreach (var file in Directory.GetFiles($"../../Actions/{character}/"))
-                using (var sr = new StreamReader(file))
-                    _actions.Add((ActionInfo) ser.ReadObject(sr.BaseStream));
+            {
+                var contents = File.ReadAllText(file);
+                _actions.Add(JsonConvert.DeserializeObject<ActionInfo>(contents));
+            }
 
             foreach (var action in _actions)
             {
@@ -194,13 +195,13 @@ namespace ActionBuilder
 
         private void LoadCharacters(string path)
         {
-            var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
-
             if (!Directory.Exists(path)) return;
 
             foreach (var file in Directory.GetFiles(path))
-                using (var sr = new StreamReader(file))
-                    _characters.Add((CharacterInfo)ser.ReadObject(sr.BaseStream));
+            {
+                var contents = File.ReadAllText(file);
+                _characters.Add(JsonConvert.DeserializeObject<CharacterInfo>(contents));
+            }
 
             foreach (var character in _characters)
                 CharacterList.Items.Add(new ListBoxItem().Content = character.Name);
@@ -278,14 +279,9 @@ namespace ActionBuilder
 
             var filepath = $"../../Actions/{CurrentCharacter().Name}/{CurrentAction().Name}.json";
 
-            using (var outStream = new MemoryStream())
-            {
-                var ser = new DataContractJsonSerializer(typeof(ActionInfo));
+            var actionJson = JsonConvert.SerializeObject(CurrentAction(), Formatting.Indented);
 
-                ser.WriteObject(outStream, CurrentAction());
-
-                JsonUtils.WriteToJson(filepath, outStream);
-            }
+            JsonUtils.WriteToJson(filepath, actionJson);
         }
 
         private void HitboxButton_Click(object sender, RoutedEventArgs e) => _boxPlaceMode = 0;
@@ -354,13 +350,6 @@ namespace ActionBuilder
         {
             if (CharacterList.SelectedIndex < 0) return;
 
-            using (var outStream = new MemoryStream())
-            {
-                var ser = new DataContractJsonSerializer(typeof(string));
-
-                ser.WriteObject(outStream, CurrentCharacter().Name);
-            }
-
             try
             {
                 File.WriteAllText("../../Editor/lastCharacter.json", CurrentCharacter().Name);
@@ -423,14 +412,10 @@ namespace ActionBuilder
             CharacterList.SelectedIndex = CharacterList.Items.Count - 1;
 
             var filepath = $"../../Characters/{CurrentCharacter().Name}.json";
-            var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
 
             // write character file
-            using (var outStream = new MemoryStream())
-            {
-                ser.WriteObject(outStream, CurrentCharacter()); 
-                JsonUtils.WriteToJson(filepath, outStream);
-            }
+            var jsonString = JsonConvert.SerializeObject(CurrentCharacter(), Formatting.Indented);
+            JsonUtils.WriteToJson(filepath, jsonString);
 
             try
             {
@@ -455,15 +440,11 @@ namespace ActionBuilder
             UpdateCharacterNames();
             UpdatePaths();
 
-            var ser = new DataContractJsonSerializer(typeof(CharacterInfo));
             var filepath = $"../../Characters/{oldName}.json";
 
             // write charactr file
-            using (var outStream = new MemoryStream())
-            {
-                ser.WriteObject(outStream, CurrentCharacter());
-                JsonUtils.WriteToJson(filepath, outStream);
-            }
+            var jsonString = JsonConvert.SerializeObject(CurrentCharacter(), Formatting.Indented);
+            JsonUtils.WriteToJson(filepath, jsonString);
 
             try
             {
@@ -476,7 +457,7 @@ namespace ActionBuilder
                 Console.WriteLine(exception);
                 throw;
             }
-           }
+        }
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

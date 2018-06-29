@@ -66,7 +66,7 @@ namespace ActionBuilderTests
             var serializedAction = JsonConvert.SerializeObject(action, Formatting.Indented);
             var deserializedAction = JsonConvert.DeserializeObject<ActionInfo>(serializedAction);
 
-            deserializedAction.Should().Be(action);
+            action.Should().Be(deserializedAction);
 
         }
     }

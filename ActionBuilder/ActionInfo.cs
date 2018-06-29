@@ -137,7 +137,7 @@ namespace ActionBuilder
             return string.Equals(Name, other.Name) 
                    && Equals(_frames, other._frames) 
                    && Type == other.Type 
-                   && _infinite.Equals(other._infinite) 
+                   && _infinite.Equals(other._infinite)
                    && Hitboxes.SequenceEqual(other.Hitboxes)
                    && Hurtboxes.SequenceEqual(other.Hurtboxes);
         }

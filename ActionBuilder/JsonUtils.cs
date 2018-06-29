@@ -15,6 +15,14 @@ namespace ActionBuilder
             return result;
         }
 
+        public static void WriteToJson(string path, string contents)
+        {
+            if (!File.Exists(path))
+                Directory.CreateDirectory(Directory.GetParent(path).FullName);
+
+            File.WriteAllText(path, contents);
+        }
+
         public static void WriteToJson(string path, Stream contents)
         {
             if (!File.Exists(path))
