@@ -138,8 +138,8 @@ namespace ActionBuilder
             InitializeComponent();
 
             LoadCharacters("../../Characters/");
-            if (File.Exists("../../Editor/lastCharacter.json"))
-                LoadActions(JsonUtils.ReadFromJson("../../Editor/lastCharacter.json"));
+            //if (File.Exists("../../Editor/lastCharacter.json"))
+               // LoadActions(JsonUtils.ReadFromJson("../../Editor/lastCharacter.json"));
 
             EditGridZoomBorder.MouseDown += EditGridZoomBorderMouseDown;
             EditGridZoomBorder.MouseWheel += EditGridZoomBorderMouseWheel;
