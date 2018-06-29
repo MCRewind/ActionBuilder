@@ -108,7 +108,7 @@ namespace ActionBuilder
 
         public void InsertFrame(int index)
         {
-            if (_frames.Count <= 0)
+            if (_frames.Count == 0)
                 _frames.Add(FrameType.Startup);
             else if (index > _frames.Count)
                 _frames.Add(_frames[_frames.Count - 1]);
@@ -120,7 +120,7 @@ namespace ActionBuilder
 
         public void RemoveFrame(int index)
         {
-            if (_frames.Count <= 0) return;
+            if (_frames.Count == 0) return;
 
             if (index > _frames.Count)
                 _frames.RemoveAt(_frames.Count - 1);

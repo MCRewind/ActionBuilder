@@ -559,7 +559,7 @@ namespace ActionBuilder
         {
             if (CurrentAction() == null) return;
 
-            CurrentAction().InsertFrame((int)FrameSlider.Value);
+            CurrentAction().InsertFrame((int)FrameSlider.Value + 1);
             CurrentAction().Hitboxes.Insert((int)FrameSlider.Value, new List<Box>());
             CurrentAction().Hurtboxes.Insert((int)FrameSlider.Value, new List<Box>());
 
