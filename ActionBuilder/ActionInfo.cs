@@ -17,15 +17,20 @@ namespace ActionBuilder
 
         public string Name;
 
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty (ItemConverterType = typeof(StringEnumConverter))]
         private List<FrameType> _frames; 
 
+        [JsonIgnore]
         public int FrameCount => _frames.Count;
 
         public Types.ActionType Type;
 
+        [JsonProperty]
         private Vector2 _infinite;
+
+        [JsonIgnore]
         public float InfiniteRangeMin { get => _infinite.X; set => _infinite.X = value; }
+        [JsonIgnore]
         public float InfiniteRangeMax { get => _infinite.Y; set => _infinite.Y = value; }
         
         public ActionInfo()

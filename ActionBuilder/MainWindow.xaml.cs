@@ -175,7 +175,9 @@ namespace ActionBuilder
             foreach (var file in Directory.GetFiles($"../../Actions/{character}/"))
             {
                 var contents = File.ReadAllText(file);
-                _actions.Add(JsonConvert.DeserializeObject<ActionInfo>(contents));
+                var action = JsonConvert.DeserializeObject<ActionInfo>(contents);
+                Console.WriteLine($"FRAME COUNT{action.FrameCount}");
+                _actions.Add(action);
             }
 
             foreach (var action in _actions)
