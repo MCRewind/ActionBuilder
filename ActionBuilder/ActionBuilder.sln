@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionBuilder", "ActionBuilder.csproj", "{DE9D07AD-5E69-49A3-B1F5-C86DFC4A1EA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionBuilderTests", "..\ActionBuilderTests\ActionBuilderTests.csproj", "{0ED44225-7FD7-4BE5-8269-A50FC5A789B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DE9D07AD-5E69-49A3-B1F5-C86DFC4A1EA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE9D07AD-5E69-49A3-B1F5-C86DFC4A1EA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE9D07AD-5E69-49A3-B1F5-C86DFC4A1EA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ED44225-7FD7-4BE5-8269-A50FC5A789B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ED44225-7FD7-4BE5-8269-A50FC5A789B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ED44225-7FD7-4BE5-8269-A50FC5A789B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ED44225-7FD7-4BE5-8269-A50FC5A789B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
