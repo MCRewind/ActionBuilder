@@ -13,8 +13,8 @@
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"/>
-            <Button x:Name="HitboxButton"       Content="Hitbox"        HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Click="HitboxButton_Click" Width="112"/>
-            <Button x:Name="HurtboxButton"      Content="Hurtbox"       HorizontalAlignment="Left" Margin="10,285,0,0" VerticalAlignment="Top" Click="HurtboxButton_Click" Width="112"/>
+            <ToggleButton x:Name="HitboxButton"       Content="Hitbox"        HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Click="HitboxButton_Click" Width="112" Background="#f73885" BorderBrush="Black" BorderThickness="2" MouseEnter="HitboxButton_OnMouseEnter" MouseLeave="HitboxButton_OnMouseLeave" Foreground="Black"/>
+            <ToggleButton x:Name="HurtboxButton"      Content="Hurtbox"       HorizontalAlignment="Left" Margin="10,285,0,0" VerticalAlignment="Top" Click="HurtboxButton_Click" Width="112" Background="#43f9aa" BorderBrush="Black" BorderThickness="2" MouseEnter="HurtboxButton_OnMouseEnter" MouseLeave="HurtboxButton_OnMouseLeave" Foreground="Black"/>
             <Button x:Name="NewCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0"  VerticalAlignment="Top" Click="NewCharacterButton_Click" Width="112"/>
             <Button x:Name="NewActionButton"    Content="New Action"    HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Click="NewActionButton_Click" Width="112"/>
             <Button x:Name="SaveButton"         Content="Save Action"   HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Click="SaveButton_Click" Width="112"/>

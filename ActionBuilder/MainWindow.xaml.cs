@@ -286,9 +286,51 @@ namespace ActionBuilder
             JsonUtils.WriteToJson(filepath, actionJson);
         }
 
-        private void HitboxButton_Click(object sender, RoutedEventArgs e) => _boxPlaceMode = 0;
+        private void HitboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(140, 30, 74) };
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
 
-        private void HurtboxButton_Click(object sender, RoutedEventArgs e) => _boxPlaceMode = 1;
+            _boxPlaceMode = _boxPlaceMode == 0 ? -1 : 0;
+            HurtboxButton.IsChecked = false;
+        }
+
+        private void HurtboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(35, 132, 90) };
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+            _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
+            HitboxButton.IsChecked = false;
+        }
+
+
+        private void HitboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!HitboxButton.IsChecked.HasValue) return;
+            if (!HitboxButton.IsChecked.Value)
+                HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(193, 44, 104) };
+        }
+
+        private void HitboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!HitboxButton.IsChecked.HasValue) return;
+            if (!HitboxButton.IsChecked.Value)
+                HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+        }
+
+        private void HurtboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!HurtboxButton.IsChecked.HasValue) return;
+            if (!HurtboxButton.IsChecked.Value)
+                HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(51, 191, 130) };
+        }
+
+        private void HurtboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!HurtboxButton.IsChecked.HasValue) return;
+            if (!HurtboxButton.IsChecked.Value)
+                HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+        }
 
         // action dropdown selection changed
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -881,7 +923,7 @@ namespace ActionBuilder
             // in the other canvas are contained within mouseDownPos and 
             // mouseUpPos, for any that are, select them!
             //
-            _boxPlaceMode = -1;
+            
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
@@ -981,6 +1023,5 @@ namespace ActionBuilder
                 CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value];
 
         }
-      
     }
 }

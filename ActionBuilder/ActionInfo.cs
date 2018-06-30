@@ -23,6 +23,7 @@ namespace ActionBuilder
         [JsonIgnore]
         public int FrameCount => _frames.Count;
 
+        [JsonConverter(typeof(StringEnumConverter))]
         public Types.ActionType Type;
 
         [JsonProperty]
@@ -33,6 +34,12 @@ namespace ActionBuilder
         [JsonIgnore]
         public float InfiniteRangeMax { get => _infinite.Y; set => _infinite.Y = value; }
         
+        [JsonConstructor]
+        public ActionInfo(bool b)
+        {
+            _infinite = new Vector2(-1, -1);
+        }
+
         public ActionInfo()
         {
             _frames = new List<FrameType> { FrameType.Startup };
