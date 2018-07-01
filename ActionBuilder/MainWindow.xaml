@@ -55,8 +55,23 @@
                         </DrawingBrush>
                     </Canvas.Background>
 
-                    <Image x:Name="CurrentFrameImage" Height="258" Width="612"
-                                   RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10"/>
+                    <Canvas Name="ImageCanvas" Height="268" Width="632">
+                        <Image x:Name="CurrentFrameImage" Height="258" Width="612"
+                               RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10">
+
+                        </Image>
+
+                        <Ellipse
+                            Name="AnchorPoint"
+                            Stroke="DodgerBlue" 
+                            Fill="DeepSkyBlue"
+                            StrokeThickness="4"
+                            Opacity=".5"
+                            MouseDown="AnchorPoint_OnMouseDown"
+                            Height="15" Canvas.Left="260" Canvas.Top="53" Width="15" RenderTransformOrigin="0.5,0.5" >
+
+                        </Ellipse>
+                    </Canvas>
 
                     <Rectangle
                         x:Name="Hitbox"
@@ -143,7 +158,10 @@
             <TextBlock x:Name="InfiniteRangeText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Infinite Range:" VerticalAlignment="Top" Height="26" Width="101" FontSize="15"/>
             <ComboBox x:Name="InfiniteRangeMinDropdown" HorizontalAlignment="Left" Margin="116,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMinDropdown_SelectionChanged" Width="73" />
             <ComboBox x:Name="InfiniteRangeMaxDropdown" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMaxDropdown_SelectionChanged" Width="73" />
-            <TextBlock x:Name="toTextBlock" HorizontalAlignment="Left" Margin="194,44,0,0" TextWrapping="Wrap" Text="To" VerticalAlignment="Top" Height="23"/>
+            <TextBlock x:Name="ToTextBlock" HorizontalAlignment="Left" Margin="194,44,0,0" TextWrapping="Wrap" Text="To" VerticalAlignment="Top" Height="23"/>
+            <TextBlock x:Name="AnchorPosBlock" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Anchor Position:" VerticalAlignment="Top" FontSize="15"/>
+            <TextBox x:Name="AnchorXTextBox" HorizontalAlignment="Left" Height="23" Margin="130,72,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="59" KeyDown="AnchorXTextBox_KeyDown"/>
+            <TextBox x:Name="AnchorYTextBox" HorizontalAlignment="Left" Height="23" Margin="194,72,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="56" KeyDown="AnchorYTextBox_KeyDown"/>
 
         </Grid>
     </Grid>

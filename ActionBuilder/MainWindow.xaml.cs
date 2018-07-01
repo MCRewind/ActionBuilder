@@ -39,7 +39,7 @@ namespace ActionBuilder
         private readonly SolidColorBrush _hitOverBrush;
 
         private CharacterInfo _lastSelectedCharacter;
-        private IntCouple _mouseDownPos;
+        private IntCouple _mouseDownPos, _anchoredMouseDownPos;
         private IntCouple _currentBoxPos = new IntCouple(0, 0);
 
         private bool _loadedFromNew;
@@ -155,6 +155,11 @@ namespace ActionBuilder
             BoxKbAngleSlider.IsSnapToTickEnabled = true;
 
             ActionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
+
+            Canvas.SetLeft(AnchorPoint, ImageCanvas.Width / 2);
+            Canvas.SetTop(AnchorPoint, ImageCanvas.Height / 2);
+            AnchorXTextBox.Text = Canvas.GetLeft(AnchorPoint).ToString();
+            AnchorYTextBox.Text = Canvas.GetTop(AnchorPoint).ToString();
         }
 
         private void LoadActions(string character)
@@ -617,7 +622,7 @@ namespace ActionBuilder
 
         private void EditGridZoomBorderMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Console.WriteLine($"{EditGridZoomBorder.ZoomX}");
+            Console.WriteLine($@"{EditGridZoomBorder.ZoomX}");
             EditCanvas.Height = 1080; 
             EditCanvas.Width = 1920; 
         }
@@ -828,6 +833,7 @@ namespace ActionBuilder
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _mouseDownPos = new IntCouple((int) e.GetPosition(BoxCanvas).X, (int) e.GetPosition(BoxCanvas).Y);
+            _anchoredMouseDownPos = new IntCouple((int)e.GetPosition(AnchorPoint).X, (int)e.GetPosition(AnchorPoint).Y);
 
             if (_boxPlaceMode <= -1) return;
             
@@ -875,7 +881,8 @@ namespace ActionBuilder
             _currentBoxPos.X =  _mouseDownPos.X;
             _currentBoxPos.Y =  _mouseDownPos.Y;
 
-            CurrentBoxList().Last().Box.SetPos(_currentBoxPos.X, _currentBoxPos.Y);
+            // set box x to ANCHORED position, not render position
+            CurrentBoxList().Last().Box.SetPos(_anchoredMouseDownPos.X, _anchoredMouseDownPos.Y);
 
             BoxXText.Text = CurrentBoxList().Last().Box.X.ToString();
             BoxYText.Text = CurrentBoxList().Last().Box.Y.ToString();
@@ -929,7 +936,8 @@ namespace ActionBuilder
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             var mousePos = new IntCouple((int) e.GetPosition(BoxCanvas).X, (int) e.GetPosition(BoxCanvas).Y);
-            
+            var anchoredMousePos = new IntCouple((int)e.GetPosition(AnchorPoint).X, (int)e.GetPosition(AnchorPoint).Y);
+
             if (_boxPlaceMode <= -1) return;
             if (!_mouseDown) return;
             if (_boxPlaceMode == 0)
@@ -940,7 +948,8 @@ namespace ActionBuilder
 
             Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
             Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y);
-            CurrentBoxList().Last().Box.SetPos(_mouseDownPos.X, _mouseDownPos.Y);
+            // set position to ANCHORED position not rendered position
+            CurrentBoxList().Last().Box.SetPos(_anchoredMouseDownPos.X, _anchoredMouseDownPos.Y);
             BoxXText.Text = CurrentBoxList().Last().Box.X.ToString();
             BoxYText.Text = CurrentBoxList().Last().Box.Y.ToString();
             CurrentBoxList().Last().Rect.Width = Math.Abs(mousePos.X - _mouseDownPos.X);
@@ -951,7 +960,7 @@ namespace ActionBuilder
             {
                 Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X - CurrentBoxList().Last().Rect.Width);
 
-                CurrentBoxList().Last().Box.X = _mouseDownPos.X - (int) CurrentBoxList().Last().Rect.Width;
+                CurrentBoxList().Last().Box.X = _anchoredMouseDownPos.X - (int) CurrentBoxList().Last().Rect.Width;
 
                 CurrentBoxList().Last().Rect.Width = Math.Abs(mousePos.X - _mouseDownPos.X);
 
@@ -962,7 +971,7 @@ namespace ActionBuilder
             {
                 Canvas.SetTop(CurrentBoxList().Last().Rect, _mouseDownPos.Y - CurrentBoxList().Last().Rect.Height);
 
-                CurrentBoxList().Last().Box.Y = _mouseDownPos.Y - (int)CurrentBoxList().Last().Rect.Height;
+                CurrentBoxList().Last().Box.Y = _anchoredMouseDownPos.Y - (int)CurrentBoxList().Last().Rect.Height;
                 
                 CurrentBoxList().Last().Rect.Height = Math.Abs(mousePos.Y - _mouseDownPos.Y);
 
@@ -1022,6 +1031,42 @@ namespace ActionBuilder
             if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
                 CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value];
 
+        }
+
+        private void AnchorPoint_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void AnchorXTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    if (_selectedBox != -1)
+                    {
+                        if (int.TryParse(AnchorXTextBox.Text, out var x))
+                        {
+                            Canvas.SetLeft(AnchorPoint, x);
+                        }
+                    }
+
+                    break;
+            }
+        }
+
+        private void AnchorYTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    if (int.TryParse(AnchorYTextBox.Text, out var y))
+                    {
+                        Canvas.SetTop(AnchorPoint, y);
+                    }
+
+                break;
+            }
         }
     }
 }
