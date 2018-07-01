@@ -155,11 +155,7 @@ namespace ActionBuilder
             BoxKbAngleSlider.IsSnapToTickEnabled = true;
 
             ActionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
-
-            Canvas.SetLeft(AnchorPoint, ImageCanvas.Width / 2);
-            Canvas.SetTop(AnchorPoint, ImageCanvas.Height / 2);
-            AnchorXTextBox.Text = Canvas.GetLeft(AnchorPoint).ToString();
-            AnchorYTextBox.Text = Canvas.GetTop(AnchorPoint).ToString();
+            
         }
 
         private void LoadActions(string character)
@@ -348,6 +344,10 @@ namespace ActionBuilder
             InfiniteRangeMinDropdown.Items.Add("None");
             InfiniteRangeMaxDropdown.Items.Clear();
             InfiniteRangeMaxDropdown.Items.Add("None");
+            Canvas.SetLeft(AnchorPoint, CurrentAction().Anchor.X);
+            Canvas.SetTop(AnchorPoint, CurrentAction().Anchor.Y);
+            AnchorXTextBox.Text = Canvas.GetLeft(AnchorPoint).ToString();
+            AnchorYTextBox.Text = Canvas.GetTop(AnchorPoint).ToString();
 
             CurrentAction().Hitboxes = new List<List<Box>>();
             CurrentAction().Hurtboxes = new List<List<Box>>();
@@ -1060,7 +1060,10 @@ namespace ActionBuilder
 
                             Canvas.SetLeft(AnchorPoint, x);
 
-                            BoxXText.Text = SelectedBox().Box.X.ToString();
+                            CurrentAction().Anchor.X = x;
+
+                            if (_selectedBox > 0)
+                                BoxXText.Text = SelectedBox().Box.X.ToString();
                         }
                     }
 
@@ -1087,8 +1090,10 @@ namespace ActionBuilder
                         }
 
                         Canvas.SetTop(AnchorPoint, y);
+                        CurrentAction().Anchor.Y = y;
 
-                        BoxYText.Text = SelectedBox().Box.Y.ToString();
+                        if (_selectedBox > 0)
+                            BoxYText.Text = SelectedBox().Box.Y.ToString();
                     }
             
                     break;

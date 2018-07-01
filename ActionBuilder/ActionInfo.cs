@@ -33,7 +33,9 @@ namespace ActionBuilder
         public float InfiniteRangeMin { get => _infinite.X; set => _infinite.X = value; }
         [JsonIgnore]
         public float InfiniteRangeMax { get => _infinite.Y; set => _infinite.Y = value; }
-        
+
+        public Vector2 Anchor;
+
         [JsonConstructor]
         public ActionInfo(bool b)
         {
@@ -44,6 +46,7 @@ namespace ActionBuilder
         {
             _frames = new List<FrameType> { FrameType.Startup };
             _infinite = new Vector2(-1, -1);
+            Anchor = new Vector2(0, 0);
         }
 
         public class Box : IEquatable<Box>
