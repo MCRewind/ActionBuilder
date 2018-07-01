@@ -1047,7 +1047,20 @@ namespace ActionBuilder
                     {
                         if (int.TryParse(AnchorXTextBox.Text, out var x))
                         {
+                            var oldX = Canvas.GetLeft(AnchorPoint);
+                            var difference = x - oldX;
+                            foreach (var box in _hitboxes)
+                            {
+                                box.Box.X += (int) difference;
+                            }
+                            foreach (var box in _hurtboxes)
+                            {
+                                box.Box.X += (int)difference;
+                            }
+
                             Canvas.SetLeft(AnchorPoint, x);
+
+                            BoxXText.Text = SelectedBox().Box.X.ToString();
                         }
                     }
 
@@ -1062,10 +1075,23 @@ namespace ActionBuilder
                 case Key.Enter:
                     if (int.TryParse(AnchorYTextBox.Text, out var y))
                     {
-                        Canvas.SetTop(AnchorPoint, y);
-                    }
+                        var oldY = Canvas.GetTop(AnchorPoint);
+                        var difference = y - oldY;
+                        foreach (var box in _hitboxes)
+                        {
+                            box.Box.Y += (int) difference;
+                        }
+                        foreach (var box in _hurtboxes)
+                        {
+                            box.Box.Y += (int) difference;
+                        }
 
-                break;
+                        Canvas.SetTop(AnchorPoint, y);
+
+                        BoxYText.Text = SelectedBox().Box.Y.ToString();
+                    }
+            
+                    break;
             }
         }
     }

@@ -56,7 +56,7 @@
                     </Canvas.Background>
 
                     <Canvas Name="ImageCanvas" Height="268" Width="632">
-                        <Image x:Name="CurrentFrameImage" Height="258" Width="612"
+                        <Image x:Name="CurrentFrameImage" Height="248" Width="612"
                                RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10">
 
                         </Image>
@@ -72,6 +72,8 @@
 
                         </Ellipse>
                     </Canvas>
+
+                    <Canvas Name="BoxCanvas" Height="268" Width="632"/>
 
                     <Rectangle
                         x:Name="Hitbox"
@@ -91,9 +93,7 @@
                         StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
                     />
 
-                    <Canvas Name="BoxCanvas"  Margin="10,0,10,10">
 
-                    </Canvas>
                 </Canvas>
             </paz:ZoomBorder>
 
