@@ -110,7 +110,7 @@
             <TextBox x:Name="CharacterNameTextBox" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="CharacterNameTextBox_KeyDown"/>
 
             <TextBlock x:Name="FrameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
-            <ComboBox x:Name="FrameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" />
+            <ComboBox x:Name="FrameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="FrameTypeDropdown_SelectionChanged" />
             <Grid HorizontalAlignment="Left" Margin="10,0,0,10" Width="228" Height="186" VerticalAlignment="Bottom">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="14*"/>
@@ -154,7 +154,7 @@
 
             <Slider x:Name="FrameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="452" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="FrameSlider_ValueChanged" Margin="130,0,70,10" Height="25"/>
             <TextBlock x:Name="ActionTypeText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" Width="85" FontSize="15" Text="Action Type:"/>
-            <ComboBox x:Name="ActionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" />
+            <ComboBox x:Name="ActionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="ActionTypeDropdown_SelectionChanged" />
             <TextBlock x:Name="InfiniteRangeText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Infinite Range:" VerticalAlignment="Top" Height="26" Width="101" FontSize="15"/>
             <ComboBox x:Name="InfiniteRangeMinDropdown" HorizontalAlignment="Left" Margin="116,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMinDropdown_SelectionChanged" Width="73" />
             <ComboBox x:Name="InfiniteRangeMaxDropdown" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMaxDropdown_SelectionChanged" Width="73" />

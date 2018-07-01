@@ -340,10 +340,13 @@ namespace ActionBuilder
 
             NameTextBox.Text = CurrentAction().Name;
             FrameSlider.Maximum = CurrentAction().FrameCount;
+            ActionTypeDropdown.SelectedIndex = (int) CurrentAction().Type;
             InfiniteRangeMinDropdown.Items.Clear();
             InfiniteRangeMinDropdown.Items.Add("None");
             InfiniteRangeMaxDropdown.Items.Clear();
             InfiniteRangeMaxDropdown.Items.Add("None");
+            InfiniteRangeMinDropdown.SelectedIndex = (int) CurrentAction().InfiniteRangeMin + 1;
+            InfiniteRangeMaxDropdown.SelectedIndex = (int) CurrentAction().InfiniteRangeMax + 1;
             Canvas.SetLeft(AnchorPoint, CurrentAction().Anchor.X);
             Canvas.SetTop(AnchorPoint, CurrentAction().Anchor.Y);
             AnchorXTextBox.Text = Canvas.GetLeft(AnchorPoint).ToString();
@@ -512,6 +515,8 @@ namespace ActionBuilder
         {
             if (CurrentActionDropdown.SelectedIndex < 0 || FrameSlider.Value > CurrentAction().FrameCount ||
                 CurrentActionDropdown.SelectedIndex >= _actionAnims.Count) return;
+
+            FrameTypeDropdown.SelectedIndex = (int) CurrentAction().Type;
 
             CurrentAction().Hitboxes[_previousFrame].Clear();
             CurrentAction().Hurtboxes[_previousFrame].Clear();    
@@ -828,7 +833,7 @@ namespace ActionBuilder
             => CurrentAction().InfiniteRangeMin = InfiniteRangeMinDropdown.SelectedIndex - 1;
 
         private void InfiniteRangeMaxDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
-            => CurrentAction().InfiniteRangeMax = InfiniteRangeMaxDropdown.SelectedIndex;
+            => CurrentAction().InfiniteRangeMax = InfiniteRangeMaxDropdown.SelectedIndex - 1;
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -1037,6 +1042,12 @@ namespace ActionBuilder
         {
             //throw new NotImplementedException();
         }
+
+        private void ActionTypeDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => CurrentAction().Type = (Types.ActionType) ActionTypeDropdown.SelectedIndex;
+
+        private void FrameTypeDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            => CurrentAction().SetFrameType((int) FrameSlider.Value, (FrameType) FrameTypeDropdown.SelectedIndex);
 
         private void AnchorXTextBox_KeyDown(object sender, KeyEventArgs e)
         {

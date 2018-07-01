@@ -13,7 +13,7 @@ namespace ActionBuilder
 {
     public class ActionInfo : IEquatable<ActionInfo>
     {
-        enum FrameType { Startup, Active, Recovery, Buffer }
+        public enum FrameType { Startup, Active, Recovery, Buffer }
 
         public string Name;
 
@@ -120,6 +120,16 @@ namespace ActionBuilder
         }
 
         public List<List<Box>> Hitboxes, Hurtboxes;
+
+        public void SetFrameType(int index, FrameType type)
+        {
+            if (_frames.Count == 0) return;
+            if (index > _frames.Count) return;
+            if (index < 0) return;
+
+            _frames[index] = type;
+        }
+        
 
         public void InsertFrame(int index)
         {
