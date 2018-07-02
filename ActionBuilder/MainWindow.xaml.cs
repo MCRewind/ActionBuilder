@@ -27,6 +27,7 @@ namespace ActionBuilder
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
+        #region VARIABLES
         private readonly List<CharacterInfo> _characters;
         private readonly List<ActionInfo> _actions;
         private readonly List<EditorInfo> _editorInfos;
@@ -75,6 +76,7 @@ namespace ActionBuilder
                 Rect = r;
             }
         }
+#endregion
 
         public MainWindow()
         {
@@ -308,8 +310,7 @@ namespace ActionBuilder
             _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
             HitboxButton.IsChecked = false;
         }
-
-
+        
         private void HitboxButton_OnMouseEnter(object sender, MouseEventArgs e)
         {
             if (!HitboxButton.IsChecked.HasValue) return;
@@ -591,8 +592,10 @@ namespace ActionBuilder
                 _hurtboxes.Add(new BoxInfo(box, r));
             }
 
-            if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
-                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value];
+            CurrentFrameImage.Source = 
+                FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count
+                    ? _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] 
+                    : null;
 
             _previousFrame = (int)FrameSlider.Value;
 
@@ -620,6 +623,12 @@ namespace ActionBuilder
             CurrentAction().RemoveFrame((int) FrameSlider.Value);
             CurrentAction().RemoveBoxList((int) FrameSlider.Value, 0);
             CurrentAction().RemoveBoxList((int) FrameSlider.Value, 1);
+
+            CurrentFrameImage.Source = null;
+            _currentBoxCount = 0;
+            _hitboxes.Clear();
+            _hurtboxes.Clear();
+            BoxCanvas.Children.Clear();
 
             UpdateUiState();
         }
@@ -1071,7 +1080,7 @@ namespace ActionBuilder
 
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Image files (*.png;*.jpeg;*.bmp)|*.png;*.jpeg;*.bmp|All files (*.*)|*.*",
+                Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp|All files (*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
 
             };
