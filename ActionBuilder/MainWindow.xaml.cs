@@ -451,6 +451,8 @@ namespace ActionBuilder
                     var tempImg = new BitmapImage();
                     tempImg.BeginInit();
                     tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{file}", UriKind.Absolute);
+                    tempImg.CacheOption = BitmapCacheOption.OnLoad;
+                    tempImg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
                     tempImg.EndInit();
                     var index = int.Parse(Path.GetFileNameWithoutExtension(file));
                     if (index >= _actionAnims[i].Count)
@@ -1106,6 +1108,8 @@ namespace ActionBuilder
             var tempImg = new BitmapImage();
             tempImg.BeginInit();
             tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", UriKind.Absolute);
+            tempImg.CacheOption = BitmapCacheOption.OnLoad;
+            tempImg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
             tempImg.EndInit();
 
             if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count <= (int) FrameSlider.Value)
@@ -1188,6 +1192,21 @@ namespace ActionBuilder
                     }
             
                     break;
+            }
+        }
+
+        private void ClearSpriteButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            CurrentFrameImage.Source = null;
+            _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] = new BitmapImage();
+            try
+            {
+                File.Delete($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}/{FrameSlider.Value}.png");
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
             }
         }
     }
