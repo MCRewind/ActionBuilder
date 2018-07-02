@@ -19,6 +19,7 @@ using MahApps.Metro.Controls;
 using static ActionBuilder.ActionInfo;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Path = System.IO.Path;
 
 namespace ActionBuilder
 {
@@ -451,7 +452,11 @@ namespace ActionBuilder
                     tempImg.BeginInit();
                     tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{file}", UriKind.Absolute);
                     tempImg.EndInit();
-                    _actionAnims[i].Add(tempImg);
+                    var index = int.Parse(Path.GetFileNameWithoutExtension(file));
+                    if (index >= _actionAnims[i].Count)
+                        for (var j = 0; j <= index; j++)
+                            _actionAnims[i].Add(new BitmapImage());
+                    _actionAnims[i][index] = tempImg;
                 }
             }
 
