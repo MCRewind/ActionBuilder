@@ -155,6 +155,8 @@ namespace ActionBuilder
             BoxKbAngleSlider.IsSnapToTickEnabled = true;
 
             ActionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
+
+            UpdateBoxUiState();
         }
 
         private void LoadActions(string character)
@@ -288,6 +290,8 @@ namespace ActionBuilder
 
         private void HitboxButton_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentAction().FrameCount <= 0) return;
+
             HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(140, 30, 74) };
             HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
 
@@ -297,6 +301,8 @@ namespace ActionBuilder
 
         private void HurtboxButton_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentAction().FrameCount <= 0) return;
+
             HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(35, 132, 90) };
             HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
             _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
@@ -338,23 +344,18 @@ namespace ActionBuilder
             if (CurrentAction() == null) return;
 
             NameTextBox.Text = CurrentAction().Name;
-            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1: 0;
-            if (CurrentAction().FrameCount == 0)
-            {
-                //FrameSlider.Value = 0;
-                FrameSlider.IsEnabled = false;
-            }
-            else
-            {
-                FrameSlider.IsEnabled = true;
-            }
+
+            UpdateUiState();
+
             ActionTypeDropdown.SelectedIndex = (int) CurrentAction().Type;
+
             InfiniteRangeMinDropdown.Items.Clear();
             InfiniteRangeMinDropdown.Items.Add("None");
             InfiniteRangeMaxDropdown.Items.Clear();
             InfiniteRangeMaxDropdown.Items.Add("None");
             InfiniteRangeMinDropdown.SelectedIndex = (int) CurrentAction().InfiniteRangeMin + 1;
             InfiniteRangeMaxDropdown.SelectedIndex = (int) CurrentAction().InfiniteRangeMax + 1;
+
             Canvas.SetLeft(AnchorPoint, CurrentAction().Anchor.X);
             Canvas.SetTop(AnchorPoint, CurrentAction().Anchor.Y);
             AnchorXTextBox.Text = Canvas.GetLeft(AnchorPoint).ToString();
@@ -594,6 +595,8 @@ namespace ActionBuilder
                 CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value];
 
             _previousFrame = (int)FrameSlider.Value;
+
+            UpdateBoxUiState();
         }
 
         private void PrevFrameButton_Click(object sender, RoutedEventArgs e) => --FrameSlider.Value;
@@ -618,16 +621,7 @@ namespace ActionBuilder
             CurrentAction().RemoveBoxList((int) FrameSlider.Value, 0);
             CurrentAction().RemoveBoxList((int) FrameSlider.Value, 1);
 
-            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1: 0;
-            if (CurrentAction().FrameCount == 0)
-            {
-                //FrameSlider.Value = 0;
-                FrameSlider.IsEnabled = false;
-            }
-            else
-            {
-                FrameSlider.IsEnabled = true;
-            }
+            UpdateUiState();
         }
 
         private void InsertFrameButton_Click(object sender, RoutedEventArgs e)
@@ -638,17 +632,54 @@ namespace ActionBuilder
             CurrentAction().InsertBoxList((int) FrameSlider.Value, 0);
             CurrentAction().InsertBoxList((int) FrameSlider.Value, 1);
 
-            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1: 0;
-            //FrameSlider.Minimum = (int) FrameSlider.Maximum == 1 ? 1 : 0;
+            UpdateUiState();
+        }
+
+        private void UpdateUiState()
+        {
+            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1 : 0;
             if (CurrentAction().FrameCount == 0)
             {
                 //FrameSlider.Value = 0;
                 FrameSlider.IsEnabled = false;
+                ImportSpriteButton.IsEnabled = false;
+                HitboxButton.IsEnabled = false;
+                HurtboxButton.IsEnabled = false;
+                FrameTypeDropdown.IsEnabled = false;
             }
             else
             {
                 FrameSlider.IsEnabled = true;
+                ImportSpriteButton.IsEnabled = true;
+                HitboxButton.IsEnabled = true;
+                HurtboxButton.IsEnabled = true;
+                FrameTypeDropdown.IsEnabled = true;
             }
+        }
+
+        private void UpdateBoxUiState()
+        {
+            if (_selectedBox < 0 || CurrentBoxList().Count == 0)
+            {
+                BoxLifespanText.IsEnabled = false;
+                BoxXText.IsEnabled = false;
+                BoxYText.IsEnabled = false;
+                BoxWidthText.IsEnabled = false;
+                BoxHeightText.IsEnabled = false;
+                BoxDmgText.IsEnabled = false;
+                BoxKbStrengthText.IsEnabled = false;
+                BoxKbAngleSlider.IsEnabled = false;
+                return;
+            }
+
+            BoxLifespanText.IsEnabled = true;
+            BoxXText.IsEnabled = true;
+            BoxYText.IsEnabled = true;
+            BoxWidthText.IsEnabled = true;
+            BoxHeightText.IsEnabled = true;
+            BoxDmgText.IsEnabled = true;
+            BoxKbStrengthText.IsEnabled = true;
+            BoxKbAngleSlider.IsEnabled = true;
         }
 
         private void EditGridZoomBorderMouseDown(object sender, MouseButtonEventArgs e)
@@ -748,6 +779,8 @@ namespace ActionBuilder
             BoxKbStrengthText.Text = SelectedBox().Box.KnockbackStrength.ToString();
             BoxLifespanText.Text = SelectedBox().Box.Lifespan.ToString();
             BoxIdTextBlock.Text = "ID: " + SelectedBox().Rect.Name;
+
+            UpdateBoxUiState();
         }
 
         private void BoxXText_KeyDown(object sender, KeyEventArgs e)
@@ -966,7 +999,7 @@ namespace ActionBuilder
             // in the other canvas are contained within mouseDownPos and 
             // mouseUpPos, for any that are, select them!
             //
-            
+            UpdateBoxUiState();
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
@@ -1034,6 +1067,8 @@ namespace ActionBuilder
 
         private void ImportSpriteButton_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentAction().FrameCount <= 0) return;
+
             var openFileDialog = new OpenFileDialog
             {
                 Filter = "Image files (*.png;*.jpeg;*.bmp)|*.png;*.jpeg;*.bmp|All files (*.*)|*.*",
