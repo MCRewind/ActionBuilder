@@ -627,12 +627,14 @@ namespace ActionBuilder
         {
             if (CurrentAction() == null) return;
 
-            if ((int) FrameSlider.Maximum == 1 && (int) FrameSlider.Value == 0)
-                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][1];
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count > 1)
+                if ((int) FrameSlider.Maximum == 1 && (int) FrameSlider.Value == 0)
+                    CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][1];
             else
                 CurrentFrameImage.Source = null;
 
-            _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value] = new BitmapImage();
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count > (int)FrameSlider.Value)
+                _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value] = new BitmapImage();
             try
             {
                 File.Delete($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}/{FrameSlider.Value}.png");
@@ -659,8 +661,9 @@ namespace ActionBuilder
         {
             if (CurrentAction() == null) return;
 
-            if ((int)FrameSlider.Maximum == 0 && (int)FrameSlider.Value == 0)
-                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][0];
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count > 0)
+                if ((int)FrameSlider.Maximum == 0 && (int)FrameSlider.Value == 0)
+                    CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][0];
 
             CurrentAction().InsertFrame((int) FrameSlider.Value);
             CurrentAction().InsertBoxList((int) FrameSlider.Value, 0);
@@ -1216,7 +1219,8 @@ namespace ActionBuilder
         private void ClearSpriteButton_OnClick(object sender, RoutedEventArgs e)
         {
             CurrentFrameImage.Source = null;
-            _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] = new BitmapImage();
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count > (int)FrameSlider.Value)
+                _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] = new BitmapImage();
             try
             {
                 File.Delete($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}/{FrameSlider.Value}.png");
