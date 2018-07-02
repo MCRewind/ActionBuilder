@@ -23,6 +23,8 @@ namespace ActionBuilder
         [JsonIgnore]
         public int FrameCount => _frames.Count;
 
+        public FrameType FrameTypeAt(int i) => _frames[i];
+
         [JsonConverter(typeof(StringEnumConverter))]
         public Types.ActionType Type;
 
@@ -121,15 +123,54 @@ namespace ActionBuilder
 
         public List<List<Box>> Hitboxes, Hurtboxes;
 
+        private ref List<List<Box>> CurrentBoxList(int type)
+        {
+            switch (type)
+            {
+                case 0:
+                    return ref Hitboxes;
+                case 1:
+                    return ref Hurtboxes;
+                default:
+                    return ref Hitboxes;
+            }
+        }
+
         public void SetFrameType(int index, FrameType type)
         {
             if (_frames.Count == 0) return;
-            if (index > _frames.Count) return;
+            if (index > _frames.Count - 1) return;
             if (index < 0) return;
 
             _frames[index] = type;
         }
-        
+
+        // type: 0 - hit, 1 - hurt
+        public void InsertBoxList(int index, int type)
+        {
+            var list = CurrentBoxList(type);
+            if (list.Count == 0)
+                list.Add(new List<Box>());
+            else if (index > _frames.Count)
+                list.Add(list[list.Count - 1]);
+            else if (index > 0)
+                list.Insert(index, list[index - 1]);
+            else
+                list.Add(new List<Box>());
+        }
+
+        public void RemoveBoxList(int index, int type)
+        {
+            var list = CurrentBoxList(type);
+            if (list.Count == 0) return;
+
+            if (index > list.Count)
+                list.RemoveAt(list.Count - 1);
+            else if (index > 0)
+                list.RemoveAt(index - 1);
+            else
+                list.RemoveAt(0);
+        }
 
         public void InsertFrame(int index)
         {
@@ -140,7 +181,7 @@ namespace ActionBuilder
             else if (index > 0)
                 _frames.Insert(index, _frames[index - 1]);
             else
-                _frames.Prepend(FrameType.Startup);
+                _frames.Add(FrameType.Startup);
         }
 
         public void RemoveFrame(int index)

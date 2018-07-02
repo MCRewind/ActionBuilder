@@ -152,9 +152,9 @@
             <Button x:Name="InsertFrameButton" Content="+"  Width="25" Height="18" Click="InsertFrameButton_Click" Margin="617,161,10,10"  />
             <Button x:Name="RemoveFrameButton" Content="-"  Width="25" Height="18" Click="RemoveFrameButton_Click" Margin="587,161,40,10" />
 
-            <Slider x:Name="FrameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="452" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="FrameSlider_ValueChanged" Margin="130,0,70,10" Height="25"/>
+            <Slider x:Name="FrameSlider" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="452" IsSnapToTickEnabled="True" TickPlacement="TopLeft" ValueChanged="FrameSlider_ValueChanged" Margin="130,0,70,10" Height="25" AutoToolTipPlacement="TopLeft" Maximum="0"/>
             <TextBlock x:Name="ActionTypeText" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="26" Width="85" FontSize="15" Text="Action Type:"/>
-            <ComboBox x:Name="ActionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="ActionTypeDropdown_SelectionChanged" />
+            <ComboBox x:Name="ActionTypeDropdown" HorizontalAlignment="Left" Margin="100,10,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="ActionTypeDropdown_SelectionChanged"/>
             <TextBlock x:Name="InfiniteRangeText" HorizontalAlignment="Left" Margin="10,41,0,0" TextWrapping="Wrap" Text="Infinite Range:" VerticalAlignment="Top" Height="26" Width="101" FontSize="15"/>
             <ComboBox x:Name="InfiniteRangeMinDropdown" HorizontalAlignment="Left" Margin="116,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMinDropdown_SelectionChanged" Width="73" />
             <ComboBox x:Name="InfiniteRangeMaxDropdown" HorizontalAlignment="Left" Margin="211,41,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="InfiniteRangeMaxDropdown_SelectionChanged" Width="73" />

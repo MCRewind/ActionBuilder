@@ -155,7 +155,6 @@ namespace ActionBuilder
             BoxKbAngleSlider.IsSnapToTickEnabled = true;
 
             ActionTypeDropdown.ItemsSource = Enum.GetValues(typeof(Types.ActionType));
-            
         }
 
         private void LoadActions(string character)
@@ -339,7 +338,16 @@ namespace ActionBuilder
             if (CurrentAction() == null) return;
 
             NameTextBox.Text = CurrentAction().Name;
-            FrameSlider.Maximum = CurrentAction().FrameCount;
+            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1: 0;
+            if (CurrentAction().FrameCount == 0)
+            {
+                //FrameSlider.Value = 0;
+                FrameSlider.IsEnabled = false;
+            }
+            else
+            {
+                FrameSlider.IsEnabled = true;
+            }
             ActionTypeDropdown.SelectedIndex = (int) CurrentAction().Type;
             InfiniteRangeMinDropdown.Items.Clear();
             InfiniteRangeMinDropdown.Items.Add("None");
@@ -354,7 +362,7 @@ namespace ActionBuilder
 
             CurrentAction().Hitboxes = new List<List<Box>>();
             CurrentAction().Hurtboxes = new List<List<Box>>();
-            for (var i = 0; i <= CurrentAction().FrameCount; ++i)
+            for (var i = 0; i < CurrentAction().FrameCount; ++i)
             {
                 InfiniteRangeMinDropdown.Items.Add(i);
                 InfiniteRangeMaxDropdown.Items.Add(i);
@@ -513,24 +521,28 @@ namespace ActionBuilder
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (CurrentActionDropdown.SelectedIndex < 0 || FrameSlider.Value > CurrentAction().FrameCount ||
+            var currentAction = CurrentAction();
+
+            if (CurrentActionDropdown.SelectedIndex < 0 || FrameSlider.Value > currentAction.FrameCount ||
                 CurrentActionDropdown.SelectedIndex >= _actionAnims.Count) return;
 
-            FrameTypeDropdown.SelectedIndex = (int) CurrentAction().Type;
+            FrameTypeDropdown.SelectedIndex = (int) currentAction.FrameTypeAt((int) FrameSlider.Value);
 
-            CurrentAction().Hitboxes[_previousFrame].Clear();
-            CurrentAction().Hurtboxes[_previousFrame].Clear();    
+            if (_previousFrame < currentAction.Hitboxes.Count)
+                currentAction.Hitboxes[_previousFrame].Clear();
+            if (_previousFrame < currentAction.Hurtboxes.Count)
+                currentAction.Hurtboxes[_previousFrame].Clear();    
             foreach (var boxInfo in _hitboxes)
-                CurrentAction().Hitboxes[_previousFrame].Add(boxInfo.Box);
+                currentAction.Hitboxes[_previousFrame].Add(boxInfo.Box);
             foreach (var boxInfo in _hurtboxes)
-                CurrentAction().Hurtboxes[_previousFrame].Add(boxInfo.Box);
+                currentAction.Hurtboxes[_previousFrame].Add(boxInfo.Box);
 
             _currentBoxCount = 0;
             _hitboxes.Clear();
             _hurtboxes.Clear();
             BoxCanvas.Children.Clear();
            
-            foreach (var box in CurrentAction().Hitboxes[(int) FrameSlider.Value])
+            foreach (var box in currentAction.Hitboxes[(int) FrameSlider.Value])
             {
                 var r = new Rectangle
                 {
@@ -554,7 +566,7 @@ namespace ActionBuilder
 
                 _hitboxes.Add(new BoxInfo(box, r));
             }
-            foreach (var box in CurrentAction().Hurtboxes[(int) FrameSlider.Value])
+            foreach (var box in currentAction.Hurtboxes[(int) FrameSlider.Value])
             {
                 var r = new Rectangle
                 {
@@ -602,22 +614,41 @@ namespace ActionBuilder
         {
             if (CurrentAction() == null) return;
 
-            CurrentAction().RemoveFrame((int)FrameSlider.Value);
-            CurrentAction().Hitboxes.RemoveAt((int)FrameSlider.Value);
-            CurrentAction().Hurtboxes.RemoveAt((int)FrameSlider.Value);
+            CurrentAction().RemoveFrame((int) FrameSlider.Value);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 0);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 1);
 
-            FrameSlider.Maximum = CurrentAction().FrameCount;
+            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1: 0;
+            if (CurrentAction().FrameCount == 0)
+            {
+                //FrameSlider.Value = 0;
+                FrameSlider.IsEnabled = false;
+            }
+            else
+            {
+                FrameSlider.IsEnabled = true;
+            }
         }
 
         private void InsertFrameButton_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentAction() == null) return;
 
-            CurrentAction().InsertFrame((int)FrameSlider.Value + 1);
-            CurrentAction().Hitboxes.Insert((int)FrameSlider.Value, new List<Box>());
-            CurrentAction().Hurtboxes.Insert((int)FrameSlider.Value, new List<Box>());
+            CurrentAction().InsertFrame((int) FrameSlider.Value);
+            CurrentAction().InsertBoxList((int) FrameSlider.Value, 0);
+            CurrentAction().InsertBoxList((int) FrameSlider.Value, 1);
 
-            FrameSlider.Maximum = CurrentAction().FrameCount;
+            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1: 0;
+            //FrameSlider.Minimum = (int) FrameSlider.Maximum == 1 ? 1 : 0;
+            if (CurrentAction().FrameCount == 0)
+            {
+                //FrameSlider.Value = 0;
+                FrameSlider.IsEnabled = false;
+            }
+            else
+            {
+                FrameSlider.IsEnabled = true;
+            }
         }
 
         private void EditGridZoomBorderMouseDown(object sender, MouseButtonEventArgs e)
