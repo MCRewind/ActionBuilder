@@ -627,15 +627,30 @@ namespace ActionBuilder
         {
             if (CurrentAction() == null) return;
 
-            CurrentAction().RemoveFrame((int) FrameSlider.Value);
-            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 0);
-            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 1);
+            if ((int) FrameSlider.Maximum == 1 && (int) FrameSlider.Value == 0)
+                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][1];
+            else
+                CurrentFrameImage.Source = null;
 
-            CurrentFrameImage.Source = null;
+            _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value] = new BitmapImage();
+            try
+            {
+                File.Delete($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}/{FrameSlider.Value}.png");
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+
             _currentBoxCount = 0;
             _hitboxes.Clear();
             _hurtboxes.Clear();
             BoxCanvas.Children.Clear();
+
+            CurrentAction().RemoveFrame((int) FrameSlider.Value);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 0);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 1);
 
             UpdateUiState();
         }
@@ -643,6 +658,9 @@ namespace ActionBuilder
         private void InsertFrameButton_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentAction() == null) return;
+
+            if ((int)FrameSlider.Maximum == 0 && (int)FrameSlider.Value == 0)
+                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][0];
 
             CurrentAction().InsertFrame((int) FrameSlider.Value);
             CurrentAction().InsertBoxList((int) FrameSlider.Value, 0);
