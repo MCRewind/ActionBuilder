@@ -35,3 +35,25 @@ MAYBE
 - copy cut paste boxes
 - other keyboard shortcuts
 - rearrange frames (move frame left and right?)
+
+2.0
+
+- move majority of file/button based operations to menu bar
+	- new character
+	- save character
+	- open character
+	- new action
+	- save action (actions should auto save tho)
+	- clear sprite
+	- import sprite
+	- etc
+- user customizable box types (name, color, properties)
+- user customizable action properties (add int, float, vector, enum, etc)
+- much better timeline (like aseprite one)
+- cleaner, modular interface
+- infinite canvas with ajustable size and stuff
+
+FUTURE
+
+- circular hitboxes
+- polygonal hitboxes
