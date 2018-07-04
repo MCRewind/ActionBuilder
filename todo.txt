@@ -1,0 +1,37 @@
+TODO
+
+- delete character button
+- delete action button
+- delete box button
+- grab, armor, collision, trigger/data boxes
+- clear all boxes button
+- boxes load properly
+- ids not displaying
+- lifespans
+- drag and drop anchor
+- scrolling with spacebar + left click
+- snap image to pixel grid
+- choose grid size
+- middle mouse click locks when used to draw box
+- display anchor toggle
+- display hitboxes toggle
+- display hurtboxes toggle
+- animation pause and play buttons
+- import set of sprites, auto adds frames
+- confirmation dialogues
+- autosave on quit
+
+MAYBE
+
+- infinite map with scaling grid size (like unity)
+- selectable list of all boxes on the side
+- displayable knockback vector on selected box??
+- make boxes draggable
+- resize boxes by pulling on edge
+- grabboxes/other needed box types
+- box color options
+- scale box border with zoom level 
+- select and move or resize groups of boxes
+- copy cut paste boxes
+- other keyboard shortcuts
+- rearrange frames (move frame left and right?)
