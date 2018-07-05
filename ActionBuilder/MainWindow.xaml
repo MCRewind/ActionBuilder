@@ -4,7 +4,7 @@
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls" 
         xmlns:paz="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
         xmlns:local="clr-namespace:ActionBuilder"
-        Title="Action Builder" MinHeight="375" MinWidth="1070" Width="1070" Height="540">
+        Title="Action Builder" MinHeight="400" MinWidth="1070" Width="1070" Height="560">
     <Grid>
         <Grid HorizontalAlignment="Left" Width="132" Margin="10,10,0,10">
             <Border
