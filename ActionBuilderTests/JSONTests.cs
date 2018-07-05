@@ -22,7 +22,7 @@ namespace ActionBuilderTests
             var action = new ActionInfo()
             {
                 Name = "Test Action",
-                Type = Types.ActionType.JAB,
+                Type = Types.ActionType.Jab,
                 Hitboxes = new List<List<ActionInfo.Box>>()
                 {
                     // frame 0

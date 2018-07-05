@@ -5,16 +5,24 @@
         xmlns:paz="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
         xmlns:local="clr-namespace:ActionBuilder"
         Title="Action Builder" MinHeight="375" MinWidth="1070" Width="1070" Height="540">
-
     <Grid>
         <Grid HorizontalAlignment="Left" Width="132" Margin="10,10,0,10">
             <Border
                 BorderBrush="DarkCyan"
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"/>
-            <ToggleButton x:Name="HitboxButton"       Content="Hitbox"        HorizontalAlignment="Left" Margin="10,253,0,0" VerticalAlignment="Top" Click="HitboxButton_Click" Width="112" Background="#f73885" BorderBrush="Black" BorderThickness="2" MouseEnter="HitboxButton_OnMouseEnter" MouseLeave="HitboxButton_OnMouseLeave" Foreground="Black"/>
-            <ToggleButton x:Name="HurtboxButton"      Content="Hurtbox"       HorizontalAlignment="Left" Margin="10,285,0,0" VerticalAlignment="Top" Click="HurtboxButton_Click" Width="112" Background="#43f9aa" BorderBrush="Black" BorderThickness="2" MouseEnter="HurtboxButton_OnMouseEnter" MouseLeave="HurtboxButton_OnMouseLeave" Foreground="Black"/>
+                VerticalAlignment="Stretch">
+            </Border>
+            <ScrollViewer VerticalAlignment="Center"  HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Center" VerticalContentAlignment="Stretch" Margin="10,242,10,74">
+                <StackPanel VerticalAlignment="Center">
+                    <ToggleButton x:Name="HitboxButton"       Content="Hitbox"       HorizontalAlignment="Stretch" VerticalAlignment="Center"  Width="90" Background="#f73885" BorderBrush="Black" BorderThickness="2" MouseEnter="HitboxButton_OnMouseEnter"       MouseLeave="HitboxButton_OnMouseLeave"       Click="HitboxButton_Click"       Foreground="Black"/>
+                    <ToggleButton x:Name="HurtboxButton"      Content="Hurtbox"      HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#43f9aa" BorderBrush="Black" BorderThickness="2" MouseEnter="HurtboxButton_OnMouseEnter"      MouseLeave="HurtboxButton_OnMouseLeave"      Click="HurtboxButton_Click"      Foreground="Black"/>
+                    <ToggleButton x:Name="GrabboxButton"      Content="Grabbox"      HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#4394F9" BorderBrush="Black" BorderThickness="2" MouseEnter="GrabboxButton_OnMouseEnter"      MouseLeave="GrabboxButton_OnMouseLeave"      Click="GrabboxButton_Click"      Foreground="Black"/>
+                    <ToggleButton x:Name="ArmorboxButton"     Content="Armorbox"     HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#FFD77D" BorderBrush="Black" BorderThickness="2" MouseEnter="ArmorboxButton_OnMouseEnter"     MouseLeave="ArmorboxButton_OnMouseLeave"     Click="ArmorboxButton_Click"     Foreground="Black"/>
+                    <ToggleButton x:Name="CollisionboxButton" Content="Collisionbox" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#FF93F7" BorderBrush="Black" BorderThickness="2" MouseEnter="CollisionboxButton_OnMouseEnter" MouseLeave="CollisionboxButton_OnMouseLeave" Click="CollisionboxButton_Click" Foreground="Black"/>
+                    <ToggleButton x:Name="DataboxButton"      Content="Databox"      HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#AE8DC7" BorderBrush="Black" BorderThickness="2" MouseEnter="DataboxButton_OnMouseEnter"      MouseLeave="DataboxButton_OnMouseLeave"      Click="DataboxButton_Click"      Foreground="Black"/>
+                 </StackPanel>
+            </ScrollViewer>
             <Button x:Name="NewCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0"  VerticalAlignment="Top" Click="NewCharacterButton_Click" Width="112"/>
             <Button x:Name="NewActionButton"    Content="New Action"    HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Click="NewActionButton_Click" Width="112"/>
             <Button x:Name="SaveButton"         Content="Save Action"   HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" Click="SaveButton_Click" Width="112"/>
@@ -59,7 +67,7 @@
                     <Canvas Name="ImageCanvas" Height="268" Width="632">
                         <Image x:Name="CurrentFrameImage" Height="248" Width="612"
                                RenderOptions.BitmapScalingMode="NearestNeighbor" Canvas.Left="10" Canvas.Top="10">
-                                
+
                         </Image>
 
                         <Ellipse
@@ -94,6 +102,41 @@
                         StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
                     />
 
+                    <Rectangle
+                        x:Name="Grabbox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        Opacity=".3"
+                        Fill="DodgerBlue"
+                        StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
+                    />
+
+                    <Rectangle
+                        x:Name="Armorbox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        Opacity=".3"
+                        Fill="Orange"
+                        StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
+                    />
+
+                    <Rectangle
+                        x:Name="Collisionbox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        Opacity=".3"
+                        Fill="HotPink"
+                        StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
+                    />
+
+                    <Rectangle
+                        x:Name="Databox"
+                        Visibility="Collapsed"
+                        Stroke="Black"
+                        Opacity=".3"
+                        Fill="MediumPurple"
+                        StrokeThickness="1" Height="150" Width="258" Canvas.Left="95" Canvas.Top="10"
+                    />
 
                 </Canvas>
             </paz:ZoomBorder>

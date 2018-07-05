@@ -2,43 +2,46 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Json;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Media.Animation;
+using JetBrains.Annotations;
 using MahApps.Metro.Controls;
-using static ActionBuilder.ActionInfo;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Path = System.IO.Path;
+using static ActionBuilder.ActionInfo;
 
 namespace ActionBuilder
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : MetroWindow
+    [UsedImplicitly]
+    public partial class MainWindow
     {
         #region VARIABLES
         private readonly List<CharacterInfo> _characters;
         private readonly List<ActionInfo> _actions;
         private readonly List<EditorInfo> _editorInfos;
-        private List<BoxInfo> _hitboxes, _hurtboxes;
+        private List<BoxInfo> _hitboxes, _hurtboxes, _grabboxes, _armorboxes, _collisionboxes, _databoxes;
         private readonly List<List<BitmapImage>> _actionAnims;
 
         private readonly SolidColorBrush _hurtBrush;
         private readonly SolidColorBrush _hurtOverBrush;
         private readonly SolidColorBrush _hitBrush;
         private readonly SolidColorBrush _hitOverBrush;
+        private readonly SolidColorBrush _grabBrush;
+        private readonly SolidColorBrush _grabOverBrush;
+        private readonly SolidColorBrush _armorBrush;
+        private readonly SolidColorBrush _armorOverBrush;
+        private readonly SolidColorBrush _collisionBrush;
+        private readonly SolidColorBrush _collisionOverBrush;
+        private readonly SolidColorBrush _dataBrush;
+        private readonly SolidColorBrush _dataOverBrush;
 
         private CharacterInfo _lastSelectedCharacter;
         private IntCouple _mouseDownPos, _anchoredMouseDownPos;
@@ -125,19 +128,30 @@ namespace ActionBuilder
                     throw;
                 }
 
-            _characters = new List<CharacterInfo>();
-            _actions = new List<ActionInfo>();
-            _editorInfos = new List<EditorInfo>();
-            _actionAnims = new List<List<BitmapImage>>();
-            _hitboxes = new List<BoxInfo>();
-            _hurtboxes = new List<BoxInfo>();
+            _actionAnims    = new List<List<BitmapImage>>();
+            _characters     = new List<CharacterInfo>();
+            _actions        = new List<ActionInfo>();
+            _editorInfos    = new List<EditorInfo>();
+            _hitboxes       = new List<BoxInfo>();
+            _hurtboxes      = new List<BoxInfo>();
+            _grabboxes      = new List<BoxInfo>();
+            _armorboxes     = new List<BoxInfo>();
+            _collisionboxes = new List<BoxInfo>();
+            _databoxes      = new List<BoxInfo>();
 
-            _hurtBrush = new SolidColorBrush { Color = Color.FromRgb(112, 255, 150) };
-            _hurtOverBrush = new SolidColorBrush { Color = Color.FromRgb(52, 249, 114) };
-            _hitBrush = new SolidColorBrush { Color = Color.FromRgb(255, 66, 116) };
-            _hitOverBrush = new SolidColorBrush { Color = Color.FromRgb(226, 20, 75) };
+            _hurtBrush          = new SolidColorBrush { Color = Color.FromRgb(112, 255, 150) };
+            _hurtOverBrush      = new SolidColorBrush { Color = Color.FromRgb(52, 249, 114) };
+            _hitBrush           = new SolidColorBrush { Color = Color.FromRgb(255, 66, 116) };
+            _hitOverBrush       = new SolidColorBrush { Color = Color.FromRgb(226, 20, 75) };
+            _grabBrush          = new SolidColorBrush { Color = Color.FromRgb(112, 146, 255) };
+            _grabOverBrush      = new SolidColorBrush { Color = Color.FromRgb(58, 91, 255) };
+            _armorBrush         = new SolidColorBrush { Color = Color.FromRgb(255, 234, 131) };
+            _armorOverBrush     = new SolidColorBrush { Color = Color.FromRgb(255, 186, 31) };
+            _collisionBrush     = new SolidColorBrush { Color = Color.FromRgb(255, 142, 233) };
+            _collisionOverBrush = new SolidColorBrush { Color = Color.FromRgb(239, 68, 255) };
+            _dataBrush          = new SolidColorBrush { Color = Color.FromRgb(177, 131, 202) };
+            _dataOverBrush      = new SolidColorBrush { Color = Color.FromRgb(110, 17, 195) };
 
-            
 
             InitializeComponent();
 
@@ -291,12 +305,19 @@ namespace ActionBuilder
             JsonUtils.WriteToJson(filepath, actionJson);
         }
 
+        #region BoxButtons
+
         private void HitboxButton_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentAction().FrameCount <= 0) return;
 
-            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(140, 30, 74) };
-            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(140, 30,  74 ) };
+
+            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
+            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
+            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
 
             _boxPlaceMode = _boxPlaceMode == 0 ? -1 : 0;
             HurtboxButton.IsChecked = false;
@@ -307,11 +328,82 @@ namespace ActionBuilder
             if (CurrentAction().FrameCount <= 0) return;
 
             HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(35, 132, 90) };
-            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+
+            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
+            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
+            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
             _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
             HitboxButton.IsChecked = false;
         }
-        
+
+        private void GrabboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(50, 110, 190) };
+
+            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
+            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
+            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 2 ? -1 : 2;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void ArmorboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(179, 151, 88) };
+
+            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
+            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
+            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 3 ? -1 : 3;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void CollisionboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(159, 92, 154) };
+
+            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
+            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
+            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
+            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 4 ? -1 : 4;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void DataboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(105, 85, 120) };
+
+            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
+            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
+            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
+            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+           
+            _boxPlaceMode = _boxPlaceMode == 5 ? -1 : 5;
+            HitboxButton.IsChecked = false;
+        }
+
+
         private void HitboxButton_OnMouseEnter(object sender, MouseEventArgs e)
         {
             if (!HitboxButton.IsChecked.HasValue) return;
@@ -340,6 +432,64 @@ namespace ActionBuilder
                 HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
         }
 
+        private void GrabboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!GrabboxButton.IsChecked.HasValue) return;
+            if (!GrabboxButton.IsChecked.Value)
+                GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(50, 110, 190) };
+        }
+
+        private void GrabboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!GrabboxButton.IsChecked.HasValue) return;
+            if (!GrabboxButton.IsChecked.Value)
+                GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+        }
+
+        private void ArmorboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!ArmorboxButton.IsChecked.HasValue) return;
+            if (!ArmorboxButton.IsChecked.Value)
+                ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(179, 151, 88) };
+        }
+
+        private void ArmorboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!ArmorboxButton.IsChecked.HasValue) return;
+            if (!ArmorboxButton.IsChecked.Value)
+                ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+        }
+
+        private void CollisionboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!CollisionboxButton.IsChecked.HasValue) return;
+            if (!CollisionboxButton.IsChecked.Value)
+                CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(159, 92, 154) };
+        }
+
+        private void CollisionboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!CollisionboxButton.IsChecked.HasValue) return;
+            if (!CollisionboxButton.IsChecked.Value)
+                CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+        }
+
+        private void DataboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!DataboxButton.IsChecked.HasValue) return;
+            if (!DataboxButton.IsChecked.Value)
+                DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(105, 85, 120) };
+        }
+
+        private void DataboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!DataboxButton.IsChecked.HasValue) return;
+            if (!DataboxButton.IsChecked.Value)
+                DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+        }
+
+        #endregion
+
         // action dropdown selection changed
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -365,6 +515,10 @@ namespace ActionBuilder
 
             CurrentAction().Hitboxes = new List<List<Box>>();
             CurrentAction().Hurtboxes = new List<List<Box>>();
+            CurrentAction().Grabboxes = new List<List<Box>>();
+            CurrentAction().Armorboxes = new List<List<Box>>();
+            CurrentAction().Collisionboxes = new List<List<Box>>();
+            CurrentAction().Databoxes = new List<List<Box>>();
             for (var i = 0; i < CurrentAction().FrameCount; ++i)
             {
                 InfiniteRangeMinDropdown.Items.Add(i);
@@ -372,6 +526,10 @@ namespace ActionBuilder
 
                 CurrentAction().Hitboxes.Add(new List<Box>());
                 CurrentAction().Hurtboxes.Add(new List<Box>());
+                CurrentAction().Grabboxes.Add(new List<Box>());
+                CurrentAction().Armorboxes.Add(new List<Box>());
+                CurrentAction().Collisionboxes.Add(new List<Box>());
+                CurrentAction().Databoxes.Add(new List<Box>());
             }
         }
 
@@ -540,15 +698,35 @@ namespace ActionBuilder
             if (_previousFrame < currentAction.Hitboxes.Count)
                 currentAction.Hitboxes[_previousFrame].Clear();
             if (_previousFrame < currentAction.Hurtboxes.Count)
-                currentAction.Hurtboxes[_previousFrame].Clear();    
+                currentAction.Hurtboxes[_previousFrame].Clear();
+            if (_previousFrame < currentAction.Grabboxes.Count)
+                currentAction.Grabboxes[_previousFrame].Clear();
+            if (_previousFrame < currentAction.Armorboxes.Count)
+                currentAction.Armorboxes[_previousFrame].Clear();
+            if (_previousFrame < currentAction.Collisionboxes.Count)
+                currentAction.Collisionboxes[_previousFrame].Clear();
+            if (_previousFrame < currentAction.Databoxes.Count)
+                currentAction.Databoxes[_previousFrame].Clear();
+
             foreach (var boxInfo in _hitboxes)
                 currentAction.Hitboxes[_previousFrame].Add(boxInfo.Box);
             foreach (var boxInfo in _hurtboxes)
                 currentAction.Hurtboxes[_previousFrame].Add(boxInfo.Box);
-
+            foreach (var boxInfo in _grabboxes)
+                currentAction.Grabboxes[_previousFrame].Add(boxInfo.Box);
+            foreach (var boxInfo in _armorboxes)
+                currentAction.Armorboxes[_previousFrame].Add(boxInfo.Box);
+            foreach (var boxInfo in _collisionboxes)
+                currentAction.Collisionboxes[_previousFrame].Add(boxInfo.Box);
+            foreach (var boxInfo in _databoxes)
+                currentAction.Databoxes[_previousFrame].Add(boxInfo.Box);
             _currentBoxCount = 0;
             _hitboxes.Clear();
             _hurtboxes.Clear();
+            _grabboxes.Clear();
+            _armorboxes.Clear();
+            _collisionboxes.Clear();
+            _databoxes.Clear();
             BoxCanvas.Children.Clear();
            
             foreach (var box in currentAction.Hitboxes[(int) FrameSlider.Value])
@@ -597,6 +775,98 @@ namespace ActionBuilder
                 BoxCanvas.Children.Add(r);
 
                 _hurtboxes.Add(new BoxInfo(box, r));
+            }
+            foreach (var box in currentAction.Grabboxes[(int)FrameSlider.Value])
+            {
+                var r = new Rectangle
+                {
+                    Stroke = Grabbox.Stroke,
+                    Opacity = Grabbox.Opacity,
+                    Fill = _grabBrush,
+                    Name = "G" + _grabboxes.Count,
+                    Visibility = Visibility.Visible,
+                    Width = box.Width,
+                    Height = box.Height,
+                };
+                r.MouseEnter += Box_MouseOver;
+                r.MouseLeave += Box_MouseLeave;
+                r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+
+                Canvas.SetLeft(r, box.X);
+                Canvas.SetTop(r, box.Y);
+
+                BoxCanvas.Children.Add(r);
+
+                _grabboxes.Add(new BoxInfo(box, r));
+            }
+            foreach (var box in currentAction.Armorboxes[(int)FrameSlider.Value])
+            {
+                var r = new Rectangle
+                {
+                    Stroke = Armorbox.Stroke,
+                    Opacity = Armorbox.Opacity,
+                    Fill = _armorBrush,
+                    Name = "A" + _armorboxes.Count,
+                    Visibility = Visibility.Visible,
+                    Width = box.Width,
+                    Height = box.Height,
+                };
+                r.MouseEnter += Box_MouseOver;
+                r.MouseLeave += Box_MouseLeave;
+                r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+
+                Canvas.SetLeft(r, box.X);
+                Canvas.SetTop(r, box.Y);
+
+                BoxCanvas.Children.Add(r);
+
+                _armorboxes.Add(new BoxInfo(box, r));
+            }
+            foreach (var box in currentAction.Collisionboxes[(int)FrameSlider.Value])
+            {
+                var r = new Rectangle
+                {
+                    Stroke = Collisionbox.Stroke,
+                    Opacity = Collisionbox.Opacity,
+                    Fill = _collisionBrush,
+                    Name = "C" + _collisionboxes.Count,
+                    Visibility = Visibility.Visible,
+                    Width = box.Width,
+                    Height = box.Height,
+                };
+                r.MouseEnter += Box_MouseOver;
+                r.MouseLeave += Box_MouseLeave;
+                r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+
+                Canvas.SetLeft(r, box.X);
+                Canvas.SetTop(r, box.Y);
+
+                BoxCanvas.Children.Add(r);
+
+                _collisionboxes.Add(new BoxInfo(box, r));
+            }
+            foreach (var box in currentAction.Databoxes[(int)FrameSlider.Value])
+            {
+                var r = new Rectangle
+                {
+                    Stroke = Databox.Stroke,
+                    Opacity = Databox.Opacity,
+                    Fill = _dataBrush,
+                    Name = "D" + _databoxes.Count,
+                    Visibility = Visibility.Visible,
+                    Width = box.Width,
+                    Height = box.Height,
+                };
+                r.MouseEnter += Box_MouseOver;
+                r.MouseLeave += Box_MouseLeave;
+                r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+
+                Canvas.SetLeft(r, box.X);
+                Canvas.SetTop(r, box.Y);
+
+                BoxCanvas.Children.Add(r);
+
+                _databoxes.Add(new BoxInfo(box, r));
             }
 
             CurrentFrameImage.Source = 
@@ -648,11 +918,19 @@ namespace ActionBuilder
             _currentBoxCount = 0;
             _hitboxes.Clear();
             _hurtboxes.Clear();
+            _grabboxes.Clear();
+            _armorboxes.Clear();
+            _collisionboxes.Clear();
+            _databoxes.Clear();
             BoxCanvas.Children.Clear();
 
             CurrentAction().RemoveFrame((int) FrameSlider.Value);
             CurrentAction().RemoveBoxList((int) FrameSlider.Value, 0);
             CurrentAction().RemoveBoxList((int) FrameSlider.Value, 1);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 2);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 3);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 4);
+            CurrentAction().RemoveBoxList((int) FrameSlider.Value, 5);
 
             UpdateUiState();
         }
@@ -668,6 +946,10 @@ namespace ActionBuilder
             CurrentAction().InsertFrame((int) FrameSlider.Value);
             CurrentAction().InsertBoxList((int) FrameSlider.Value, 0);
             CurrentAction().InsertBoxList((int) FrameSlider.Value, 1);
+            CurrentAction().InsertBoxList((int) FrameSlider.Value, 2);
+            CurrentAction().InsertBoxList((int) FrameSlider.Value, 3);
+            CurrentAction().InsertBoxList((int) FrameSlider.Value, 4);
+            CurrentAction().InsertBoxList((int) FrameSlider.Value, 5);
 
             UpdateUiState();
         }
@@ -682,6 +964,10 @@ namespace ActionBuilder
                 ImportSpriteButton.IsEnabled = false;
                 HitboxButton.IsEnabled = false;
                 HurtboxButton.IsEnabled = false;
+                GrabboxButton.IsEnabled = false;
+                ArmorboxButton.IsEnabled = false;
+                CollisionboxButton.IsEnabled = false;
+                DataboxButton.IsEnabled = false;
                 FrameTypeDropdown.IsEnabled = false;
             }
             else
@@ -690,6 +976,10 @@ namespace ActionBuilder
                 ImportSpriteButton.IsEnabled = true;
                 HitboxButton.IsEnabled = true;
                 HurtboxButton.IsEnabled = true;
+                GrabboxButton.IsEnabled = true;
+                ArmorboxButton.IsEnabled = true;
+                CollisionboxButton.IsEnabled = true;
+                DataboxButton.IsEnabled = true;
                 FrameTypeDropdown.IsEnabled = true;
             }
         }
@@ -726,7 +1016,6 @@ namespace ActionBuilder
 
         private void EditGridZoomBorderMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            Console.WriteLine($@"{EditGridZoomBorder.ZoomX}");
             EditCanvas.Height = 1080; 
             EditCanvas.Width = 1920; 
         }
@@ -752,6 +1041,14 @@ namespace ActionBuilder
                 rect.Fill = _hitOverBrush;
             else if (rect.Fill.IsEqualTo(_hurtBrush))
                 rect.Fill = _hurtOverBrush;
+            else if (rect.Fill.IsEqualTo(_grabBrush))
+                rect.Fill = _grabOverBrush;
+            else if (rect.Fill.IsEqualTo(_armorBrush))
+                rect.Fill = _armorOverBrush;
+            else if (rect.Fill.IsEqualTo(_collisionBrush))
+                rect.Fill = _collisionOverBrush;
+            else if (rect.Fill.IsEqualTo(_dataBrush))
+                rect.Fill = _dataOverBrush;
         }
 
         private bool IsSelectedBox(Rectangle rect)
@@ -771,6 +1068,22 @@ namespace ActionBuilder
                 if (_hurtboxes[i].Rect.Equals(rect))
                     return _hitboxes.Count + i;
 
+            for (var i = 0; i < _grabboxes.Count; ++i)
+                if (_grabboxes[i].Rect.Equals(rect))
+                    return _hitboxes.Count + _hurtboxes.Count + i;
+
+            for (var i = 0; i < _armorboxes.Count; ++i)
+                if (_armorboxes[i].Rect.Equals(rect))
+                    return _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + i;
+
+            for (var i = 0; i < _collisionboxes.Count; ++i)
+                if (_collisionboxes[i].Rect.Equals(rect))
+                    return _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + _armorboxes.Count + i;
+
+            for (var i = 0; i < _databoxes.Count; ++i)
+                if (_databoxes[i].Rect.Equals(rect))
+                    return _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + _armorboxes.Count + _collisionboxes.Count + i;
+
             return -1;
         }
 
@@ -784,11 +1097,34 @@ namespace ActionBuilder
                 rect.Fill = _hitBrush;
             else if (rect.Fill.IsEqualTo(_hurtOverBrush))
                 rect.Fill = _hurtBrush;
+            else if (rect.Fill.IsEqualTo(_grabOverBrush))
+                rect.Fill = _grabBrush;
+            else if (rect.Fill.IsEqualTo(_armorOverBrush))
+                rect.Fill = _armorBrush;
+            else if (rect.Fill.IsEqualTo(_collisionOverBrush))
+                rect.Fill = _collisionBrush;
+            else if (rect.Fill.IsEqualTo(_dataOverBrush))
+                rect.Fill = _dataBrush;
         }
 
         private BoxInfo SelectedBox()
         {
-            return _selectedBox >= _hitboxes.Count ? _hurtboxes[_selectedBox - _hitboxes.Count] : _hitboxes[_selectedBox];
+            if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + _armorboxes.Count + _collisionboxes.Count)
+                return _databoxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count - _armorboxes.Count - _collisionboxes.Count];
+
+            if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + _armorboxes.Count)
+                return _collisionboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count - _armorboxes.Count];
+
+            if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count)
+                return _armorboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count];
+
+            if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count)
+                return _grabboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count];
+
+            if (_selectedBox >= _hitboxes.Count)
+                return _hurtboxes[_selectedBox - _hitboxes.Count];
+
+            return _hitboxes[_selectedBox];
         }
 
         private void Box_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -802,6 +1138,14 @@ namespace ActionBuilder
                 SelectedBox().Rect.Fill = _hitBrush;
             else if (SelectedBox().Rect.Fill.IsEqualTo(_hurtOverBrush))
                 SelectedBox().Rect.Fill = _hurtBrush;
+            else if (SelectedBox().Rect.Fill.IsEqualTo(_grabOverBrush))
+                SelectedBox().Rect.Fill = _grabBrush;
+            else if (SelectedBox().Rect.Fill.IsEqualTo(_armorOverBrush))
+                SelectedBox().Rect.Fill = _armorBrush;
+            else if (SelectedBox().Rect.Fill.IsEqualTo(_collisionOverBrush))
+                SelectedBox().Rect.Fill = _collisionBrush;
+            else if (SelectedBox().Rect.Fill.IsEqualTo(_dataOverBrush))
+                SelectedBox().Rect.Fill = _dataBrush;
 
             var index = IndexFromRect(rect);
 
@@ -957,11 +1301,7 @@ namespace ActionBuilder
 
                     box.Fill = _hitBrush;
 
-                    box.Name = "hit" + _hitboxes.Count;
-
-                    box.MouseEnter += Box_MouseOver;
-                    box.MouseLeave += Box_MouseLeave;
-                    box.MouseLeftButtonDown += Box_MouseLeftButtonDown;                
+                    box.Name = "hit" + _hitboxes.Count;        
                     break;
 
                 case 1:
@@ -972,12 +1312,50 @@ namespace ActionBuilder
                     box.Fill = _hurtBrush;
 
                     box.Name = "hurt" + _hurtboxes.Count;
+                    break;
+                case 2:
+                    box.Stroke = Grabbox.Stroke;
+                    box.Opacity = Grabbox.Opacity;
+                    box.Fill = Grabbox.Fill;
 
-                    box.MouseEnter += Box_MouseOver;
-                    box.MouseLeave += Box_MouseLeave;
-                    box.MouseLeftButtonDown += Box_MouseLeftButtonDown;
+                    box.Fill = _grabBrush;
+
+                    box.Name = "grab" + _grabboxes.Count;
+                    break;
+                case 3:
+                    box.Stroke = Armorbox.Stroke;
+                    box.Opacity = Armorbox.Opacity;
+                    box.Fill = Armorbox.Fill;
+
+                    box.Fill = _armorBrush;
+
+                    box.Name = "armor" + _armorboxes.Count;
+                    break;
+                case 4:
+                    box.Stroke = Collisionbox.Stroke;
+                    box.Opacity = Collisionbox.Opacity;
+                    box.Fill = Collisionbox.Fill;
+
+                    box.Fill = _collisionBrush;
+
+                    box.Name = "collision" + _collisionboxes.Count;
+                    break;
+                case 5:
+                    box.Stroke = Databox.Stroke;
+                    box.Opacity = Databox.Opacity;
+                    box.Fill = Databox.Fill;
+
+                    box.Fill = _dataBrush;
+
+                    box.Name = "data" + _databoxes.Count;
+
                     break;
             }
+
+
+            box.MouseEnter += Box_MouseOver;
+            box.MouseLeave += Box_MouseLeave;
+            box.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
             CurrentBoxList().Add(new BoxInfo(new Box(), box));
             BoxCanvas.Children.Add(CurrentBoxList().Last().Rect);
@@ -1020,6 +1398,18 @@ namespace ActionBuilder
                 case 1:
                     _currentBoxCount = _hurtboxes.Count;
                     break;
+                case 2:
+                    _currentBoxCount = _grabboxes.Count;
+                    break;
+                case 3:
+                    _currentBoxCount = _armorboxes.Count;
+                    break;
+                case 4:
+                    _currentBoxCount = _collisionboxes.Count;
+                    break;
+                case 5:
+                    _currentBoxCount = _databoxes.Count;
+                    break;
             }
 
             // Release the mouse capture and stop tracking it.
@@ -1046,10 +1436,19 @@ namespace ActionBuilder
 
             if (_boxPlaceMode <= -1) return;
             if (!_mouseDown) return;
-            if (_boxPlaceMode == 0)
-                if (_hitboxes.Count == _currentBoxCount) return;
-                else if (_boxPlaceMode == 1)
-                    if (_hurtboxes.Count == _currentBoxCount) return;
+
+            switch (_boxPlaceMode)
+            {
+                case 0 when _hitboxes.Count == _currentBoxCount:
+                case 1 when _hurtboxes.Count == _currentBoxCount:
+                case 2 when _grabboxes.Count == _currentBoxCount:
+                case 3 when _armorboxes.Count == _currentBoxCount:
+                case 4 when _collisionboxes.Count == _currentBoxCount:
+                case 5 when _databoxes.Count == _currentBoxCount:
+                    return;
+                default:
+                    break;
+            }
 
 
             Canvas.SetLeft(CurrentBoxList().Last().Rect, _mouseDownPos.X);
@@ -1097,6 +1496,14 @@ namespace ActionBuilder
                     return ref _hitboxes;
                 case 1:
                     return ref _hurtboxes;
+                case 2:
+                    return ref _grabboxes;
+                case 3:
+                    return ref _armorboxes;
+                case 4:
+                    return ref _collisionboxes;
+                case 5:
+                    return ref _databoxes;
                 default:
                     return ref _hitboxes;
             }
@@ -1173,6 +1580,22 @@ namespace ActionBuilder
                             {
                                 box.Box.X += (int)difference;
                             }
+                            foreach (var box in _grabboxes)
+                            {
+                                box.Box.X += (int)difference;
+                            }
+                            foreach (var box in _armorboxes)
+                            {
+                                box.Box.X += (int)difference;
+                            }
+                            foreach (var box in _collisionboxes)
+                            {
+                                box.Box.X += (int)difference;
+                            }
+                            foreach (var box in _databoxes)
+                            {
+                                box.Box.X += (int)difference;
+                            }
 
                             Canvas.SetLeft(AnchorPoint, x);
 
@@ -1203,6 +1626,22 @@ namespace ActionBuilder
                         foreach (var box in _hurtboxes)
                         {
                             box.Box.Y += (int) difference;
+                        }
+                        foreach (var box in _grabboxes)
+                        {
+                            box.Box.Y += (int)difference;
+                        }
+                        foreach (var box in _armorboxes)
+                        {
+                            box.Box.Y += (int)difference;
+                        }
+                        foreach (var box in _collisionboxes)
+                        {
+                            box.Box.Y += (int)difference;
+                        }
+                        foreach (var box in _databoxes)
+                        {
+                            box.Box.Y += (int)difference;
                         }
 
                         Canvas.SetTop(AnchorPoint, y);
