@@ -305,191 +305,6 @@ namespace ActionBuilder
             JsonUtils.WriteToJson(filepath, actionJson);
         }
 
-        #region BoxButtons
-
-        private void HitboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction().FrameCount <= 0) return;
-
-            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(140, 30,  74 ) };
-
-            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
-            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
-            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
-            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
-            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
-
-            _boxPlaceMode = _boxPlaceMode == 0 ? -1 : 0;
-            HurtboxButton.IsChecked = false;
-        }
-
-        private void HurtboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction().FrameCount <= 0) return;
-
-            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(35, 132, 90) };
-
-            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
-            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
-            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
-            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
-            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
-
-            _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
-            HitboxButton.IsChecked = false;
-        }
-
-        private void GrabboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction().FrameCount <= 0) return;
-
-            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(50, 110, 190) };
-
-            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
-            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
-            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
-            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
-            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
-
-            _boxPlaceMode = _boxPlaceMode == 2 ? -1 : 2;
-            HitboxButton.IsChecked = false;
-        }
-
-        private void ArmorboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction().FrameCount <= 0) return;
-
-            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(179, 151, 88) };
-
-            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
-            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
-            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
-            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
-            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
-
-            _boxPlaceMode = _boxPlaceMode == 3 ? -1 : 3;
-            HitboxButton.IsChecked = false;
-        }
-
-        private void CollisionboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction().FrameCount <= 0) return;
-
-            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(159, 92, 154) };
-
-            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
-            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
-            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
-            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
-            DataboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
-
-            _boxPlaceMode = _boxPlaceMode == 4 ? -1 : 4;
-            HitboxButton.IsChecked = false;
-        }
-
-        private void DataboxButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction().FrameCount <= 0) return;
-
-            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(105, 85, 120) };
-
-            HurtboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  249, 170) };
-            HitboxButton.Background       = new SolidColorBrush { Color = Color.FromRgb(247, 56,  133) };
-            GrabboxButton.Background      = new SolidColorBrush { Color = Color.FromRgb(67,  148, 249) };
-            ArmorboxButton.Background     = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
-            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
-           
-            _boxPlaceMode = _boxPlaceMode == 5 ? -1 : 5;
-            HitboxButton.IsChecked = false;
-        }
-
-
-        private void HitboxButton_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (!HitboxButton.IsChecked.HasValue) return;
-            if (!HitboxButton.IsChecked.Value)
-                HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(193, 44, 104) };
-        }
-
-        private void HitboxButton_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!HitboxButton.IsChecked.HasValue) return;
-            if (!HitboxButton.IsChecked.Value)
-                HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
-        }
-
-        private void HurtboxButton_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (!HurtboxButton.IsChecked.HasValue) return;
-            if (!HurtboxButton.IsChecked.Value)
-                HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(51, 191, 130) };
-        }
-
-        private void HurtboxButton_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!HurtboxButton.IsChecked.HasValue) return;
-            if (!HurtboxButton.IsChecked.Value)
-                HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
-        }
-
-        private void GrabboxButton_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (!GrabboxButton.IsChecked.HasValue) return;
-            if (!GrabboxButton.IsChecked.Value)
-                GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(50, 110, 190) };
-        }
-
-        private void GrabboxButton_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!GrabboxButton.IsChecked.HasValue) return;
-            if (!GrabboxButton.IsChecked.Value)
-                GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
-        }
-
-        private void ArmorboxButton_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (!ArmorboxButton.IsChecked.HasValue) return;
-            if (!ArmorboxButton.IsChecked.Value)
-                ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(179, 151, 88) };
-        }
-
-        private void ArmorboxButton_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!ArmorboxButton.IsChecked.HasValue) return;
-            if (!ArmorboxButton.IsChecked.Value)
-                ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
-        }
-
-        private void CollisionboxButton_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (!CollisionboxButton.IsChecked.HasValue) return;
-            if (!CollisionboxButton.IsChecked.Value)
-                CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(159, 92, 154) };
-        }
-
-        private void CollisionboxButton_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!CollisionboxButton.IsChecked.HasValue) return;
-            if (!CollisionboxButton.IsChecked.Value)
-                CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
-        }
-
-        private void DataboxButton_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            if (!DataboxButton.IsChecked.HasValue) return;
-            if (!DataboxButton.IsChecked.Value)
-                DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(105, 85, 120) };
-        }
-
-        private void DataboxButton_OnMouseLeave(object sender, MouseEventArgs e)
-        {
-            if (!DataboxButton.IsChecked.HasValue) return;
-            if (!DataboxButton.IsChecked.Value)
-                DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
-        }
-
-        #endregion
-
         // action dropdown selection changed
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -746,8 +561,8 @@ namespace ActionBuilder
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                Canvas.SetLeft(r, box.X);
-                Canvas.SetTop(r, box.Y);
+                Canvas.SetLeft(r, box.X + Canvas.GetLeft(AnchorPoint));
+                Canvas.SetTop(r, box.Y + Canvas.GetTop(AnchorPoint));
 
                 BoxCanvas.Children.Add(r);
 
@@ -769,8 +584,8 @@ namespace ActionBuilder
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                Canvas.SetLeft(r, box.X);
-                Canvas.SetTop(r, box.Y);
+                Canvas.SetLeft(r, box.X + Canvas.GetLeft(AnchorPoint));
+                Canvas.SetTop(r, box.Y + Canvas.GetTop(AnchorPoint));
 
                 BoxCanvas.Children.Add(r);
 
@@ -792,8 +607,8 @@ namespace ActionBuilder
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                Canvas.SetLeft(r, box.X);
-                Canvas.SetTop(r, box.Y);
+                Canvas.SetLeft(r, box.X + Canvas.GetLeft(AnchorPoint));
+                Canvas.SetTop(r, box.Y + Canvas.GetTop(AnchorPoint));
 
                 BoxCanvas.Children.Add(r);
 
@@ -815,8 +630,8 @@ namespace ActionBuilder
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                Canvas.SetLeft(r, box.X);
-                Canvas.SetTop(r, box.Y);
+                Canvas.SetLeft(r, box.X + Canvas.GetLeft(AnchorPoint));
+                Canvas.SetTop(r, box.Y + Canvas.GetTop(AnchorPoint));
 
                 BoxCanvas.Children.Add(r);
 
@@ -838,8 +653,8 @@ namespace ActionBuilder
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                Canvas.SetLeft(r, box.X);
-                Canvas.SetTop(r, box.Y);
+                Canvas.SetLeft(r, box.X + Canvas.GetLeft(AnchorPoint));
+                Canvas.SetTop(r, box.Y + Canvas.GetTop(AnchorPoint));
 
                 BoxCanvas.Children.Add(r);
 
@@ -861,8 +676,8 @@ namespace ActionBuilder
                 r.MouseLeave += Box_MouseLeave;
                 r.MouseLeftButtonDown += Box_MouseLeftButtonDown;
 
-                Canvas.SetLeft(r, box.X);
-                Canvas.SetTop(r, box.Y);
+                Canvas.SetLeft(r, box.X + Canvas.GetLeft(AnchorPoint));
+                Canvas.SetTop(r, box.Y + Canvas.GetTop(AnchorPoint));
 
                 BoxCanvas.Children.Add(r);
 
@@ -1511,6 +1326,7 @@ namespace ActionBuilder
 
         private void ImportSpriteButton_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentAction() == null) return;
             if (CurrentAction().FrameCount <= 0) return;
 
             var openFileDialog = new OpenFileDialog
@@ -1657,6 +1473,8 @@ namespace ActionBuilder
 
         private void ClearSpriteButton_OnClick(object sender, RoutedEventArgs e)
         {
+            if (CurrentAction() == null) return;
+
             CurrentFrameImage.Source = null;
             if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count > (int)FrameSlider.Value)
                 _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] = new BitmapImage();
@@ -1670,5 +1488,190 @@ namespace ActionBuilder
                 throw;
             }
         }
+
+        #region BoxButtons
+
+        private void HitboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(140, 30, 74) };
+
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+            GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 0 ? -1 : 0;
+            HurtboxButton.IsChecked = false;
+        }
+
+        private void HurtboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(35, 132, 90) };
+
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+            GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void GrabboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(50, 110, 190) };
+
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 2 ? -1 : 2;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void ArmorboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(179, 151, 88) };
+
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+            GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 3 ? -1 : 3;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void CollisionboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(159, 92, 154) };
+
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+            GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+
+            _boxPlaceMode = _boxPlaceMode == 4 ? -1 : 4;
+            HitboxButton.IsChecked = false;
+        }
+
+        private void DataboxButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction().FrameCount <= 0) return;
+
+            DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(105, 85, 120) };
+
+            HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+            HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+            GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+            ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+            CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+
+            _boxPlaceMode = _boxPlaceMode == 5 ? -1 : 5;
+            HitboxButton.IsChecked = false;
+        }
+
+
+        private void HitboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!HitboxButton.IsChecked.HasValue) return;
+            if (!HitboxButton.IsChecked.Value)
+                HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(193, 44, 104) };
+        }
+
+        private void HitboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!HitboxButton.IsChecked.HasValue) return;
+            if (!HitboxButton.IsChecked.Value)
+                HitboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(247, 56, 133) };
+        }
+
+        private void HurtboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!HurtboxButton.IsChecked.HasValue) return;
+            if (!HurtboxButton.IsChecked.Value)
+                HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(51, 191, 130) };
+        }
+
+        private void HurtboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!HurtboxButton.IsChecked.HasValue) return;
+            if (!HurtboxButton.IsChecked.Value)
+                HurtboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 249, 170) };
+        }
+
+        private void GrabboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!GrabboxButton.IsChecked.HasValue) return;
+            if (!GrabboxButton.IsChecked.Value)
+                GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(50, 110, 190) };
+        }
+
+        private void GrabboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!GrabboxButton.IsChecked.HasValue) return;
+            if (!GrabboxButton.IsChecked.Value)
+                GrabboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(67, 148, 249) };
+        }
+
+        private void ArmorboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!ArmorboxButton.IsChecked.HasValue) return;
+            if (!ArmorboxButton.IsChecked.Value)
+                ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(179, 151, 88) };
+        }
+
+        private void ArmorboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!ArmorboxButton.IsChecked.HasValue) return;
+            if (!ArmorboxButton.IsChecked.Value)
+                ArmorboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 215, 125) };
+        }
+
+        private void CollisionboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!CollisionboxButton.IsChecked.HasValue) return;
+            if (!CollisionboxButton.IsChecked.Value)
+                CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(159, 92, 154) };
+        }
+
+        private void CollisionboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!CollisionboxButton.IsChecked.HasValue) return;
+            if (!CollisionboxButton.IsChecked.Value)
+                CollisionboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(255, 147, 247) };
+        }
+
+        private void DataboxButton_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!DataboxButton.IsChecked.HasValue) return;
+            if (!DataboxButton.IsChecked.Value)
+                DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(105, 85, 120) };
+        }
+
+        private void DataboxButton_OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!DataboxButton.IsChecked.HasValue) return;
+            if (!DataboxButton.IsChecked.Value)
+                DataboxButton.Background = new SolidColorBrush { Color = Color.FromRgb(174, 141, 199) };
+        }
+
+        #endregion
     }
 }
