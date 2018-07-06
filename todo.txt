@@ -4,6 +4,7 @@ TODO
 - delete action button
 - delete box button
 - grab, armor, collision, trigger/data boxes - DONE
+- fix weird box moving bug
 - clear all boxes button
 - boxes load properly
 - ids not displaying
