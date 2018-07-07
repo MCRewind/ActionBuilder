@@ -698,6 +698,32 @@ namespace ActionBuilder
 
             _previousFrame = (int)FrameSlider.Value;
 
+            switch (_currentBoxType)
+            {
+                case 0:
+                    _selectedBox = _hitboxes.Count > 0 ? 0 : -1;
+                    break;
+                case 1:
+                    _selectedBox = _hurtboxes.Count > 0 ? 0 : -1;
+                    break;
+                case 2:
+                    _selectedBox = _grabboxes.Count > 0 ? 0 : -1;
+                    break;
+                case 3:
+                    _selectedBox = _armorboxes.Count > 0 ? 0 : -1;
+                    break;
+                case 4:
+                    _selectedBox = _collisionboxes.Count > 0 ? 0 : -1;
+                    break;
+                case 5:
+                    _selectedBox = _databoxes.Count > 0 ? 0 : -1;
+                    break;
+                default:
+                    _selectedBox = _hitboxes.Count > 0 ? 0 : -1;
+                    break;
+            }
+
+
             UpdateBoxUiState();
             UpdateBoxList();
         }
@@ -964,28 +990,36 @@ namespace ActionBuilder
         private BoxInfo SelectedBox()
         {
             if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + _armorboxes.Count + _collisionboxes.Count)
-                return _databoxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count - _armorboxes.Count - _collisionboxes.Count];
+                if (_databoxes.Count > 0)
+                    return _databoxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count - _armorboxes.Count - _collisionboxes.Count];
 
             if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count + _armorboxes.Count)
-                return _collisionboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count - _armorboxes.Count];
+                if (_collisionboxes.Count > 0)
+                    return _collisionboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count - _armorboxes.Count];
 
             if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count + _grabboxes.Count)
-                return _armorboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count];
+                if (_armorboxes.Count > 0)
+                    return _armorboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count - _grabboxes.Count];
 
             if (_selectedBox >= _hitboxes.Count + _hurtboxes.Count)
-                return _grabboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count];
+                if (_grabboxes.Count > 0)
+                    return _grabboxes[_selectedBox - _hitboxes.Count - _hurtboxes.Count];
 
             if (_selectedBox >= _hitboxes.Count)
-                return _hurtboxes[_selectedBox - _hitboxes.Count];
+                if (_hurtboxes.Count > 0)
+                    return _hurtboxes[_selectedBox - _hitboxes.Count];
 
-            return _hitboxes[_selectedBox];
+                return _hitboxes[_selectedBox];
         }
 
         private void Box_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is Rectangle rect)) return;
 
+            if (_selectedBox == -1) _selectedBox = 0;
+
             if (IsSelectedBox(rect)) return;
+
 
             // if selected box is a selected hitbox
             if (SelectedBox().Rect.Fill.IsEqualTo(_hitOverBrush))
@@ -1872,6 +1906,76 @@ namespace ActionBuilder
 
                     break;
             }
+        }
+
+        private void DeleteBoxButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            //var rect = IndexFromRect(SelectedBox().Rect);
+            if (_selectedBox < 0) return;
+
+            switch (_currentBoxType)
+            {
+                case 0:
+                    if (_hitboxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_hitboxes[_selectedBox].Rect);
+                        _hitboxes.RemoveAt(_selectedBox);
+
+                    }
+                    break;
+                case 1:
+                    if (_hurtboxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_hurtboxes[_selectedBox].Rect);
+                        _hurtboxes.RemoveAt(_selectedBox);
+                    }
+
+                    break;
+                case 2:
+                    if (_grabboxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_grabboxes[_selectedBox].Rect);
+                        _grabboxes.RemoveAt(_selectedBox);
+                    }
+
+                    break;
+                case 3:
+                    if (_armorboxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_armorboxes[_selectedBox].Rect);
+                        _armorboxes.RemoveAt(_selectedBox);
+                    }
+
+                    break;
+                case 4:
+                    if (_collisionboxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_collisionboxes[_selectedBox].Rect);
+                        _collisionboxes.RemoveAt(_selectedBox);
+                    }
+
+                    break;
+                case 5:
+                    if (_databoxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_databoxes[_selectedBox].Rect);
+                        _databoxes.RemoveAt(_selectedBox);
+                    }
+
+                    break;
+                default:
+                    if (_hitboxes.Count > _selectedBox)
+                    {
+                        BoxCanvas.Children.Remove(_hitboxes[_selectedBox].Rect);
+                        _hitboxes.RemoveAt(_selectedBox);
+                    }
+
+                    break;
+            }
+
+            _selectedBox = -1;
+
+            UpdateBoxList();
         }
     }
 }
