@@ -1097,6 +1097,8 @@ namespace ActionBuilder
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            
             _mouseDownPos = new IntCouple((int) e.GetPosition(BoxCanvas).X, (int) e.GetPosition(BoxCanvas).Y);
             _anchoredMouseDownPos = new IntCouple((int)e.GetPosition(AnchorPoint).X, (int)e.GetPosition(AnchorPoint).Y);
 

@@ -4,7 +4,8 @@ TODO
 - delete action button
 - delete box button
 - grab, armor, collision, trigger/data boxes - DONE
-- fix weird box moving bug
+- fix weird box moving with anchor bug
+- fix pan lock from box drawn with middle click - DONE
 - clear all boxes button
 - boxes load properly
 - ids not displaying
