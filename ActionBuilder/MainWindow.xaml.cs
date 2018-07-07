@@ -778,7 +778,7 @@ namespace ActionBuilder
                 FrameSlider.Maximum = 0;
             else
                 FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1 : 0;
-            if (CurrentAction().FrameCount == 0)
+            if (CurrentAction() == null || CurrentAction().FrameCount == 0)
             {
                 //FrameSlider.Value = 0;
                 FrameSlider.IsEnabled = false;
