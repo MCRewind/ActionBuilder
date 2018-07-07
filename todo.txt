@@ -1,7 +1,7 @@
 TODO
 
 - delete character button - DONE
-- delete action button
+- delete action button - DONE
 - delete box button
 - grab, armor, collision, trigger/data boxes - DONE
 - fix weird box moving with anchor bug

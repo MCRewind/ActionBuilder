@@ -14,6 +14,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Path = System.IO.Path;
 using static ActionBuilder.ActionInfo;
+using System.ComponentModel;
 
 namespace ActionBuilder
 {
@@ -27,7 +28,7 @@ namespace ActionBuilder
         private readonly List<CharacterInfo> _characters;
         private readonly List<ActionInfo> _actions;
         private readonly List<EditorInfo> _editorInfos;
-        private List<BoxInfo> _hitboxes, _hurtboxes, _grabboxes, _armorboxes, _collisionboxes, _databoxes;
+        private BindingList<BoxInfo> _hitboxes, _hurtboxes, _grabboxes, _armorboxes, _collisionboxes, _databoxes;
         private readonly List<List<BitmapImage>> _actionAnims;
 
         private readonly SolidColorBrush _hurtBrush;
@@ -54,6 +55,7 @@ namespace ActionBuilder
         private int _boxPlaceMode = -1;
         private int _currentBoxCount;
         private int _previousFrame;
+        private int _currentBoxType;
 
         private const int GridSize = 4;
 
@@ -132,12 +134,12 @@ namespace ActionBuilder
             _characters     = new List<CharacterInfo>();
             _actions        = new List<ActionInfo>();
             _editorInfos    = new List<EditorInfo>();
-            _hitboxes       = new List<BoxInfo>();
-            _hurtboxes      = new List<BoxInfo>();
-            _grabboxes      = new List<BoxInfo>();
-            _armorboxes     = new List<BoxInfo>();
-            _collisionboxes = new List<BoxInfo>();
-            _databoxes      = new List<BoxInfo>();
+            _hitboxes       = new BindingList<BoxInfo>();
+            _hurtboxes      = new BindingList<BoxInfo>();
+            _grabboxes      = new BindingList<BoxInfo>();
+            _armorboxes     = new BindingList<BoxInfo>();
+            _collisionboxes = new BindingList<BoxInfo>();
+            _databoxes      = new BindingList<BoxInfo>();
 
             _hurtBrush          = new SolidColorBrush { Color = Color.FromRgb(112, 255, 150) };
             _hurtOverBrush      = new SolidColorBrush { Color = Color.FromRgb(52, 249, 114) };
@@ -152,7 +154,7 @@ namespace ActionBuilder
             _dataBrush          = new SolidColorBrush { Color = Color.FromRgb(177, 131, 202) };
             _dataOverBrush      = new SolidColorBrush { Color = Color.FromRgb(110, 17, 195) };
 
-
+            
             InitializeComponent();
 
             LoadCharacters("../../Characters/");
@@ -546,6 +548,7 @@ namespace ActionBuilder
             _collisionboxes.Clear();
             _databoxes.Clear();
             BoxCanvas.Children.Clear();
+            BoxList.Items.Clear();
            
             foreach (var box in currentAction.Hitboxes[(int) FrameSlider.Value])
             {
@@ -695,6 +698,7 @@ namespace ActionBuilder
             _previousFrame = (int)FrameSlider.Value;
 
             UpdateBoxUiState();
+            UpdateBoxList();
         }
 
         private void PrevFrameButton_Click(object sender, RoutedEventArgs e) => --FrameSlider.Value;
@@ -830,6 +834,34 @@ namespace ActionBuilder
             BoxKbAngleSlider.IsEnabled = true;
         }
 
+        private void UpdateBoxList()
+        {
+            switch (_currentBoxType)
+            {
+                case 0:
+                    BoxList.ItemsSource = _hitboxes.Select(x => x.Rect.Name).ToList();
+                    break;
+                case 1:
+                    BoxList.ItemsSource = _hurtboxes.Select(x => x.Rect.Name).ToList();
+                    break;
+                case 2:
+                    BoxList.ItemsSource = _grabboxes.Select(x => x.Rect.Name).ToList();
+                    break;
+                case 3:
+                    BoxList.ItemsSource = _armorboxes.Select(x => x.Rect.Name).ToList();
+                    break;
+                case 4:
+                    BoxList.ItemsSource = _collisionboxes.Select(x => x.Rect.Name).ToList();
+                    break;
+                case 5:
+                    BoxList.ItemsSource = _databoxes.Select(x => x.Rect.Name).ToList();
+                    break;
+                default:
+                    BoxList.ItemsSource = _hitboxes.Select(x => x.Rect.Name).ToList();
+                    break;
+            }
+        }
+
         private void EditGridZoomBorderMouseDown(object sender, MouseButtonEventArgs e)
         {
             
@@ -956,17 +988,35 @@ namespace ActionBuilder
 
             // if selected box is a selected hitbox
             if (SelectedBox().Rect.Fill.IsEqualTo(_hitOverBrush))
+            {
                 SelectedBox().Rect.Fill = _hitBrush;
+                _currentBoxType = 0;
+            }
             else if (SelectedBox().Rect.Fill.IsEqualTo(_hurtOverBrush))
+            {
                 SelectedBox().Rect.Fill = _hurtBrush;
+                _currentBoxType = 1;
+            }
             else if (SelectedBox().Rect.Fill.IsEqualTo(_grabOverBrush))
+            {
                 SelectedBox().Rect.Fill = _grabBrush;
+                _currentBoxType = 2;
+            }
             else if (SelectedBox().Rect.Fill.IsEqualTo(_armorOverBrush))
+            {
                 SelectedBox().Rect.Fill = _armorBrush;
+                _currentBoxType = 3;
+            }
             else if (SelectedBox().Rect.Fill.IsEqualTo(_collisionOverBrush))
+            {
                 SelectedBox().Rect.Fill = _collisionBrush;
+                _currentBoxType = 4;
+            }
             else if (SelectedBox().Rect.Fill.IsEqualTo(_dataOverBrush))
+            {
                 SelectedBox().Rect.Fill = _dataBrush;
+                _currentBoxType = 5;
+            }
 
             var index = IndexFromRect(rect);
 
@@ -983,6 +1033,9 @@ namespace ActionBuilder
             BoxIdTextBlock.Text = "ID: " + SelectedBox().Rect.Name;
 
             UpdateBoxUiState();
+
+            UpdateBoxList();
+            BoxList.SelectedIndex = index;
         }
 
         private void BoxXText_KeyDown(object sender, KeyEventArgs e)
@@ -1235,6 +1288,8 @@ namespace ActionBuilder
                     break;
             }
 
+            UpdateBoxList();
+
             // Release the mouse capture and stop tracking it.
             EditCanvas.ReleaseMouseCapture();
 
@@ -1311,7 +1366,7 @@ namespace ActionBuilder
             BoxHeightText.Text = CurrentBoxList().Last().Box.Height.ToString();
         }
 
-        private ref List<BoxInfo> CurrentBoxList()
+        private ref BindingList<BoxInfo> CurrentBoxList()
         {
             switch (_boxPlaceMode)
             {
@@ -1513,6 +1568,8 @@ namespace ActionBuilder
 
             _boxPlaceMode = _boxPlaceMode == 0 ? -1 : 0;
             HurtboxButton.IsChecked = false;
+            _currentBoxType = 0;
+            UpdateBoxList();
         }
 
         private void HurtboxButton_Click(object sender, RoutedEventArgs e)
@@ -1529,6 +1586,8 @@ namespace ActionBuilder
 
             _boxPlaceMode = _boxPlaceMode == 1 ? -1 : 1;
             HitboxButton.IsChecked = false;
+            _currentBoxType = 1;
+            UpdateBoxList();
         }
 
         private void GrabboxButton_Click(object sender, RoutedEventArgs e)
@@ -1545,6 +1604,8 @@ namespace ActionBuilder
 
             _boxPlaceMode = _boxPlaceMode == 2 ? -1 : 2;
             HitboxButton.IsChecked = false;
+            _currentBoxType = 2;
+            UpdateBoxList();
         }
 
         private void ArmorboxButton_Click(object sender, RoutedEventArgs e)
@@ -1561,6 +1622,8 @@ namespace ActionBuilder
 
             _boxPlaceMode = _boxPlaceMode == 3 ? -1 : 3;
             HitboxButton.IsChecked = false;
+            _currentBoxType = 3;
+            UpdateBoxList();
         }
 
         private void CollisionboxButton_Click(object sender, RoutedEventArgs e)
@@ -1577,6 +1640,8 @@ namespace ActionBuilder
 
             _boxPlaceMode = _boxPlaceMode == 4 ? -1 : 4;
             HitboxButton.IsChecked = false;
+            _currentBoxType = 4;
+            UpdateBoxList();
         }
 
         private void DataboxButton_Click(object sender, RoutedEventArgs e)
@@ -1593,6 +1658,8 @@ namespace ActionBuilder
 
             _boxPlaceMode = _boxPlaceMode == 5 ? -1 : 5;
             HitboxButton.IsChecked = false;
+            _currentBoxType = 5;
+            UpdateBoxList();
         }
 
 

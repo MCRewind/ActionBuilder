@@ -145,43 +145,44 @@
         </Grid>
 
         <Grid Margin="0,10,10,10" HorizontalAlignment="Right" Width="248">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="223*"/>
+            </Grid.ColumnDefinitions>
             <Border
                 BorderBrush="DarkCyan" 
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"/>
-            <TextBox x:Name="NameTextBox"          Height="23" Margin="10,41,47,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="NameTextBox_KeyDown"/>
-            <TextBox x:Name="CharacterNameTextBox" Height="23" Margin="10,10,47,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="CharacterNameTextBox_KeyDown"/>
+                VerticalAlignment="Stretch" Grid.ColumnSpan="2"/>
+            <TextBox x:Name="NameTextBox"          Height="23" Margin="10,41,47,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="NameTextBox_KeyDown" Grid.ColumnSpan="2"/>
+            <TextBox x:Name="CharacterNameTextBox" Height="23" Margin="10,10,47,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="CharacterNameTextBox_KeyDown" Grid.ColumnSpan="2"/>
 
-            <TextBlock x:Name="FrameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
-            <ComboBox x:Name="FrameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="FrameTypeDropdown_SelectionChanged" />
-            <Grid HorizontalAlignment="Left" Margin="10,0,0,10" Width="228" Height="186" VerticalAlignment="Bottom">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="14*"/>
-                    <RowDefinition Height="181*"/>
-                </Grid.RowDefinitions>
-                <TextBox x:Name="BoxXText" HorizontalAlignment="Left" Height="23" Margin="10,14,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102" KeyDown="BoxXText_KeyDown" Grid.RowSpan="2"/>
-                <TextBox x:Name="BoxYText" HorizontalAlignment="Left" Height="23" Margin="117,14,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101" KeyDown="BoxYText_KeyDown" Grid.RowSpan="2"/>
-                <TextBox x:Name="BoxWidthText" HorizontalAlignment="Left" Height="23" Margin="10,51,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" KeyDown="BoxWidthText_KeyDown" Grid.Row="1"/>
-                <TextBox x:Name="BoxHeightText" HorizontalAlignment="Left" Height="23" Margin="117,51,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" KeyDown="BoxHeightText_KeyDown" Grid.Row="1"/>
-                <TextBox x:Name="BoxDmgText" HorizontalAlignment="Left" Height="23" Margin="10,103,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" KeyDown="BoxDMGText_KeyDown" Grid.Row="1"/>
-                <TextBox x:Name="BoxKbStrengthText" HorizontalAlignment="Left" Height="23" Margin="117,103,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" KeyDown="BoxKBStrengthText_KeyDown" Grid.Row="1"/>
-                <Slider x:Name="BoxKbAngleSlider" HorizontalAlignment="Left" Margin="10,155.333,0,0" VerticalAlignment="Top" Width="208" ValueChanged="BoxKBAngleSlider_ValueChanged" Grid.Row="1"/>
-                <TextBlock x:Name="KbAngleText" HorizontalAlignment="Left" Margin="10,134,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Knockback Angle" Grid.Row="1"/>
-                <TextBlock x:Name="BoxAngleText" HorizontalAlignment="Left" Margin="196,134.333,0,0" TextWrapping="Wrap" Text="0°" VerticalAlignment="Top" Grid.Row="1"/>
-                <TextBlock x:Name="DamageTextBlock" HorizontalAlignment="Left" Margin="10,82,0,0" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Top" Width="102" Grid.Row="1"/>
-                <TextBlock x:Name="KbStrengthTextBlock" HorizontalAlignment="Left" Margin="117,82,0,0" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Top" Width="101" Grid.Row="1"/>
-                <TextBlock x:Name="WidthTextBlock" HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Width="102" Grid.Row="1"/>
-                <TextBlock x:Name="HeghtTextBlock" HorizontalAlignment="Left" Margin="117,30,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Width="101" RenderTransformOrigin="0.512,1.086" Grid.Row="1"/>
-                <TextBlock x:Name="XPosTextBlock" HorizontalAlignment="Left" Margin="10,-8,0,0" TextWrapping="Wrap" Text="X" VerticalAlignment="Top" Width="102"/>
-                <TextBlock x:Name="YPosTextBlock" HorizontalAlignment="Left" Margin="117,-8,0,0" TextWrapping="Wrap" Text="Y" VerticalAlignment="Top" Width="101"/>
-                <TextBox x:Name="BoxLifespanText" HorizontalAlignment="Left" Height="23" Margin="10,-39,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101" KeyDown="BoxYText_KeyDown"/>
-                <TextBlock x:Name="BoxIdTextBlock" HorizontalAlignment="Left" Margin="116,-39,0,0" TextWrapping="Wrap" Text="ID: " VerticalAlignment="Top" Width="62" Height="26" FontSize="20"/>
-                <TextBlock x:Name="BoxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,-60,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101"/>
+            <TextBlock x:Name="FrameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15" Grid.ColumnSpan="2"/>
+            <ComboBox x:Name="FrameTypeDropdown" HorizontalAlignment="Left" Margin="70,72,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="FrameTypeDropdown_SelectionChanged" Grid.Column="1" />
 
-            </Grid>
-            <Button x:Name="DeleteCharacterButton" Content="X" HorizontalAlignment="Left" Margin="206,10,0,0" VerticalAlignment="Top" Width="32" Click="DeleteCharacterButton_OnClick"/>
-            <Button x:Name="DeleteActionButton" Content="X" HorizontalAlignment="Left" Margin="206,41,0,0" VerticalAlignment="Top" Width="32" Click="DeleteActionButton_OnClick"/>
+            <TextBox x:Name="BoxXText" HorizontalAlignment="Left" Height="23" Margin="11,0,0,157" TextWrapping="Wrap" Text="X" VerticalAlignment="Bottom" Width="102" KeyDown="BoxXText_KeyDown" Grid.ColumnSpan="2"/>
+            <TextBox x:Name="BoxYText" HorizontalAlignment="Left" Height="23" Margin="93,0,0,157" TextWrapping="Wrap" Text="Y" VerticalAlignment="Bottom" Width="101" KeyDown="BoxYText_KeyDown" Grid.Column="1"/>
+            <TextBox x:Name="BoxWidthText" HorizontalAlignment="Left" Height="23" Margin="11,0,0,105" TextWrapping="Wrap" Text="Width" VerticalAlignment="Bottom" Width="102" KeyDown="BoxWidthText_KeyDown" Grid.ColumnSpan="2"/>
+            <TextBox x:Name="BoxHeightText" HorizontalAlignment="Left" Height="23" Margin="93,0,0,105" TextWrapping="Wrap" Text="Height" VerticalAlignment="Bottom" Width="101" KeyDown="BoxHeightText_KeyDown" Grid.Column="1"/>
+            <TextBox x:Name="BoxDmgText" HorizontalAlignment="Left" Height="23" Margin="10,0,0,53" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Bottom" Width="102" KeyDown="BoxDMGText_KeyDown" Grid.ColumnSpan="2"/>
+            <TextBox x:Name="BoxKbStrengthText" HorizontalAlignment="Left" Height="23" Margin="93,0,0,53" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Bottom" Width="101" KeyDown="BoxKBStrengthText_KeyDown" Grid.Column="1"/>
+            <Slider  x:Name="BoxKbAngleSlider" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Width="208" ValueChanged="BoxKBAngleSlider_ValueChanged" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="KbAngleText" HorizontalAlignment="Left" Margin="11,0,0,31" TextWrapping="Wrap" VerticalAlignment="Bottom" Text="Knockback Angle" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="BoxAngleText" HorizontalAlignment="Left" Margin="181,0,0,31" TextWrapping="Wrap" Text="0°" VerticalAlignment="Bottom" Grid.Column="1" RenderTransformOrigin="0.636,0.375"/>
+            <TextBlock x:Name="DamageTextBlock" HorizontalAlignment="Left" Margin="11,0,0,84" TextWrapping="Wrap" Text="Damage" VerticalAlignment="Bottom" Width="102" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="KbStrengthTextBlock" HorizontalAlignment="Left" Margin="93,0,0,84" TextWrapping="Wrap" Text="KB Strength" VerticalAlignment="Bottom" Width="101" Grid.Column="1"/>
+            <TextBlock x:Name="WidthTextBlock" HorizontalAlignment="Left" Margin="11,0,0,136" TextWrapping="Wrap" Text="Width" VerticalAlignment="Bottom" Width="102" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="HeghtTextBlock" HorizontalAlignment="Left" Margin="93,0,0,136" TextWrapping="Wrap" Text="Height" VerticalAlignment="Bottom" Width="101" RenderTransformOrigin="0.512,1.086" Grid.Column="1"/>
+            <TextBlock x:Name="XPosTextBlock" HorizontalAlignment="Left" Margin="11,0,0,188" TextWrapping="Wrap" Text="X" VerticalAlignment="Bottom" Width="102" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="YPosTextBlock" HorizontalAlignment="Left" Margin="93,0,0,188" TextWrapping="Wrap" Text="Y" VerticalAlignment="Bottom" Width="101" Grid.Column="1"/>
+            <TextBox   x:Name="BoxLifespanText" HorizontalAlignment="Left" Height="23" Margin="11,0,0,209" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Bottom" Width="101" KeyDown="BoxYText_KeyDown" Grid.ColumnSpan="2"/>
+            <TextBlock x:Name="BoxIdTextBlock" HorizontalAlignment="Left" Margin="92,0,0,209" TextWrapping="Wrap" Text="ID: " VerticalAlignment="Bottom" Width="62" Height="26" FontSize="20" Grid.Column="1"/>
+            <TextBlock x:Name="BoxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,0,0,240" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Bottom" Width="101" Grid.ColumnSpan="2"/>
+
+
+            <Button x:Name="DeleteCharacterButton" Content="X" HorizontalAlignment="Left" Margin="181,10,0,0" VerticalAlignment="Top" Width="32" Click="DeleteCharacterButton_OnClick" Grid.Column="1"/>
+            <Button x:Name="DeleteActionButton" Content="X" HorizontalAlignment="Left" Margin="181,41,0,0" VerticalAlignment="Top" Width="32" Click="DeleteActionButton_OnClick" Grid.Column="1"/>
+            <ListBox x:Name="BoxList" HorizontalAlignment="Left" Margin="10,103,0,261" VerticalAlignment="Stretch" Width="51" BorderBrush="Azure" BorderThickness="1" Grid.ColumnSpan="2"/>
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">
