@@ -548,7 +548,8 @@ namespace ActionBuilder
             _collisionboxes.Clear();
             _databoxes.Clear();
             BoxCanvas.Children.Clear();
-            BoxList.Items.Clear();
+            BoxList.ClearValue(ItemsControl.ItemsSourceProperty);
+            BoxList.ItemsSource = new List<string>();
            
             foreach (var box in currentAction.Hitboxes[(int) FrameSlider.Value])
             {
@@ -1036,6 +1037,7 @@ namespace ActionBuilder
 
             UpdateBoxList();
             BoxList.SelectedIndex = index;
+            BoxList.ScrollIntoView(BoxList.SelectedItem);
         }
 
         private void BoxXText_KeyDown(object sender, KeyEventArgs e)
