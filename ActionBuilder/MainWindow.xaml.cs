@@ -1752,7 +1752,57 @@ namespace ActionBuilder
 
         private void DeleteActionButton_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var result = MessageBox.Show
+            (
+                $"Are you sure you want to delete {CurrentAction().Name}?",
+                "Delete Action",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    if (Directory.Exists($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}"))
+                        try
+                        {
+                            Directory.Delete($"../../Textures/{CurrentCharacter().Name}/{CurrentAction().Name}", true);
+                        }
+                        catch (IOException exception)
+                        {
+                            Console.WriteLine(exception);
+                            throw;
+                        }
+
+                    if (File.Exists($"../../Actions/{CurrentCharacter().Name}/{CurrentAction().Name}.json"))
+                        try
+                        {
+                            File.Delete($"../../Actions/{CurrentCharacter().Name}/{CurrentAction().Name}.json");
+                        }
+                        catch (IOException exception)
+                        {
+                            Console.WriteLine(exception);
+                            throw;
+                        }
+
+
+                    _actionAnims.RemoveAt(CurrentActionDropdown.SelectedIndex);
+                    if (CurrentActionDropdown.HasItems)
+                    {
+                        _actions.Remove(CurrentAction());
+                        CurrentActionDropdown.Items.Remove(CurrentActionDropdown.SelectedItem);
+                    }
+
+                    NameTextBox.Text = string.Empty;
+
+                    CurrentFrameImage.Source = null;
+
+                    UpdateUiState();
+                    break;
+                case MessageBoxResult.No:
+
+                    break;
+            }
         }
     }
 }
