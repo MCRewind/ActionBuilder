@@ -21,7 +21,7 @@
                     <ToggleButton x:Name="ArmorboxButton"     Content="Armorbox"     HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#FFD77D" BorderBrush="Black" BorderThickness="2" MouseEnter="ArmorboxButton_OnMouseEnter"     MouseLeave="ArmorboxButton_OnMouseLeave"     Click="ArmorboxButton_Click"     Foreground="Black"/>
                     <ToggleButton x:Name="CollisionboxButton" Content="Collisionbox" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#FF93F7" BorderBrush="Black" BorderThickness="2" MouseEnter="CollisionboxButton_OnMouseEnter" MouseLeave="CollisionboxButton_OnMouseLeave" Click="CollisionboxButton_Click" Foreground="Black"/>
                     <ToggleButton x:Name="DataboxButton"      Content="Databox"      HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="90" Background="#AE8DC7" BorderBrush="Black" BorderThickness="2" MouseEnter="DataboxButton_OnMouseEnter"      MouseLeave="DataboxButton_OnMouseLeave"      Click="DataboxButton_Click"      Foreground="Black"/>
-                 </StackPanel>
+                </StackPanel>
             </ScrollViewer>
             <Button x:Name="NewCharacterButton" Content="New Character" HorizontalAlignment="Left" Margin="10,10,0,0"  VerticalAlignment="Top" Click="NewCharacterButton_Click" Width="112"/>
             <Button x:Name="NewActionButton"    Content="New Action"    HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Click="NewActionButton_Click" Width="112"/>
@@ -150,8 +150,8 @@
                 BorderThickness="3"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"/>
-            <TextBox x:Name="NameTextBox"          Height="23" Margin="10,41,10,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="NameTextBox_KeyDown"/>
-            <TextBox x:Name="CharacterNameTextBox" Height="23" Margin="10,10,10,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="CharacterNameTextBox_KeyDown"/>
+            <TextBox x:Name="NameTextBox"          Height="23" Margin="10,41,47,0" TextWrapping="Wrap" Text="Action Name"    VerticalAlignment="Top" KeyDown="NameTextBox_KeyDown"/>
+            <TextBox x:Name="CharacterNameTextBox" Height="23" Margin="10,10,47,0" TextWrapping="Wrap" Text="Character Name" VerticalAlignment="Top" KeyDown="CharacterNameTextBox_KeyDown"/>
 
             <TextBlock x:Name="FrameTypeText" HorizontalAlignment="Left" Margin="10,72,0,0" TextWrapping="Wrap" Text="Frame Type:" VerticalAlignment="Top" Height="26" Width="80" FontSize="15"/>
             <ComboBox x:Name="FrameTypeDropdown" HorizontalAlignment="Left" Margin="95,72,0,0" VerticalAlignment="Top"  Height="22" SelectionChanged="FrameTypeDropdown_SelectionChanged" />
@@ -180,6 +180,8 @@
                 <TextBlock x:Name="BoxLifespanTextBlock" HorizontalAlignment="Left" Margin="10,-60,0,0" TextWrapping="Wrap" Text="Lifespan" VerticalAlignment="Top" Width="101"/>
 
             </Grid>
+            <Button x:Name="DeleteCharacterButton" Content="X" HorizontalAlignment="Left" Margin="206,10,0,0" VerticalAlignment="Top" Width="32" Click="DeleteCharacterButton_OnClick"/>
+            <Button x:Name="DeleteActionButton" Content="X" HorizontalAlignment="Left" Margin="206,41,0,0" VerticalAlignment="Top" Width="32" Click="DeleteActionButton_OnClick"/>
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">

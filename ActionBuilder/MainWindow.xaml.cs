@@ -477,6 +477,7 @@ namespace ActionBuilder
         {
             if (!CharacterList.HasItems || CharacterList.SelectedIndex < 0 || e.Key != Key.Enter) return;
 
+            var selectedIndex = CharacterList.SelectedIndex;
             var oldName = CurrentCharacter().Name;
             CurrentCharacter().Name = CharacterNameTextBox.Text;
             UpdateCharacterNames();
@@ -499,6 +500,8 @@ namespace ActionBuilder
                 Console.WriteLine(exception);
                 throw;
             }
+
+            CharacterList.SelectedIndex = selectedIndex;
         }
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -771,7 +774,10 @@ namespace ActionBuilder
 
         private void UpdateUiState()
         {
-            FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1 : 0;
+            if (CurrentAction() == null)
+                FrameSlider.Maximum = 0;
+            else
+                FrameSlider.Maximum = CurrentAction().FrameCount > 1 ? CurrentAction().FrameCount - 1 : 0;
             if (CurrentAction().FrameCount == 0)
             {
                 //FrameSlider.Value = 0;
@@ -1118,7 +1124,7 @@ namespace ActionBuilder
 
                     box.Fill = _hitBrush;
 
-                    box.Name = "hit" + _hitboxes.Count;        
+                    box.Name = "I" + _hitboxes.Count;        
                     break;
 
                 case 1:
@@ -1128,7 +1134,7 @@ namespace ActionBuilder
 
                     box.Fill = _hurtBrush;
 
-                    box.Name = "hurt" + _hurtboxes.Count;
+                    box.Name = "U" + _hurtboxes.Count;
                     break;
                 case 2:
                     box.Stroke = Grabbox.Stroke;
@@ -1137,7 +1143,7 @@ namespace ActionBuilder
 
                     box.Fill = _grabBrush;
 
-                    box.Name = "grab" + _grabboxes.Count;
+                    box.Name = "G" + _grabboxes.Count;
                     break;
                 case 3:
                     box.Stroke = Armorbox.Stroke;
@@ -1146,7 +1152,7 @@ namespace ActionBuilder
 
                     box.Fill = _armorBrush;
 
-                    box.Name = "armor" + _armorboxes.Count;
+                    box.Name = "A" + _armorboxes.Count;
                     break;
                 case 4:
                     box.Stroke = Collisionbox.Stroke;
@@ -1155,7 +1161,7 @@ namespace ActionBuilder
 
                     box.Fill = _collisionBrush;
 
-                    box.Name = "collision" + _collisionboxes.Count;
+                    box.Name = "C" + _collisionboxes.Count;
                     break;
                 case 5:
                     box.Stroke = Databox.Stroke;
@@ -1164,7 +1170,7 @@ namespace ActionBuilder
 
                     box.Fill = _dataBrush;
 
-                    box.Name = "data" + _databoxes.Count;
+                    box.Name = "D" + _databoxes.Count;
 
                     break;
             }
@@ -1326,48 +1332,6 @@ namespace ActionBuilder
             }
         }
 
-        private void ImportSpriteButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentAction() == null) return;
-            if (CurrentAction().FrameCount <= 0) return;
-
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
-
-            };
-            if (openFileDialog.ShowDialog() != true) return;
-
-            //if (File.Exists($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png"))
-            //File.Delete($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
-            try
-            {
-                File.Copy(openFileDialog.FileName, $"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", true);
-            }
-            catch (IOException exception)
-            {
-                Console.WriteLine(exception);
-                throw;
-            }
-           
-            var tempImg = new BitmapImage();
-            tempImg.BeginInit();
-            tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", UriKind.Absolute);
-            tempImg.CacheOption = BitmapCacheOption.OnLoad;
-            tempImg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            tempImg.EndInit();
-
-            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count <= (int) FrameSlider.Value)
-                for (var i = 0; i <= (int) FrameSlider.Value; i++)
-                    _actionAnims[CurrentActionDropdown.SelectedIndex].Add(new BitmapImage());
-            _actionAnims[CurrentActionDropdown.SelectedIndex][(int) FrameSlider.Value] = tempImg;
-
-            if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
-                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value];
-
-        }
-
         private void AnchorPoint_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             //throw new NotImplementedException();
@@ -1471,6 +1435,48 @@ namespace ActionBuilder
             
                     break;
             }
+        }
+
+        private void ImportSpriteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentAction() == null) return;
+            if (CurrentAction().FrameCount <= 0) return;
+
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+
+            };
+            if (openFileDialog.ShowDialog() != true) return;
+
+            //if (File.Exists($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png"))
+            //File.Delete($"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png");
+            try
+            {
+                File.Copy(openFileDialog.FileName, $"{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", true);
+            }
+            catch (IOException exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
+
+            var tempImg = new BitmapImage();
+            tempImg.BeginInit();
+            tempImg.UriSource = new Uri($@"{AppDomain.CurrentDomain.BaseDirectory}/../{CurrentEditorInfo().TexturePath}/{FrameSlider.Value}.png", UriKind.Absolute);
+            tempImg.CacheOption = BitmapCacheOption.OnLoad;
+            tempImg.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            tempImg.EndInit();
+
+            if (_actionAnims[CurrentActionDropdown.SelectedIndex].Count <= (int)FrameSlider.Value)
+                for (var i = 0; i <= (int)FrameSlider.Value; i++)
+                    _actionAnims[CurrentActionDropdown.SelectedIndex].Add(new BitmapImage());
+            _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value] = tempImg;
+
+            if (FrameSlider.Value < _actionAnims[CurrentActionDropdown.SelectedIndex].Count)
+                CurrentFrameImage.Source = _actionAnims[CurrentActionDropdown.SelectedIndex][(int)FrameSlider.Value];
+
         }
 
         private void ClearSpriteButton_OnClick(object sender, RoutedEventArgs e)
@@ -1675,5 +1681,78 @@ namespace ActionBuilder
         }
 
         #endregion
+
+        private void DeleteCharacterButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show
+            (
+                $"Are you sure you want to delete {CurrentCharacter().Name}?",
+                "Delete Character",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    if(File.Exists($"../../Characters/{CurrentCharacter().Name}.json"))
+                        try
+                        {
+                            File.Delete($"../../Characters/{CurrentCharacter().Name}.json");
+                        }
+                        catch (IOException exception)
+                        {
+                            Console.WriteLine(exception);
+                            throw;
+                        }
+
+                    if (Directory.Exists($"../../Textures/{CurrentCharacter().Name}"))
+                        try
+                        {
+                            Directory.Delete($"../../Textures/{CurrentCharacter().Name}", true);
+                        }
+                        catch (IOException exception)
+                        {
+                            Console.WriteLine(exception);
+                            throw;
+                        }
+
+                    if (Directory.Exists($"../../Actions/{CurrentCharacter().Name}"))
+                        try
+                        {
+                            Directory.Delete($"../../Actions/{CurrentCharacter().Name}", true);
+                        }
+                        catch (IOException exception)
+                        {
+                            Console.WriteLine(exception);
+                            throw;
+                        }
+
+                    CharacterList.Items.Remove(CharacterList.SelectedItem);
+                    _characters.Remove(_lastSelectedCharacter);
+
+                    if (CurrentActionDropdown.HasItems)
+                    {
+                        _actions.Clear();
+                        CurrentActionDropdown.Items.Clear();
+                    }
+                    _actionAnims.Clear();
+                    CharacterNameTextBox.Text = string.Empty;
+                    NameTextBox.Text = string.Empty;
+
+                    CurrentFrameImage.Source = null;
+
+                    UpdateUiState();
+                    break;
+                case MessageBoxResult.No:
+
+                    break;
+            }
+        }
+
+        private void DeleteActionButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
