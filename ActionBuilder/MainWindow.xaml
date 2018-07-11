@@ -183,7 +183,7 @@
             <Button x:Name="DeleteCharacterButton" Content="X" HorizontalAlignment="Left" Margin="181,10,0,0" VerticalAlignment="Top" Width="32" Click="DeleteCharacterButton_OnClick" Grid.Column="1"/>
             <Button x:Name="DeleteActionButton" Content="X" HorizontalAlignment="Left" Margin="181,41,0,0" VerticalAlignment="Top" Width="32" Click="DeleteActionButton_OnClick" Grid.Column="1"/>
             <ListBox x:Name="BoxList" HorizontalAlignment="Left" Margin="10,103,0,261" VerticalAlignment="Stretch" Width="51" BorderBrush="Azure" BorderThickness="1" Grid.ColumnSpan="2"/>
-            <Button x:Name="DeleteBoxButton" Content="D&#xD;&#xA;E&#xD;&#xA;L&#xD;&#xA;E&#xD;&#xA;T&#xD;&#xA;E&#xD;&#xA;&#xD;&#xA;B&#xD;&#xA;O&#xD;&#xA;X" Grid.Column="1" HorizontalAlignment="Left" Margin="36,103,0,0" VerticalAlignment="Top" Width="20" Click="DeleteBoxButton_OnClick"  Height="145"/>
+            <Button x:Name="DeleteBoxButton" Content="D&#xD;&#xA;E&#xD;&#xA;L&#xD;&#xA;E&#xD;&#xA;T&#xD;&#xA;E&#xD;&#xA;&#xD;&#xA;B&#xD;&#xA;O&#xD;&#xA;X" Grid.Column="1" HorizontalAlignment="Left" Margin="36,103,0,261" VerticalAlignment="Stretch"  Width="20" Click="DeleteBoxButton_OnClick"  Height="145"/>
         </Grid>
 
         <Grid Margin="147,0,263,10" VerticalAlignment="Bottom" Height="196">
