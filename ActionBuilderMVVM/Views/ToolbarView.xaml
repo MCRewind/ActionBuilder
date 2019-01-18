@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="ActionBuilderMVVM.Views.ToolbarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ActionBuilderMVVM.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d">
+    <Grid>
+        <!-- Menu. -->
+        <Menu Width="Auto" Height="20" Background="White"  DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="Open" InputGestureText="Ctrl+O"
+                          cal:Message.Attach="[Action OpenAction]"/>
+                <MenuItem Header="Save" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="Save As" InputGestureText="Ctrl+Shift+S"/>
+                <Separator/>
+                <MenuItem Header="Change Sprite Directory" InputGestureText="Ctrl+I"
+                          cal:Message.Attach="[Action ChangeSpriteDirectory]"/>
+                <Separator/>
+                <MenuItem Header="Exit" InputGestureText="Alt+F4"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Undo" InputGestureText="Ctrl+Z"/>
+                <MenuItem Header="Redo" InputGestureText="Ctrl+Y"/>
+                <Separator/>
+                <MenuItem Header="Cut" InputGestureText="Ctrl+X"/>
+                <MenuItem Header="Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem Header="Paste" InputGestureText="Ctrl+V"/>
+                <Separator/>
+                <Slider Name="WidthSlider" Minimum="0" Maximum="200" Width="200" 
+                        cal:Message.Attach="[Event ValueChanged] = [Action SetCanvasWidth(WidthSlider.Value)]"/>
+                <Slider Name="HeightSlider" Minimum="0" Maximum="200" Width="200" 
+                        cal:Message.Attach="[Event ValueChanged] = [Action SetCanvasHeight(HeightSlider.Value)]"/>
+            </MenuItem>
+            <MenuItem Header="_Action">
+                <MenuItem Header="Next Frame" InputGestureText="Ctrl+]"
+                          cal:Message.Attach="[Action NextFrameAction]"
+                          IsEnabled="{Binding CanNextFrame}"/>
+                <MenuItem Header="Previous Frame" InputGestureText="Ctrl+["
+                          cal:Message.Attach="[Action PreviousFrameAction]"
+                          IsEnabled="{Binding CanPreviousFrame}"/>
+            </MenuItem>
+        </Menu>
+    </Grid>
+</UserControl>

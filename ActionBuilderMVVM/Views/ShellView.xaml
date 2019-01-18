@@ -1,0 +1,43 @@
+﻿<Window x:Class="ActionBuilderMVVM.ViewModels.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ActionBuilderMVVM.ViewModels"
+        xmlns:paz="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        mc:Ignorable="d"
+        Title="ShellView" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+            <ContentControl x:Name="ToolbarViewModel" DockPanel.Dock="Top"/>
+
+            <TabControl x:Name="Items">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}" />
+                            <Button Content="X"
+                                    cal:Message.Attach="CloseItem($dataContext)" />
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+        </DockPanel>
+
+    </Grid>
+</Window>

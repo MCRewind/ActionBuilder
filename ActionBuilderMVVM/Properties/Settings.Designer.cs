@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ActionBuilder.Properties
+namespace ActionBuilderMVVM.Properties
 {
 
 
