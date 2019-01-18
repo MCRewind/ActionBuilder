@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using ActionBuilderMVVM.Models;
 using ActionBuilderMVVM.Models.ActionBuilderMVVM;
 using ActionBuilderMVVM.Other;
+using ActionBuilderMVVM.Properties;
 using ActionBuilderMVVM.Utils;
 using Caliburn.Micro;
 using Ookii.Dialogs.Wpf;
@@ -119,9 +120,16 @@ namespace ActionBuilderMVVM.ViewModels
         public void LoadAction(ActionModel action)
         {
             _action = action;
+            if (_configProvider.SpritePath == null)
+            {
+                ImagePath = new Uri("pack://application:,,,/Textures/NO_TEXTURE.png").AbsolutePath;
+            }
+            else
+            {
+                _actionSpritesPath = Path.Combine(_configProvider.SpritePath, _action.Name);
+                ReloadSprites();
 
-            _actionSpritesPath = Path.Combine(_configProvider.SpritePath, _action.Name);
-            ReloadSprites();
+            }
 
             SwitchFrames(0);
 
@@ -206,7 +214,10 @@ namespace ActionBuilderMVVM.ViewModels
 
         private void ReloadSprites()
         {
-            ImagePath = Path.Combine(_actionSpritesPath, _actionFrame + ".png");
+            if (_actionSpritesPath == null) return;
+
+            var path = Path.Combine(_actionSpritesPath, _actionFrame + ".png");
+            ImagePath = File.Exists(path) ? path : new Uri("pack://application:,,,/Textures/NO_TEXTURE.png").AbsolutePath;
         }
 
         private void NextFrame()
