@@ -12,26 +12,26 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <panAndZoom:ZoomBorder Name="MainZoomBorder" Stretch="None" ZoomSpeed="1.2" 
-                    Background="White"  ClipToBounds="True" Focusable="True"
-                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        Background="White"  ClipToBounds="True" Focusable="True"
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Canvas Name="EditCanvas" 
-                Width="{Binding Path=CanvasWidth, Mode=Default}" 
-                Height="{Binding Path=CanvasHeight, Mode=Default}">
+                    Width="{Binding Path=CanvasWidth, Mode=Default}" 
+                    Height="{Binding Path=CanvasHeight, Mode=Default}">
             <Canvas.Background>
                 <VisualBrush TileMode="Tile"
-                             Viewport="0,0,16,16"
-                             ViewportUnits="Absolute"
-                             Viewbox="0,0,16,16"
-                             ViewboxUnits="Absolute">
+                                 Viewport="0,0,16,16"
+                                 ViewportUnits="Absolute"
+                                 Viewbox="0,0,16,16"
+                                 ViewboxUnits="Absolute">
                     <VisualBrush.Visual>
                         <Ellipse Fill="#FF000000"
-                                 Width="2"
-                                 Height="2"/>
+                                     Width="2"
+                                     Height="2"/>
                     </VisualBrush.Visual>
                 </VisualBrush>
             </Canvas.Background>
             <Image Source="{Binding ImagePath}"
-                   RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                       RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             <ItemsControl ItemsSource="{Binding BoxRects}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -41,11 +41,11 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Rectangle Fill="Red"
-                                 Width="{Binding Width}"
-                                 Height="{Binding Height}"
-                                 Canvas.Top="{Binding X}"
-                                 Canvas.Left="{Binding Y}"
-                                 Opacity=".5"/>
+                                     Width="{Binding Width}"
+                                     Height="{Binding Height}"
+                                     Canvas.Top="{Binding X}"
+                                     Canvas.Left="{Binding Y}"
+                                     Opacity=".5"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

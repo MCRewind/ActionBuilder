@@ -117,31 +117,6 @@ namespace ActionBuilderMVVM.ViewModels
             LoadAction(action.Value);
         }
 
-        public void LoadAction(ActionModel action)
-        {
-            _action = action;
-            if (_configProvider.SpritePath == null)
-            {
-                ImagePath = new Uri("pack://application:,,,/Textures/NO_TEXTURE.png").AbsolutePath;
-            }
-            else
-            {
-                _actionSpritesPath = Path.Combine(_configProvider.SpritePath, _action.Name);
-                ReloadSprites();
-
-            }
-
-            SwitchFrames(0);
-
-            foreach (var frame in _action.AllBoxes)
-            {
-                foreach (var box in frame)
-                {
-                    BoxRects.Add(new BoxRectModel(box.X * 10, box.Y * 10, (float)box.Width * 10, (float)box.Height * 10));
-                }
-            }
-        }
-
         public void Handle(EditorEvent<string> newPathEvent)
         {
             _actionSpritesPath = Path.Combine(newPathEvent.Value, _action.Name);
@@ -183,21 +158,39 @@ namespace ActionBuilderMVVM.ViewModels
             }
         }
 
+
+        public void LoadAction(ActionModel action)
+        {
+            _action = action;
+            if (_configProvider.SpritePath == null)
+            {
+                ImagePath = new Uri("pack://application:,,,/Textures/NO_TEXTURE.png").AbsolutePath;
+            }
+            else
+            {
+                _actionSpritesPath = Path.Combine(_configProvider.SpritePath, _action.Name);
+                ReloadSprites();
+            }
+            Console.WriteLine($"frameCount: {_action.FrameCount}");
+
+            SwitchFrames(0);
+        }
+
         private void SwitchFrames(int distance)
         {
             var newFrame = _actionFrame + distance;
 
             if (newFrame < 0)
-                _actionFrame = 0;
-            else if (newFrame > _action.FrameCount)
-                _actionFrame = _action.FrameCount;
+                newFrame = 0;
+            else if (newFrame >= _action.FrameCount)
+                newFrame = _action.FrameCount - 1;
 
             if (newFrame == 0)
             {
                 _eventAggregator.PublishOnUIThread(new ToolBarEvent<bool>(ToolBarEventType.CanPreviousFrameEvent, false));
                 _eventAggregator.PublishOnUIThread(new ToolBarEvent<bool>(ToolBarEventType.CanNextFrameEvent, true));
             }
-            else if (newFrame == _action.FrameCount)
+            else if (newFrame == _action.FrameCount - 1 )
             {
                 _eventAggregator.PublishOnUIThread(new ToolBarEvent<bool>(ToolBarEventType.CanNextFrameEvent, false));
                 _eventAggregator.PublishOnUIThread(new ToolBarEvent<bool>(ToolBarEventType.CanPreviousFrameEvent, true));
@@ -209,7 +202,16 @@ namespace ActionBuilderMVVM.ViewModels
             }
 
             _actionFrame = newFrame;
+
             ReloadSprites();
+            ReloadBoxes();
+        }
+
+        private void ReloadBoxes()
+        {
+            BoxRects.Clear();
+            foreach (var box in _action.Hurtboxes[_actionFrame])
+                BoxRects.Add(new BoxRectModel(box.X * 10, box.Y * 10, (float)box.Width * 10, (float)box.Height * 10));
         }
 
         private void ReloadSprites()

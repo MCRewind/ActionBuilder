@@ -31,7 +31,7 @@ namespace ActionBuilderMVVM.Models
 
             public ActionModel()
             {
-                _frames = new List<FrameType> { FrameType.Startup };
+                _frames = new List<FrameType>();
                 _infinite = new Vector2(-1, -1);
                 Anchor = new Vector2(0, 0);
             }

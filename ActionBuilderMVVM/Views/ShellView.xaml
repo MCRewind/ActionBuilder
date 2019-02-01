@@ -24,8 +24,8 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+ 
             <ContentControl x:Name="ToolbarViewModel" DockPanel.Dock="Top"/>
-
             <TabControl x:Name="Items">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
