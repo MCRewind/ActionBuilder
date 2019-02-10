@@ -14,7 +14,7 @@ namespace ActionBuilderMVVM.Utils
 {
     static class FileUtils
     {
-        public static bool SaveAction(Action action, ref string initialDirectory)
+        public static bool SaveActionAs(ActionModel action, ref string initialDirectory)
         {
             var saveActionDialog = new VistaSaveFileDialog
             {
@@ -28,10 +28,16 @@ namespace ActionBuilderMVVM.Utils
             if (saveActionDialog.ShowDialog() != true) return false;
 
             initialDirectory = saveActionDialog.FileName;
+            action.Path = saveActionDialog.FileName;
 
-            var actionJson = JsonConvert.SerializeObject(action);
-            File.WriteAllText(saveActionDialog.FileName, actionJson);
+            SaveAction(action);
             return true;
+        }
+
+        public static void SaveAction(ActionModel action)
+        {
+            var actionJson = JsonConvert.SerializeObject(action);
+            File.WriteAllText(action.Path, actionJson);
         }
 
         public static ActionModel OpenAction(ref string initialDirectory)
@@ -51,7 +57,7 @@ namespace ActionBuilderMVVM.Utils
 
             var contents = File.ReadAllText(openFileDialog.FileName);
             var action = JsonConvert.DeserializeObject<ActionModel>(contents);
-
+            action.Path = openFileDialog.FileName;
             return action;
 
         }

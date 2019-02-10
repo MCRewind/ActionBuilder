@@ -16,7 +16,7 @@ using Wpf.Controls.PanAndZoom;
 
 namespace ActionBuilderMVVM.ViewModels
 {
-    class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<ApplicationEventType>
+    class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<ApplicationEventType>, IHandle<ApplicationEvent<ActionModel>>
     {
         private readonly IEventAggregator _eventAggregator;
 
@@ -37,7 +37,6 @@ namespace ActionBuilderMVVM.ViewModels
 
         public void Handle(ApplicationEventType eventType)
         {
-            var refActionPath = _configProvider.ActionPath;
             switch (eventType)
             {
                 case ApplicationEventType.NewActionEvent:
@@ -51,6 +50,7 @@ namespace ActionBuilderMVVM.ViewModels
                     _eventAggregator.PublishOnUIThread(new EditorEvent<ActionModel>(EditorEventType.UpdateActionEvent, newAction));
                     break;
                 case ApplicationEventType.OpenActionEvent:
+                    var refActionPath = _configProvider.ActionPath;
                     var action = FileUtils.OpenAction(ref refActionPath);
 
                     if (action != null)
@@ -67,7 +67,6 @@ namespace ActionBuilderMVVM.ViewModels
                     }
 
                     break;
-
                 case ApplicationEventType.ChangeSpriteDirectoryEvent:
                     var newPath = FileUtils.ChangeSpriteDirDialog(_configProvider.SpritePath);
 
@@ -83,5 +82,18 @@ namespace ActionBuilderMVVM.ViewModels
             }
         }
 
+        public void Handle(ApplicationEvent<ActionModel> message)
+        {
+            switch (message.EventType)
+            {
+                case ApplicationEventType.SaveActionAsEvent:
+                    var refActionPath = _configProvider.ActionPath;
+                    FileUtils.SaveActionAs(message.Value, ref refActionPath);
+                    break;
+                case ApplicationEventType.SaveActionEvent:
+                    FileUtils.SaveAction(message.Value);
+                    break;
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace ActionBuilderMVVM
         NewActionEvent,
         OpenActionEvent,
         SaveActionEvent,
-        SaveAsActionEvent,
+        SaveActionAsEvent,
         ChangeSpriteDirectoryEvent,
     }
 
@@ -63,6 +63,8 @@ namespace ActionBuilderMVVM
         UpdateSpritesEvent,
         NextFrameEvent,
         PreviousFrameEvent,
+        SaveActionEvent,
+        SaveActionAsEvent
     }
 
     internal class EditorEvent<T>

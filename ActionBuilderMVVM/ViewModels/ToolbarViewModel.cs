@@ -55,6 +55,16 @@ namespace ActionBuilderMVVM.ViewModels
            _eventAggregator.PublishOnUIThread(ApplicationEventType.OpenActionEvent);
         }
 
+        public void SaveAction()
+        {
+            _eventAggregator.PublishOnUIThread(EditorEventType.SaveActionEvent);
+        }
+
+        public void SaveAsAction()
+        {
+            _eventAggregator.PublishOnUIThread(EditorEventType.SaveActionAsEvent);
+        }
+
         public void ChangeSpriteDirectory()
         {
             _eventAggregator.PublishOnUIThread(ApplicationEventType.ChangeSpriteDirectoryEvent);

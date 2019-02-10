@@ -155,6 +155,14 @@ namespace ActionBuilderMVVM.ViewModels
                 case EditorEventType.PreviousFrameEvent:
                     PreviousFrame();
                     break;
+                case EditorEventType.SaveActionEvent:
+                    _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionEvent, _action));
+                    break;
+                case EditorEventType.SaveActionAsEvent:
+                    _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionAsEvent, _action));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(message), message, null);
             }
         }
 

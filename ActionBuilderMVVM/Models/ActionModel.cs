@@ -15,6 +15,8 @@ namespace ActionBuilderMVVM.Models
         [JsonObject(MemberSerialization.OptIn)]
         public class ActionModel
         {
+            public string Path { get; set; }
+
             public enum FrameType
             {
                 Startup,

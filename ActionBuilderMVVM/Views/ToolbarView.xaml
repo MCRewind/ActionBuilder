@@ -14,8 +14,10 @@
                           cal:Message.Attach="[Action NewAction]"/>
                 <MenuItem Header="Open" InputGestureText="Ctrl+O"
                           cal:Message.Attach="[Action OpenAction]"/>
-                <MenuItem Header="Save" InputGestureText="Ctrl+S"/>
-                <MenuItem Header="Save As" InputGestureText="Ctrl+Shift+S"/>
+                <MenuItem Header="Save" InputGestureText="Ctrl+S"
+                          cal:Message.Attach="[Action SaveAction]"/>
+                <MenuItem Header="Save As" InputGestureText="Ctrl+Shift+S"
+                          cal:Message.Attach="[Action SaveAsAction]"/>
                 <Separator/>
                 <MenuItem Header="Change Sprite Directory" InputGestureText="Ctrl+I"
                           cal:Message.Attach="[Action ChangeSpriteDirectory]"/>
