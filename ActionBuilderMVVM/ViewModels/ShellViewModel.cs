@@ -37,10 +37,20 @@ namespace ActionBuilderMVVM.ViewModels
 
         public void Handle(ApplicationEventType eventType)
         {
+            var refActionPath = _configProvider.ActionPath;
             switch (eventType)
             {
+                case ApplicationEventType.NewActionEvent:
+                    var newAction = new ActionModel();
+                    newAction.Name = "New Action";
+                    ActivateItem(new EditorViewModel(_eventAggregator, _configProvider)
+                    {
+                        DisplayName = newAction.Name
+                    });
+
+                    _eventAggregator.PublishOnUIThread(new EditorEvent<ActionModel>(EditorEventType.UpdateActionEvent, newAction));
+                    break;
                 case ApplicationEventType.OpenActionEvent:
-                    var refActionPath = _configProvider.ActionPath;
                     var action = FileUtils.OpenAction(ref refActionPath);
 
                     if (action != null)
@@ -57,6 +67,7 @@ namespace ActionBuilderMVVM.ViewModels
                     }
 
                     break;
+
                 case ApplicationEventType.ChangeSpriteDirectoryEvent:
                     var newPath = FileUtils.ChangeSpriteDirDialog(_configProvider.SpritePath);
 

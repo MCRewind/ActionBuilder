@@ -34,10 +34,11 @@ namespace ActionBuilderMVVM.Models
                 _frames = new List<FrameType>();
                 _infinite = new Vector2(-1, -1);
                 Anchor = new Vector2(0, 0);
+                Hurtboxes = new List<List<Box>>();
             }
 
             [JsonProperty]
-            public string Name { get; private set; }
+            public string Name { get; set; }
 
             [JsonProperty, JsonConverter(typeof(StringEnumConverter))]
             public ActionType Type { get; private set; }

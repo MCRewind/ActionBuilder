@@ -14,6 +14,26 @@ namespace ActionBuilderMVVM.Utils
 {
     static class FileUtils
     {
+        public static bool SaveAction(Action action, ref string initialDirectory)
+        {
+            var saveActionDialog = new VistaSaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = ".act",
+                Filter = "Action files (*.act)|*.act",
+                InitialDirectory = initialDirectory,
+                OverwritePrompt = true,
+                Title = "Save Action"
+            };
+            if (saveActionDialog.ShowDialog() != true) return false;
+
+            initialDirectory = saveActionDialog.FileName;
+
+            var actionJson = JsonConvert.SerializeObject(action);
+            File.WriteAllText(saveActionDialog.FileName, actionJson);
+            return true;
+        }
+
         public static ActionModel OpenAction(ref string initialDirectory)
         {
             var openFileDialog = new VistaOpenFileDialog

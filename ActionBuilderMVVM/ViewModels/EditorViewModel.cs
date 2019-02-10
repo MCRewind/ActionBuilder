@@ -173,6 +173,7 @@ namespace ActionBuilderMVVM.ViewModels
             }
             Console.WriteLine($"frameCount: {_action.FrameCount}");
 
+            _actionFrame = 0;
             SwitchFrames(0);
         }
 
@@ -183,7 +184,7 @@ namespace ActionBuilderMVVM.ViewModels
             if (newFrame < 0)
                 newFrame = 0;
             else if (newFrame >= _action.FrameCount)
-                newFrame = _action.FrameCount - 1;
+                newFrame = Math.Max(0, _action.FrameCount - 1);
 
             if (newFrame == 0)
             {
@@ -210,6 +211,10 @@ namespace ActionBuilderMVVM.ViewModels
         private void ReloadBoxes()
         {
             BoxRects.Clear();
+            if (_actionFrame >= _action.Hurtboxes.Count)
+            {
+                return;
+            }
             foreach (var box in _action.Hurtboxes[_actionFrame])
                 BoxRects.Add(new BoxRectModel(box.X * 10, box.Y * 10, (float)box.Width * 10, (float)box.Height * 10));
         }

@@ -10,7 +10,10 @@ namespace ActionBuilderMVVM
 
     internal enum ApplicationEventType
     {
+        NewActionEvent,
         OpenActionEvent,
+        SaveActionEvent,
+        SaveAsActionEvent,
         ChangeSpriteDirectoryEvent,
     }
 

@@ -45,6 +45,11 @@ namespace ActionBuilderMVVM.ViewModels
             }
         }
 
+        public void NewAction()
+        {
+            _eventAggregator.PublishOnUIThread(ApplicationEventType.NewActionEvent);
+        }
+
         public void OpenAction()
         {
            _eventAggregator.PublishOnUIThread(ApplicationEventType.OpenActionEvent);

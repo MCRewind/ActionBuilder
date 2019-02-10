@@ -10,6 +10,8 @@
         <!-- Menu. -->
         <Menu Width="Auto" Height="20" Background="White"  DockPanel.Dock="Top">
             <MenuItem Header="_File">
+                <MenuItem Header="New" InputGestureText="Ctrl+N"
+                          cal:Message.Attach="[Action NewAction]"/>
                 <MenuItem Header="Open" InputGestureText="Ctrl+O"
                           cal:Message.Attach="[Action OpenAction]"/>
                 <MenuItem Header="Save" InputGestureText="Ctrl+S"/>
