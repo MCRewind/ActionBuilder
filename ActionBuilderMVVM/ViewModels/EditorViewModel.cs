@@ -32,7 +32,7 @@ namespace ActionBuilderMVVM.ViewModels
         private int _canvasHeight;
         private int _actionFrame;
 
-        private bool _unsavedChanges;
+        private bool _hasUnsavedChanges;
 
         private string _actionSpritesPath;
 
@@ -55,12 +55,12 @@ namespace ActionBuilderMVVM.ViewModels
             CanvasHeight = 200;
         }
 
-        private bool UnsavedChanges
+        public bool HasUnsavedChanges
         {
-            get => _unsavedChanges;
+            get => _hasUnsavedChanges;
             set
             {
-                _unsavedChanges = value;
+                _hasUnsavedChanges = value;
                 UpdateTabTitle();
             }
         }
@@ -125,7 +125,7 @@ namespace ActionBuilderMVVM.ViewModels
 
         private void UpdateTabTitle()
         {
-            DisplayName = _action.Name + (UnsavedChanges ? "*" : "");
+            DisplayName = _action.Name + (HasUnsavedChanges ? "*" : "");
         }
 
         public void Handle(EditorEvent<string> newPathEvent)
@@ -163,7 +163,7 @@ namespace ActionBuilderMVVM.ViewModels
                 var refActionPath = _configProvider.ActionPath;
                 if (FileUtils.SaveActionAs(_action, ref refActionPath))
                 {
-                    UnsavedChanges = false;
+                    HasUnsavedChanges = false;
                     return true;
                 }
             }
@@ -181,7 +181,7 @@ namespace ActionBuilderMVVM.ViewModels
             var refActionPath = _configProvider.ActionPath;
             if (FileUtils.SaveActionAs(_action, ref refActionPath))
             {
-                UnsavedChanges = false;
+                HasUnsavedChanges = false;
                 return true;
             }
 
@@ -202,7 +202,7 @@ namespace ActionBuilderMVVM.ViewModels
             }
             Console.WriteLine($"frameCount: {_action.FrameCount}");
 
-            UnsavedChanges = true;
+            HasUnsavedChanges = action.Path == null;
 
             _actionFrame = 0;
             SwitchFrames(0);

@@ -28,7 +28,6 @@ namespace ActionBuilderMVVM.ViewModels
 
         public ShellViewModel(IEventAggregator eventAggregator, ToolbarViewModel toolbarViewModel, IConfigProvider configProvider)
         {
-
             _eventAggregator = eventAggregator;
             _configProvider = configProvider;
             _configProvider.Load();
@@ -39,7 +38,40 @@ namespace ActionBuilderMVVM.ViewModels
 
         public void CloseItem(IScreen item)
         {
-            if (((EditorViewModel) item).SaveAction())
+            if (((EditorViewModel)item).HasUnsavedChanges)
+            {
+                if (TaskDialog.OSSupportsTaskDialogs)
+                {
+                    using (var dialog = new TaskDialog())
+                    {
+                        dialog.WindowTitle = "Unsaved Changes";
+                        dialog.MainInstruction = "This action has unsaved changes";
+                        dialog.Content = $"Would you like to save changes to {item.DisplayName}?";
+                        var yesButton = new TaskDialogButton(ButtonType.Yes);
+                        var noButton = new TaskDialogButton(ButtonType.No);
+                        dialog.Buttons.Add(yesButton);
+                        dialog.Buttons.Add(noButton);
+                        var buttonPressed = dialog.Show();
+                        if (buttonPressed.Equals(yesButton))
+                        {
+                            if (((EditorViewModel)item).SaveAction())
+                            {
+                                DeactivateItem(item, true);
+                            }
+                        }
+
+                        if (buttonPressed.Equals(noButton))
+                        {
+                            DeactivateItem(item, true);
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("This operating system does not support task dialogs.", "Task Dialog Sample");
+                }
+            }
+            else
             {
                 DeactivateItem(item, true);
             }
@@ -73,7 +105,7 @@ namespace ActionBuilderMVVM.ViewModels
 
                         ActivateItem(new EditorViewModel(_eventAggregator, _configProvider)
                         {
-                            DisplayName = action.Name
+                            DisplayName = action.Name,
                         });
                         
                         ActiveEditor.LoadAction(action);
