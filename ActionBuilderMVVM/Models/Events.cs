@@ -15,6 +15,8 @@ namespace ActionBuilderMVVM
         SaveActionEvent,
         SaveActionAsEvent,
         ChangeSpriteDirectoryEvent,
+        NextFrameEvent,
+        PreviousFrameEvent
     }
 
     class ApplicationEvent<T>
@@ -59,12 +61,7 @@ namespace ActionBuilderMVVM
 
     internal enum EditorEventType
     {
-        UpdateActionEvent,
         UpdateSpritesEvent,
-        NextFrameEvent,
-        PreviousFrameEvent,
-        SaveActionEvent,
-        SaveActionAsEvent
     }
 
     internal class EditorEvent<T>

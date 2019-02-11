@@ -104,7 +104,6 @@
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding DisplayName}" />
-
                             <Button HorizontalAlignment="Right" Style="{StaticResource TabCloseButton}" 
                                     Content="✖" cal:Message.Attach="CloseItem($dataContext)"/>
                         </StackPanel>
@@ -112,6 +111,5 @@
                 </TabControl.ItemTemplate>
             </TabControl>
         </DockPanel>
-
     </Grid>
 </Window>

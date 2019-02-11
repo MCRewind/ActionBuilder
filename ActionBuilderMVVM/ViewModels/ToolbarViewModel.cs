@@ -57,12 +57,13 @@ namespace ActionBuilderMVVM.ViewModels
 
         public void SaveAction()
         {
-            _eventAggregator.PublishOnUIThread(EditorEventType.SaveActionEvent);
+            
+            _eventAggregator.PublishOnUIThread(ApplicationEventType.SaveActionEvent);
         }
 
         public void SaveAsAction()
         {
-            _eventAggregator.PublishOnUIThread(EditorEventType.SaveActionAsEvent);
+            _eventAggregator.PublishOnUIThread(ApplicationEventType.SaveActionAsEvent);
         }
 
         public void ChangeSpriteDirectory()
@@ -72,12 +73,12 @@ namespace ActionBuilderMVVM.ViewModels
 
         public void NextFrameAction()
         {
-            _eventAggregator.PublishOnUIThread(EditorEventType.NextFrameEvent);
+            _eventAggregator.PublishOnUIThread(ApplicationEventType.NextFrameEvent);
         }
 
         public void PreviousFrameAction()
         {
-            _eventAggregator.PublishOnUIThread(EditorEventType.PreviousFrameEvent);
+            _eventAggregator.PublishOnUIThread(ApplicationEventType.PreviousFrameEvent);
         }
 
         public void Handle(ToolBarEvent<bool> message)

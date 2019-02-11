@@ -16,13 +16,15 @@ using Wpf.Controls.PanAndZoom;
 
 namespace ActionBuilderMVVM.ViewModels
 {
-    class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<ApplicationEventType>, IHandle<ApplicationEvent<ActionModel>>
+    class ShellViewModel : Conductor<IScreen>.Collection.OneActive, IHandle<ApplicationEventType>
     {
         private readonly IEventAggregator _eventAggregator;
 
         private readonly IConfigProvider _configProvider;
 
         public ToolbarViewModel ToolbarViewModel { get; }
+
+        private EditorViewModel ActiveEditor => ActiveItem as EditorViewModel;
 
         public ShellViewModel(IEventAggregator eventAggregator, ToolbarViewModel toolbarViewModel, IConfigProvider configProvider)
         {
@@ -35,22 +37,33 @@ namespace ActionBuilderMVVM.ViewModels
             _eventAggregator.Subscribe(this);
         }
 
+        public void CloseItem(IScreen item)
+        {
+            if (((EditorViewModel) item).SaveAction())
+            {
+                DeactivateItem(item, true);
+            }
+        }
+
         public void Handle(ApplicationEventType eventType)
         {
+            var refActionPath = _configProvider.ActionPath;
             switch (eventType)
             {
                 case ApplicationEventType.NewActionEvent:
-                    var newAction = new ActionModel();
-                    newAction.Name = "New Action";
+                    var newAction = new ActionModel
+                    {
+                        Name = "New Action"
+                    };
+
                     ActivateItem(new EditorViewModel(_eventAggregator, _configProvider)
                     {
                         DisplayName = newAction.Name
                     });
 
-                    _eventAggregator.PublishOnUIThread(new EditorEvent<ActionModel>(EditorEventType.UpdateActionEvent, newAction));
+                    ActiveEditor.LoadAction(newAction);
                     break;
                 case ApplicationEventType.OpenActionEvent:
-                    var refActionPath = _configProvider.ActionPath;
                     var action = FileUtils.OpenAction(ref refActionPath);
 
                     if (action != null)
@@ -62,8 +75,8 @@ namespace ActionBuilderMVVM.ViewModels
                         {
                             DisplayName = action.Name
                         });
-
-                        _eventAggregator.PublishOnUIThread(new EditorEvent<ActionModel>(EditorEventType.UpdateActionEvent, action));
+                        
+                        ActiveEditor.LoadAction(action);
                     }
 
                     break;
@@ -77,21 +90,19 @@ namespace ActionBuilderMVVM.ViewModels
 
                     _eventAggregator.PublishOnUIThread(new EditorEvent<string>(EditorEventType.UpdateSpritesEvent, newPath));
                     break;
-                default:
-                    break;
-            }
-        }
-
-        public void Handle(ApplicationEvent<ActionModel> message)
-        {
-            switch (message.EventType)
-            {
-                case ApplicationEventType.SaveActionAsEvent:
-                    var refActionPath = _configProvider.ActionPath;
-                    FileUtils.SaveActionAs(message.Value, ref refActionPath);
-                    break;
                 case ApplicationEventType.SaveActionEvent:
-                    FileUtils.SaveAction(message.Value);
+                    ActiveEditor.SaveAction();
+                    break;
+                case ApplicationEventType.SaveActionAsEvent:
+                    ActiveEditor.SaveActionAs();
+                    break;
+                case ApplicationEventType.NextFrameEvent:
+                    ActiveEditor.NextFrame();
+                    break;
+                case ApplicationEventType.PreviousFrameEvent:
+                    ActiveEditor.PreviousFrame();
+                    break;
+                default:
                     break;
             }
         }

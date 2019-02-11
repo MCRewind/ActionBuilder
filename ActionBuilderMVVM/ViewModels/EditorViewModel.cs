@@ -23,7 +23,7 @@ using Path = System.IO.Path;
 
 namespace ActionBuilderMVVM.ViewModels
 {
-    class EditorViewModel : Screen, IHandle<EditorEvent<ActionModel>>, IHandle<EditorEvent<string>>, IHandle<EditorEventType>
+    class EditorViewModel : Screen, IHandle<EditorEvent<string>>
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IConfigProvider _configProvider;
@@ -128,11 +128,6 @@ namespace ActionBuilderMVVM.ViewModels
             DisplayName = _action.Name + (UnsavedChanges ? "*" : "");
         }
 
-        public void Handle(EditorEvent<ActionModel> action)
-        {
-            LoadAction(action.Value);
-        }
-
         public void Handle(EditorEvent<string> newPathEvent)
         {
             _actionSpritesPath = Path.Combine(newPathEvent.Value, _action.Name);
@@ -161,32 +156,37 @@ namespace ActionBuilderMVVM.ViewModels
             }
         }
 
-        public void Handle(EditorEventType message)
+        public bool SaveAction()
         {
-            switch (message)
+            if (_action.Path == null)
             {
-                case EditorEventType.NextFrameEvent:
-                    NextFrame();
-                    break;
-                case EditorEventType.PreviousFrameEvent:
-                    PreviousFrame();
-                    break;
-                case EditorEventType.SaveActionEvent:
-                    if (_action.Path == null)
-                        _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionAsEvent, _action));
-                    else
-                        _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionEvent, _action));
+                var refActionPath = _configProvider.ActionPath;
+                if (FileUtils.SaveActionAs(_action, ref refActionPath))
+                {
                     UnsavedChanges = false;
-                    break;
-                case EditorEventType.SaveActionAsEvent:
-                    _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionAsEvent, _action));
-                    UnsavedChanges = false;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(message), message, null);
+                    return true;
+                }
             }
+            else
+            {
+                FileUtils.SaveAction(_action);
+                return true;
+            }
+
+            return false;
         }
 
+        public bool SaveActionAs()
+        {
+            var refActionPath = _configProvider.ActionPath;
+            if (FileUtils.SaveActionAs(_action, ref refActionPath))
+            {
+                UnsavedChanges = false;
+                return true;
+            }
+
+            return false;
+        }
 
         public void LoadAction(ActionModel action)
         {
@@ -258,12 +258,12 @@ namespace ActionBuilderMVVM.ViewModels
             ImagePath = File.Exists(path) ? path : new Uri("pack://application:,,,/Textures/NO_TEXTURE.png").AbsolutePath;
         }
 
-        private void NextFrame()
+        public void NextFrame()
         {
             SwitchFrames(1);
         }
 
-        private void PreviousFrame()
+        public void PreviousFrame()
         {
             SwitchFrames(-1);
         }
