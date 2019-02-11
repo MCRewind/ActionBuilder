@@ -59,7 +59,6 @@ namespace ActionBuilderMVVM.Utils
             var action = JsonConvert.DeserializeObject<ActionModel>(contents);
             action.Path = openFileDialog.FileName;
             return action;
-
         }
 
         public static string ChangeSpriteDirDialog(string initialDirectory)

@@ -25,13 +25,14 @@ namespace ActionBuilderMVVM.ViewModels
 {
     class EditorViewModel : Screen, IHandle<EditorEvent<ActionModel>>, IHandle<EditorEvent<string>>, IHandle<EditorEventType>
     {
-
         private readonly IEventAggregator _eventAggregator;
         private readonly IConfigProvider _configProvider;
 
         private int _canvasWidth;
         private int _canvasHeight;
         private int _actionFrame;
+
+        private bool _unsavedChanges;
 
         private string _actionSpritesPath;
 
@@ -52,6 +53,16 @@ namespace ActionBuilderMVVM.ViewModels
 
             CanvasWidth = 200;
             CanvasHeight = 200;
+        }
+
+        private bool UnsavedChanges
+        {
+            get => _unsavedChanges;
+            set
+            {
+                _unsavedChanges = value;
+                UpdateTabTitle();
+            }
         }
 
         public int CanvasWidth
@@ -112,6 +123,11 @@ namespace ActionBuilderMVVM.ViewModels
             //TODO remove menu items for hitboxes
         }
 
+        private void UpdateTabTitle()
+        {
+            DisplayName = _action.Name + (UnsavedChanges ? "*" : "");
+        }
+
         public void Handle(EditorEvent<ActionModel> action)
         {
             LoadAction(action.Value);
@@ -156,10 +172,15 @@ namespace ActionBuilderMVVM.ViewModels
                     PreviousFrame();
                     break;
                 case EditorEventType.SaveActionEvent:
-                    _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionEvent, _action));
+                    if (_action.Path == null)
+                        _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionAsEvent, _action));
+                    else
+                        _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionEvent, _action));
+                    UnsavedChanges = false;
                     break;
                 case EditorEventType.SaveActionAsEvent:
                     _eventAggregator.PublishOnUIThread(new ApplicationEvent<ActionModel>(ApplicationEventType.SaveActionAsEvent, _action));
+                    UnsavedChanges = false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(message), message, null);
@@ -180,6 +201,8 @@ namespace ActionBuilderMVVM.ViewModels
                 ReloadSprites();
             }
             Console.WriteLine($"frameCount: {_action.FrameCount}");
+
+            UnsavedChanges = true;
 
             _actionFrame = 0;
             SwitchFrames(0);

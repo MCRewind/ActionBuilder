@@ -99,6 +99,7 @@
     <Compile Include="Other\IConfigProvider.cs" />
     <Compile Include="Other\ImageSourceConverter.cs" />
     <Compile Include="Other\SettingsConfigProvider.cs" />
+    <Compile Include="Other\VisibilityConverter.cs" />
     <Compile Include="Utils\CollectionUtils.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="ViewModels\EditorViewModel.cs" />
