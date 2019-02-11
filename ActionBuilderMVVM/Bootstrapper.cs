@@ -26,6 +26,7 @@ namespace ActionBuilderMVVM
             _container.Singleton<ToolbarViewModel, ToolbarViewModel>();
             _container.Singleton<IConfigProvider, SettingsConfigProvider>();
             _container.RegisterPerRequest(typeof(ShellViewModel), null, typeof(ShellViewModel));
+            _container.PerRequest<EditorViewModel>();
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)

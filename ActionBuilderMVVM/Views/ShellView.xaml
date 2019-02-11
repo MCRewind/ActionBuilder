@@ -57,19 +57,13 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="10"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+        <DockPanel Grid.Row="0" Grid.Column="0">
             <ContentControl x:Name="ToolbarViewModel" DockPanel.Dock="Top"/>
             <TabControl x:Name="Items" Margin="10" BorderThickness="0" Background="LightGray">
                 <TabControl.Resources>

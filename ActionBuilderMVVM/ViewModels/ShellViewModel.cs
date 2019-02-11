@@ -26,12 +26,19 @@ namespace ActionBuilderMVVM.ViewModels
 
         private EditorViewModel ActiveEditor => ActiveItem as EditorViewModel;
 
-        public ShellViewModel(IEventAggregator eventAggregator, ToolbarViewModel toolbarViewModel, IConfigProvider configProvider)
-        {
+        private readonly Func<EditorViewModel> _editorViewModelFactory;
+
+        public ShellViewModel(
+            IEventAggregator eventAggregator,
+            ToolbarViewModel toolbarViewModel,
+            IConfigProvider configProvider,
+            Func<EditorViewModel> editorViewModelFactory
+        ){
             _eventAggregator = eventAggregator;
             _configProvider = configProvider;
             _configProvider.Load();
             ToolbarViewModel = toolbarViewModel;
+            this._editorViewModelFactory = editorViewModelFactory;
 
             _eventAggregator.Subscribe(this);
         }
@@ -88,12 +95,7 @@ namespace ActionBuilderMVVM.ViewModels
                         Name = "New Action"
                     };
 
-                    ActivateItem(new EditorViewModel(_eventAggregator, _configProvider)
-                    {
-                        DisplayName = newAction.Name
-                    });
-
-                    ActiveEditor.LoadAction(newAction);
+                    ActivateEditor(newAction);
                     break;
                 case ApplicationEventType.OpenActionEvent:
                     var action = FileUtils.OpenAction(ref refActionPath);
@@ -103,12 +105,7 @@ namespace ActionBuilderMVVM.ViewModels
                         _configProvider.ActionPath = refActionPath;
                         _configProvider.Save();
 
-                        ActivateItem(new EditorViewModel(_eventAggregator, _configProvider)
-                        {
-                            DisplayName = action.Name,
-                        });
-                        
-                        ActiveEditor.LoadAction(action);
+                        ActivateEditor(action);
                     }
 
                     break;
@@ -136,6 +133,16 @@ namespace ActionBuilderMVVM.ViewModels
                     break;
                 default:
                     break;
+            }
+
+            void ActivateEditor(ActionModel action)
+            {
+                var editorViewModel = _editorViewModelFactory();
+                editorViewModel.DisplayName = action.Name;
+
+                ActivateItem(editorViewModel);
+
+                ActiveEditor.LoadAction(action);
             }
         }
     }
