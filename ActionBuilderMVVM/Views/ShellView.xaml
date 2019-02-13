@@ -62,10 +62,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <DockPanel Grid.Row="0" Grid.Column="0">
-            <ContentControl x:Name="ToolbarViewModel" DockPanel.Dock="Top"/>
-            <TabControl x:Name="Items" Margin="10" BorderThickness="0" Background="LightGray">
+            <ContentControl HorizontalAlignment="Right" x:Name="BoxInfoPanel" DockPanel.Dock="Right"/>
+            <ContentControl x:Name="Toolbar" DockPanel.Dock="Top"/>
+            <TabControl x:Name="Items" Margin="10" BorderThickness="0" Background="LightGray" DockPanel.Dock="Left">
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
                         <Setter Property="Template">

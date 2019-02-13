@@ -23,10 +23,11 @@ namespace ActionBuilderMVVM
         {
             _container.Singleton<IWindowManager, WindowManager>();
             _container.Singleton<IEventAggregator, EventAggregator>();
-            _container.Singleton<ToolbarViewModel, ToolbarViewModel>();
             _container.Singleton<IConfigProvider, SettingsConfigProvider>();
-            _container.RegisterPerRequest(typeof(ShellViewModel), null, typeof(ShellViewModel));
+            _container.Singleton<ToolbarViewModel>();
+            _container.Singleton<BoxInfoPanelViewModel>();
             _container.PerRequest<EditorViewModel>();
+            _container.PerRequest<ShellViewModel>();
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)

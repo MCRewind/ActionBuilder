@@ -22,22 +22,26 @@ namespace ActionBuilderMVVM.ViewModels
 
         private readonly IConfigProvider _configProvider;
 
-        public ToolbarViewModel ToolbarViewModel { get; }
-
         private EditorViewModel ActiveEditor => ActiveItem as EditorViewModel;
+
+        public ToolbarViewModel Toolbar { get; }
+
+        public BoxInfoPanelViewModel BoxInfoPanel { get; private set; }
 
         private readonly Func<EditorViewModel> _editorViewModelFactory;
 
         public ShellViewModel(
             IEventAggregator eventAggregator,
-            ToolbarViewModel toolbarViewModel,
             IConfigProvider configProvider,
+            ToolbarViewModel toolbarViewModel,
+            BoxInfoPanelViewModel boxInfoPanelViewModel,
             Func<EditorViewModel> editorViewModelFactory
         ){
             _eventAggregator = eventAggregator;
             _configProvider = configProvider;
             _configProvider.Load();
-            ToolbarViewModel = toolbarViewModel;
+            Toolbar = toolbarViewModel;
+            BoxInfoPanel = boxInfoPanelViewModel;
             this._editorViewModelFactory = editorViewModelFactory;
 
             _eventAggregator.Subscribe(this);

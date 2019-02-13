@@ -78,6 +78,29 @@ namespace ActionBuilderMVVM
         }
     }
 
-#endregion
+    #endregion
+
+    #region BoxInfoPanelEvent
+
+    internal enum BoxInfoPanelEventType
+    {
+        UpdateInfo
+    }
+
+    internal class BoxInfoPanelEvent<T>
+    {
+
+        public BoxInfoPanelEventType EventType { get; }
+
+        public T Value { get; }
+
+        public BoxInfoPanelEvent(BoxInfoPanelEventType eventType, T value = default)
+        {
+            Value = value;
+            EventType = eventType;
+        }
+    }
+
+    #endregion
 
 }
