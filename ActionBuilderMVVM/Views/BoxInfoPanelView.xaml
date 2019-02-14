@@ -4,11 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ActionBuilderMVVM.Views"
+             xmlns:other="clr-namespace:ActionBuilderMVVM.Other"
+             xmlns:models="clr-namespace:ActionBuilderMVVM.Models"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <ScrollViewer HorizontalAlignment="Right">
-            <ComboBox ItemsSource="{Binding SelectedBox.BoxType}"/>
+            <ComboBox ItemsSource="{Binding Source={other:EnumBindingSource {x:Type models:Box+BoxType}}}"/>
         </ScrollViewer>
     </Grid>
 </UserControl>

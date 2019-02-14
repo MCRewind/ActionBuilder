@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using ActionBuilderMVVM.Models.ActionBuilderMVVM;
+using ActionBuilderMVVM.Models;
 using Newtonsoft.Json;
 using Ookii.Dialogs.Wpf;
 

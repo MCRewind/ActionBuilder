@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ActionBuilderMVVM.Models.ActionBuilderMVVM;
+using ActionBuilderMVVM.Models;
 using Caliburn.Micro;
 
 namespace ActionBuilderMVVM.ViewModels
 {
-    class BoxInfoPanelViewModel : Screen, IHandle<BoxInfoPanelEvent<ActionModel.Box>>
+    class BoxInfoPanelViewModel : Screen, IHandle<BoxInfoPanelEvent<Box>>
     {
-        private ActionModel.Box _selectedBox;
+        private Box _selectedBox;
 
-        public ActionModel.Box SelectedBox
+        public Box SelectedBox
         {
             get => _selectedBox;
             set
@@ -25,10 +25,10 @@ namespace ActionBuilderMVVM.ViewModels
 
         public BoxInfoPanelViewModel()
         {
-            SelectedBox = new ActionModel.Box();
+            SelectedBox = new Box();
         }
 
-        public void Handle(BoxInfoPanelEvent<ActionModel.Box> message)
+        public void Handle(BoxInfoPanelEvent<Box> message)
         {
             switch (message.EventType)
             {
