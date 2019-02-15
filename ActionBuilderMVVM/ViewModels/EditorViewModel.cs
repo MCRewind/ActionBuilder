@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ActionBuilderMVVM.Models;
-using ActionBuilderMVVM.Models;
 using ActionBuilderMVVM.Other;
 using ActionBuilderMVVM.Properties;
 using ActionBuilderMVVM.Utils;

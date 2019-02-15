@@ -23,10 +23,7 @@ namespace ActionBuilderMVVM.ViewModels
 
         }
 
-        public BoxInfoPanelViewModel()
-        {
-            SelectedBox = new Box();
-        }
+        public bool IsBoxSelected => SelectedBox != null;
 
         public void Handle(BoxInfoPanelEvent<Box> message)
         {

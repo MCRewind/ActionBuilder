@@ -41,31 +41,31 @@ namespace ActionBuilderMVVM.Models
         public string Name { get; set; }
 
         [JsonProperty, JsonConverter(typeof(StringEnumConverter))]
-        public ActionType Type { get; private set; }
+        public ActionType Type { get; set; }
 
         [JsonProperty]
-        public Vector2 Anchor { get; private set; }
+        public Vector2 Anchor { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Hitboxes { get; private set; }
+        public List<List<Box>> Hitboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Hurtboxes { get; private set; }
+        public List<List<Box>> Hurtboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Grabboxes { get; private set; }
+        public List<List<Box>> Grabboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Armorboxes { get; private set; }
+        public List<List<Box>> Armorboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Collisionboxes { get; private set; }
+        public List<List<Box>> Collisionboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Databoxes { get; private set; }
+        public List<List<Box>> Databoxes { get; set; }
 
         [JsonProperty]
-        public List<FrameProperty> FrameProperties { get; private set; }
+        public List<FrameProperty> FrameProperties { get; set; }
 
         public List<List<Box>> AllBoxes => CollectionUtils
             .Concat(Hitboxes, Hurtboxes, Grabboxes, Armorboxes, Collisionboxes, Databoxes).ToList();
@@ -105,10 +105,10 @@ namespace ActionBuilderMVVM.Models
             }
 
             [JsonProperty]
-            public Vector2 Velocity { get; private set; }
+            public Vector2 Velocity { get; set; }
 
             [JsonConverter(typeof(StringEnumConverter)), JsonProperty]
-            public ModificationType Modification { get; private set; }
+            public ModificationType Modification { get; set; }
         }
 
         [JsonObject(MemberSerialization.OptIn)]
@@ -119,7 +119,7 @@ namespace ActionBuilderMVVM.Models
             public FrameProperty() => DetailedVelocity = new VelocityModifier();
 
             [JsonProperty]
-            public VelocityModifier DetailedVelocity { get; private set; }
+            public VelocityModifier DetailedVelocity { get; set; }
         }
     }
 
@@ -137,7 +137,7 @@ namespace ActionBuilderMVVM.Models
             Null
         }
 
-        public Box(BoxType type, int x, int y, double width, double height, double damage, double knockbackStrength,
+        public Box(BoxType type, int x, int y, double width, double height, double damage, double baseKnockback, double knockbackGrowth,
             double knockbackAngle, int lifespan)
         {
             Type = type;
@@ -146,39 +146,43 @@ namespace ActionBuilderMVVM.Models
             Width = width;
             Height = height;
             Damage = damage;
-            KnockbackStrength = knockbackStrength;
+            BaseKnockback = baseKnockback;
+            KnockbackGrowth = knockbackGrowth;
             KnockbackAngle = knockbackAngle;
             Lifespan = lifespan;
         }
 
-        public Box() : this(BoxType.Hit, 0, 0, 5, 5, 0, 0, 0, 1) { }
+        public Box() : this(BoxType.Hit, 0, 0, 5, 5, 0, 0, 0, 0, 1) { }
 
         [JsonProperty]
-        public double Damage { get; private set; }
+        public double Damage { get; set; }
 
         [JsonProperty]
-        public double KnockbackStrength { get; private set; }
+        public double BaseKnockback { get; set; }
 
         [JsonProperty]
-        public double KnockbackAngle { get; private set; }
+        public double KnockbackGrowth { get; set; }
 
         [JsonProperty]
-        public int Lifespan { get; private set; }
+        public double KnockbackAngle { get; set; }
 
         [JsonProperty]
-        public int X { get; private set; }
+        public int Lifespan { get; set; }
 
         [JsonProperty]
-        public int Y { get; private set; }
+        public int X { get; set; }
 
         [JsonProperty]
-        public double Width { get; private set; }
+        public int Y { get; set; }
 
         [JsonProperty]
-        public double Height { get; private set; }
+        public double Width { get; set; }
+
+        [JsonProperty]
+        public double Height { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter)), JsonProperty]
 
-        public BoxType Type { get; private set; }
+        public BoxType Type { get; set; }
     }
 }
