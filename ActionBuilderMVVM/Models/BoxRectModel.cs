@@ -14,10 +14,13 @@ namespace ActionBuilderMVVM.Models
         public float Width { get; private set; }
         public float Height { get; private set; }
 
+        public Box.BoxType Type { get; private set; }
+
         private float _scale = 10;
 
-        public BoxRectModel(float gameX, float gameY, float gameWidth, float gameHeight)
+        public BoxRectModel(Box.BoxType type, float gameX, float gameY, float gameWidth, float gameHeight)
         {
+            Type = type;
             X = gameX * _scale;
             Y = gameY * _scale;
             Width = gameWidth * _scale;

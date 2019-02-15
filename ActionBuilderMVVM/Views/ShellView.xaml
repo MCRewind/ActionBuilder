@@ -79,7 +79,7 @@
                                                           Margin="2"/>
                                     </Grid>
                                     <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="false">
+                                        <Trigger Property="IsMouseOver" Value="False">
                                             <Setter TargetName="Panel" Property="Background" Value="White" />
                                         </Trigger>
                                         <Trigger Property="IsMouseOver" Value="True">

@@ -4,8 +4,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:panAndZoom="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:other="clr-namespace:ActionBuilderMVVM.Other"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <other:BoxColorConverter x:Key="BoxColorConverter"/>
+
+        <Style x:Key="BoxRectangle" TargetType="Rectangle">
+            <Setter Property="Width" Value="{Binding Width}"/>
+            <Setter Property="Height" Value="{Binding Height}"/>
+            <Setter Property="Canvas.Top" Value="{Binding X}"/>
+            <Setter Property="Canvas.Right" Value="{Binding Y}"/>
+            <Setter Property="Fill">
+                <Setter.Value>
+                    <Binding Converter="{StaticResource BoxColorConverter}"
+                             Path="Type"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.75" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
 
     <panAndZoom:ZoomBorder Name="MainZoomBorder" Stretch="None" ZoomSpeed="1.2" 
                         Background="White"  ClipToBounds="True" Focusable="True"
@@ -36,12 +64,7 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Rectangle Fill="Red"
-                                     Width="{Binding Width}"
-                                     Height="{Binding Height}"
-                                     Canvas.Top="{Binding X}"
-                                     Canvas.Left="{Binding Y}"
-                                     Opacity=".5"/>
+                        <Rectangle Name="BoxRect" Style="{StaticResource BoxRectangle}"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

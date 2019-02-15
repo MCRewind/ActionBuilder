@@ -246,7 +246,7 @@ namespace ActionBuilderMVVM.ViewModels
                 return;
             }
             foreach (var box in _action.Hurtboxes[_actionFrame])
-                BoxRects.Add(new BoxRectModel(box.X * 10, box.Y * 10, (float)box.Width * 10, (float)box.Height * 10));
+                BoxRects.Add(new BoxRectModel(Box.BoxType.Hurt, box.X * 10, box.Y * 10, (float)box.Width * 10, (float)box.Height * 10));
         }
 
         private void ReloadSprites()
