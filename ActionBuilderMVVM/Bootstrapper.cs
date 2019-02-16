@@ -27,6 +27,7 @@ namespace ActionBuilderMVVM
             _container.Singleton<ToolbarViewModel>();
             _container.Singleton<BoxInfoPanelViewModel>();
             _container.PerRequest<EditorViewModel>();
+            _container.PerRequest<BoxViewModel>();
             _container.PerRequest<ShellViewModel>();
         }
 

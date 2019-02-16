@@ -14,7 +14,7 @@
             <StackPanel VerticalAlignment="Bottom" IsEnabled="{Binding IsBoxSelected}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Type: " />
-                    <ComboBox ItemsSource="{Binding Source={other:EnumBindingSource {x:Type models:Box+BoxType}}}"/>
+                    <ComboBox ItemsSource="{Binding Source={other:EnumBindingSource {x:Type models:BoxModel+BoxType}}}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="X:   " />

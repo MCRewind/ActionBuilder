@@ -8,11 +8,11 @@ using Caliburn.Micro;
 
 namespace ActionBuilderMVVM.ViewModels
 {
-    class BoxInfoPanelViewModel : Screen, IHandle<BoxInfoPanelEvent<Box>>
+    class BoxInfoPanelViewModel : Screen, IHandle<BoxInfoPanelEvent<BoxModel>>
     {
-        private Box _selectedBox;
+        private BoxModel _selectedBox;
 
-        public Box SelectedBox
+        public BoxModel SelectedBox
         {
             get => _selectedBox;
             set
@@ -20,12 +20,16 @@ namespace ActionBuilderMVVM.ViewModels
                 _selectedBox = value;
                 NotifyOfPropertyChange(nameof(SelectedBox));
             }
-
         }
 
         public bool IsBoxSelected => SelectedBox != null;
 
-        public void Handle(BoxInfoPanelEvent<Box> message)
+        public BoxInfoPanelViewModel(IEventAggregator eventAggregator)
+        {
+            eventAggregator.Subscribe(this);
+        }
+
+        public void Handle(BoxInfoPanelEvent<BoxModel> message)
         {
             switch (message.EventType)
             {

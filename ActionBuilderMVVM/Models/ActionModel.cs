@@ -34,7 +34,7 @@ namespace ActionBuilderMVVM.Models
             _frames = new List<FrameType>();
             _infinite = new Vector2(-1, -1);
             Anchor = new Vector2(0, 0);
-            Hurtboxes = new List<List<Box>>();
+            Hurtboxes = new List<List<BoxModel>>();
         }
 
         [JsonProperty]
@@ -47,27 +47,27 @@ namespace ActionBuilderMVVM.Models
         public Vector2 Anchor { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Hitboxes { get; set; }
+        public List<List<BoxModel>> Hitboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Hurtboxes { get; set; }
+        public List<List<BoxModel>> Hurtboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Grabboxes { get; set; }
+        public List<List<BoxModel>> Grabboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Armorboxes { get; set; }
+        public List<List<BoxModel>> Armorboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Collisionboxes { get; set; }
+        public List<List<BoxModel>> Collisionboxes { get; set; }
 
         [JsonProperty]
-        public List<List<Box>> Databoxes { get; set; }
+        public List<List<BoxModel>> Databoxes { get; set; }
 
         [JsonProperty]
         public List<FrameProperty> FrameProperties { get; set; }
 
-        public List<List<Box>> AllBoxes => CollectionUtils
+        public List<List<BoxModel>> AllBoxes => CollectionUtils
             .Concat(Hitboxes, Hurtboxes, Grabboxes, Armorboxes, Collisionboxes, Databoxes).ToList();
 
         public int FrameCount => _frames.Count;
@@ -121,68 +121,5 @@ namespace ActionBuilderMVVM.Models
             [JsonProperty]
             public VelocityModifier DetailedVelocity { get; set; }
         }
-    }
-
-    [JsonObject(MemberSerialization.OptIn)]
-    public class Box
-    {
-        public enum BoxType
-        {
-            Hit,
-            Hurt,
-            Grab,
-            Armor,
-            Collision,
-            Data,
-            Null
-        }
-
-        public Box(BoxType type, int x, int y, double width, double height, double damage, double baseKnockback, double knockbackGrowth,
-            double knockbackAngle, int lifespan)
-        {
-            Type = type;
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            Damage = damage;
-            BaseKnockback = baseKnockback;
-            KnockbackGrowth = knockbackGrowth;
-            KnockbackAngle = knockbackAngle;
-            Lifespan = lifespan;
-        }
-
-        public Box() : this(BoxType.Hit, 0, 0, 5, 5, 0, 0, 0, 0, 1) { }
-
-        [JsonProperty]
-        public double Damage { get; set; }
-
-        [JsonProperty]
-        public double BaseKnockback { get; set; }
-
-        [JsonProperty]
-        public double KnockbackGrowth { get; set; }
-
-        [JsonProperty]
-        public double KnockbackAngle { get; set; }
-
-        [JsonProperty]
-        public int Lifespan { get; set; }
-
-        [JsonProperty]
-        public int X { get; set; }
-
-        [JsonProperty]
-        public int Y { get; set; }
-
-        [JsonProperty]
-        public double Width { get; set; }
-
-        [JsonProperty]
-        public double Height { get; set; }
-
-        [JsonConverter(typeof(StringEnumConverter)), JsonProperty]
-
-        public BoxType Type { get; set; }
     }
 }

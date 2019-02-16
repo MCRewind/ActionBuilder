@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -35,18 +36,22 @@ namespace ActionBuilderMVVM.ViewModels
 
         private string _actionSpritesPath;
 
+        private readonly Func<BoxViewModel> _boxViewModelFactory;
+
         private Rect _gridRect;
 
         private ActionModel _action = null;
 
-        public ObservableCollection<BoxRectModel> BoxRects { get; set; }
+        public ObservableCollection<BoxViewModel> BoxRects { get; set; }
 
-        public EditorViewModel(IEventAggregator eventAggregator, IConfigProvider configProvider)
+        public EditorViewModel(IEventAggregator eventAggregator, IConfigProvider configProvider, Func<BoxViewModel> boxViewModelFactory)
         {
-            BoxRects = new ObservableCollection<BoxRectModel>();
+            _boxViewModelFactory = boxViewModelFactory;
 
             _eventAggregator = eventAggregator;
             _configProvider = configProvider;
+
+            BoxRects = new ObservableCollection<BoxViewModel>();
 
             _eventAggregator.Subscribe(this);
 
@@ -120,6 +125,11 @@ namespace ActionBuilderMVVM.ViewModels
         {
             base.OnDeactivate(close);
             //TODO remove menu items for hitboxes
+        }
+
+        public void BoxSelected(BoxViewModel box)
+        {
+            _eventAggregator.PublishOnUIThread(new BoxInfoPanelEvent<BoxModel>(BoxInfoPanelEventType.UpdateInfo, box.Box));
         }
 
         private void UpdateTabTitle()
@@ -245,8 +255,13 @@ namespace ActionBuilderMVVM.ViewModels
             {
                 return;
             }
+
             foreach (var box in _action.Hurtboxes[_actionFrame])
-                BoxRects.Add(new BoxRectModel(Box.BoxType.Hurt, box.X * 10, box.Y * 10, (float)box.Width * 10, (float)box.Height * 10));
+            {
+                var boxVM = _boxViewModelFactory();
+                boxVM.Box = box;
+                BoxRects.Add(boxVM);
+            }
         }
 
         private void ReloadSprites()

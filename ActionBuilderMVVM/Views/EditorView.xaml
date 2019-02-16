@@ -6,6 +6,7 @@
              xmlns:panAndZoom="clr-namespace:Wpf.Controls.PanAndZoom;assembly=Wpf.Controls.PanAndZoom"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:other="clr-namespace:ActionBuilderMVVM.Other"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
@@ -20,7 +21,7 @@
             <Setter Property="Fill">
                 <Setter.Value>
                     <Binding Converter="{StaticResource BoxColorConverter}"
-                             Path="Type"/>
+                                 Path="Type"/>
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
@@ -32,12 +33,12 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
     </UserControl.Resources>
 
     <panAndZoom:ZoomBorder Name="MainZoomBorder" Stretch="None" ZoomSpeed="1.2" 
                         Background="White"  ClipToBounds="True" Focusable="True"
-                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                        PanButton="Middle">
         <Canvas Name="EditCanvas" 
                     Width="{Binding Path=CanvasWidth, Mode=Default}" 
                     Height="{Binding Path=CanvasHeight, Mode=Default}">
@@ -64,7 +65,10 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Rectangle Name="BoxRect" Style="{StaticResource BoxRectangle}"/>
+                        <Rectangle Name="BoxRect"
+                                   cal:Message.Attach="[Event MouseLeftButtonDown] = [Action BoxSelected($dataContext)]"
+                                   Style="{StaticResource BoxRectangle}">
+                        </Rectangle>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

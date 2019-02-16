@@ -98,7 +98,7 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Models\ActionModel.cs" />
     <Compile Include="Models\ActionType.cs" />
-    <Compile Include="Models\BoxRectModel.cs" />
+    <Compile Include="Models\BoxModel.cs" />
     <Compile Include="Models\Events.cs" />
     <Compile Include="Other\AppSettings.cs" />
     <Compile Include="Other\AppSettingsLocator.cs" />
@@ -111,6 +111,7 @@
     <Compile Include="Utils\CollectionUtils.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="ViewModels\BoxInfoPanelViewModel.cs" />
+    <Compile Include="ViewModels\BoxViewModel.cs" />
     <Compile Include="ViewModels\EditorViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\ToolbarViewModel.cs" />
