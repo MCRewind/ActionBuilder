@@ -1,10 +1,21 @@
 using System;
 using UnityEditor;
-using UnityEditor.Graphs;
 using UnityEngine;
 
-namespace Editor
+namespace Editor.Old
 {
+    public class BoxInfo
+    {
+        public string Name;
+        public Color Color;
+
+        public BoxInfo(string name, Color color)
+        {
+            Name = name;
+            Color = color;
+        }
+    }
+    
     public class Box
     {
         public enum Direction
@@ -17,10 +28,10 @@ namespace Editor
         
         public Rect Rect;
         public string Title;
-        public bool IsDragged;
-        public bool IsSelected;
-        public bool Resizing;
-        public Direction ResizeDir;
+        private bool _isDragged;
+        private bool _isSelected;
+        private bool _resizing;
+        private Direction _resizeDir;
 
         public GUIStyle Style;
         public GUIStyle DefaultBoxStyle;
@@ -49,7 +60,7 @@ namespace Editor
         
         private void Resize(Vector2 mousePos)
         {
-            switch (ResizeDir)
+            switch (_resizeDir)
             {
                 case Direction.Left:
                     Rect.xMin = mousePos.x;
@@ -70,32 +81,27 @@ namespace Editor
 
         private bool ShouldResize(Vector2 mousePos)
         {
-            bool IsWithinXOf(float num, float range, float value)
+            if (mousePos.x.IsWithinXOf(25, Rect.xMax))
             {
-                return num > value - range && num < value + range;
-            }
-            
-            if (IsWithinXOf(mousePos.x, 25, Rect.xMax))
-            {
-                ResizeDir = Direction.Right;
+                _resizeDir = Direction.Right;
                 return true;
             }
 
-            if (IsWithinXOf(mousePos.x, 25, Rect.xMin))
+            if (mousePos.x.IsWithinXOf(25, Rect.xMin))
             {
-                ResizeDir = Direction.Left;
+                _resizeDir = Direction.Left;
                 return true;
             }
 
-            if (IsWithinXOf(mousePos.y, 25, Rect.yMax))
+            if (mousePos.y.IsWithinXOf(25, Rect.yMax))
             {
-                ResizeDir = Direction.Down;
+                _resizeDir = Direction.Down;
                 return true;
             }
 
-            if (IsWithinXOf(mousePos.y, 25, Rect.yMin))
+            if (mousePos.y.IsWithinXOf(25, Rect.yMin))
             {
-                ResizeDir = Direction.Up;
+                _resizeDir = Direction.Up;
                 return true;
             }
 
@@ -113,12 +119,12 @@ namespace Editor
                         {
                             if (ShouldResize(e.mousePosition))
                             {
-                                Resizing = true;
+                                _resizing = true;
                             }
                             else
                             {
-                                IsDragged = true;
-                                IsSelected = true;
+                                _isDragged = true;
+                                _isSelected = true;
                                 
                                 Style = SelectedBoxStyle;
                             }
@@ -127,12 +133,12 @@ namespace Editor
                         else
                         {
                             GUI.changed = true;
-                            IsSelected = false;
+                            _isSelected = false;
                             Style = DefaultBoxStyle;
                         }
                     }
 
-                    if (e.button == 1 && IsSelected && Rect.Contains(e.mousePosition))
+                    if (e.button == 1 && _isSelected && Rect.Contains(e.mousePosition))
                     {
                         ProcessContextMenu();
                         e.Use();
@@ -141,20 +147,24 @@ namespace Editor
                     break;
                 
                 case EventType.MouseUp:
-                    IsDragged = false;
-                    Resizing = false;
+                    _isDragged = false;
+                    _resizing = false;
                     break;
                 
                 case EventType.MouseDrag:
                     if (e.button == 0)
                     {
-                        if (IsDragged)
+                        if (_isDragged)
                         {
                             Drag(e.delta);
+                            e.Use();
                         }
-                        else if (Resizing)
+                        else if (_resizing)
+                        {
                             Resize(e.mousePosition);
-                        e.Use();
+                            e.Use();
+                        }
+
                         return true;
                     }
 

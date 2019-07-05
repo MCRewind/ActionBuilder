@@ -6,9 +6,9 @@ using Editor;
 using UnityEditor;
 using UnityEngine;
 
-public class ActionEditor : EditorWindow
+public class OldActionEditor : EditorWindow
 {
-    private List<Box> _boxes;
+    private List<Editor.Old.Box> _boxes;
 
     private GUIStyle _boxStyle;
     private GUIStyle _selectedBoxStyle;
@@ -19,7 +19,7 @@ public class ActionEditor : EditorWindow
     [MenuItem("Window/Action Builder")]
     private static void OpenWindow()
     {
-        var window = GetWindow<ActionEditor>();
+        var window = GetWindow<OldActionEditor>();
         window.titleContent = new GUIContent("Action Builder");
     }
 
@@ -27,13 +27,13 @@ public class ActionEditor : EditorWindow
     {
         _boxStyle = new GUIStyle
         {
-            normal = {background = EditorGUIUtility.Load("builtin skins/darkskin/images/node1.png") as Texture2D},
+            normal = {background = BoxTextures.MakeBoxTexture(Color.green, 5) },//EditorGUIUtility.Load("builtin skins/darkskin/images/node1.png") as Texture2D},
             border = new RectOffset(12, 12, 12, 12)
         };
 
         _selectedBoxStyle = new GUIStyle
         {
-            normal =  {background = EditorGUIUtility.Load("builtin skins/darkskin/images/node1 on.png") as Texture2D},
+            normal =  {background = _boxStyle.normal.background.Tint(Color.black, 50)},//EditorGUIUtility.Load("builtin skins/darkskin/images/node1 on.png") as Texture2D},
             border = new RectOffset(12, 12, 12, 12)
         };
     }
@@ -138,12 +138,12 @@ public class ActionEditor : EditorWindow
     private void OnClickAddNode(Vector2 mousePosition)
     {
         if (_boxes is null)
-            _boxes = new List<Box>();
+            _boxes = new List<Editor.Old.Box>();
         
-        _boxes.Add(new Box(mousePosition, 200, 200, _boxStyle, _selectedBoxStyle, OnClickRemoveBox));
+        _boxes.Add(new Editor.Old.Box(mousePosition, 200, 200, _boxStyle, _selectedBoxStyle, OnClickRemoveBox));
     }
 
-    private void OnClickRemoveBox(Box box)
+    private void OnClickRemoveBox(Editor.Old.Box box)
     {
         _boxes.Remove(box);
     }
