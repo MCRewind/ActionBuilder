@@ -13,6 +13,9 @@ namespace Editor
         [Serializable]
         public class ActionEditorSettings : ISerializationCallbackReceiver
         {
+            public float maxZoom = 5f;
+            public float minZoom = 1f;
+            
             public bool zoomToMouse = true;
             
             [SerializeField] private Color32 _gridLineColor = new Color(0.45f, 0.45f, 0.45f);

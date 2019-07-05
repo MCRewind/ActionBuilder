@@ -9,8 +9,27 @@ namespace Editor
     {
         private Action _currentAction;
 
-        private float _zoom = 1.0f;
+        private float _zoom = 1;
+        public float zoom 
+        { 
+            get => _zoom;
+            set
+            {
+                _zoom = Mathf.Clamp(value, ActionEditorPreferences.Settings.minZoom, ActionEditorPreferences.Settings.maxZoom);
+                Repaint();
+            }
+        }
+        
         private Vector2 _panOffset;
+        public Vector2 panOffset 
+        {
+            get => _panOffset;
+            set
+            {
+                _panOffset = value; 
+                Repaint();
+            }
+        }
         
         [MenuItem("Window/Action Builder")]
         private static void OpenWindow()

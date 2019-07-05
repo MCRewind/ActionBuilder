@@ -9,7 +9,8 @@ namespace Editor
         private void OnGUI()
         {
             ProcessEvents();
-            DrawGrid(position, _zoom, _panOffset);
+            DrawGrid(position, zoom, panOffset);
+            GUI.changed = true;
         }
 
         private void DrawGrid(Rect rect, float zoom, Vector2 panOffset) {

@@ -23,8 +23,7 @@ namespace Editor
                 case EventType.MouseDrag:
                     if (e.button == RightMouse)
                     {
-                        _panOffset += e.delta * _zoom;
-                        GUI.changed = true;
+                        _panOffset += e.delta * zoom;
                     }
 
                     break;
@@ -33,12 +32,15 @@ namespace Editor
                 case EventType.KeyUp:
                     break;
                 case EventType.ScrollWheel:
-                    var oldZoom = _zoom;
-                    if (e.delta.y > 0) _zoom += 0.1f * _zoom;
-                    else _zoom -= 0.1f * _zoom;
+                    var oldZoom = zoom;
+                    
+                    if (e.delta.y > 0) 
+                        zoom += 0.1f * zoom;
+                    else 
+                        zoom -= 0.1f * zoom;
+                    
                     if (ActionEditorPreferences.Settings.zoomToMouse) 
-                        _panOffset += (1 - oldZoom / _zoom) * (WindowToGridPosition(e.mousePosition) + _panOffset);
-                    GUI.changed = true;
+                        panOffset += (1 - oldZoom / zoom) * (WindowToGridPosition(e.mousePosition) + panOffset);
                     break;
                 case EventType.Repaint:
                     break;
