@@ -451,3 +451,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # End of https://www.gitignore.io/api/rider,macos,csharp
+
+# Action Builder
+Deps/
